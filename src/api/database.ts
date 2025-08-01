@@ -1,12 +1,12 @@
 import { Activity, InsertActivity, User, InsertUser } from '../../shared/schema';
 
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 export class DatabaseAPI {
   // User operations
   async getUser(id: number): Promise<User | null> {
     try {
-      const response = await fetch(`${API_BASE}/users/${id}`);
+      const response = await fetch(`${API_BASE}/users?id=${id}`);
       if (!response.ok) return null;
       return await response.json();
     } catch (error) {
@@ -17,7 +17,7 @@ export class DatabaseAPI {
 
   async getUserByUsername(username: string): Promise<User | null> {
     try {
-      const response = await fetch(`${API_BASE}/users/by-username/${username}`);
+      const response = await fetch(`${API_BASE}/users?username=${username}`);
       if (!response.ok) return null;
       return await response.json();
     } catch (error) {
@@ -44,7 +44,7 @@ export class DatabaseAPI {
   // Activity operations
   async getUserActivities(userId: number): Promise<Activity[]> {
     try {
-      const response = await fetch(`${API_BASE}/users/${userId}/activities`);
+      const response = await fetch(`${API_BASE}/activities?userId=${userId}`);
       if (!response.ok) {
         console.error(`Failed to fetch activities: ${response.status} ${response.statusText}`);
         return [];
@@ -73,7 +73,7 @@ export class DatabaseAPI {
 
   async updateActivity(id: number, activityData: Partial<Activity>): Promise<Activity | null> {
     try {
-      const response = await fetch(`${API_BASE}/activities/${id}`, {
+      const response = await fetch(`${API_BASE}/activities?id=${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(activityData),
@@ -88,7 +88,7 @@ export class DatabaseAPI {
 
   async deleteActivity(id: number): Promise<boolean> {
     try {
-      const response = await fetch(`${API_BASE}/activities/${id}`, {
+      const response = await fetch(`${API_BASE}/activities?id=${id}`, {
         method: 'DELETE',
       });
       return response.ok;
