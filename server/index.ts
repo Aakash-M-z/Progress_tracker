@@ -7,6 +7,11 @@ import { InsertUser, InsertActivity } from '../shared/schema';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Health check endpoint for Render
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
 app.use(cors());
 app.use(express.json());
 
