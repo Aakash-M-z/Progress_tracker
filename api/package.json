@@ -1,0 +1,11 @@
+{
+  "name": "dsa-progress-tracker-api",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.1",
+    "@vercel/node": "^3.0.0",
+    "drizzle-orm": "^0.44.4",
+    "ws": "^8.18.3"
+  }
+} 
