@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: dsa-progress-tracker
+    env: static
+    buildCommand: npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: VITE_API_URL
+        sync: false 
