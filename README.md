@@ -73,14 +73,15 @@ A comprehensive web application designed to help you track your Data Structures 
 
 - Node.js (version 16 or higher)
 - npm or yarn
+- Neon Database account (for production)
 
 ### Installation
 
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
-cd dsa-progress-tracker
+git clone https://github.com/Aakash-M-z/Dsa-ProgressTracker.git
+cd Progress_track
 ```
 
 2. Install dependencies:
@@ -89,19 +90,59 @@ cd dsa-progress-tracker
 npm install
 ```
 
-3. Start the development server:
+3. Set up environment variables:
+
+Create a `.env` file in the root directory:
+```bash
+DATABASE_URL=your_neon_database_url_here
+VITE_API_URL=http://localhost:3001
+```
+
+4. Start the development server:
 
 ```bash
 npm run dev
 ```
 
-4. Open your browser and navigate to `http://localhost:5173`
+5. Start the backend server (in a separate terminal):
+
+```bash
+npx tsx server/index.ts
+```
+
+6. Open your browser and navigate to `http://localhost:5000`
 
 ### Building for Production
 
 ```bash
 npm run build
 ```
+
+## Deployment
+
+### Vercel Deployment
+
+1. **Frontend Deployment:**
+   - Go to [Vercel](https://vercel.com)
+   - Import your GitHub repository: `https://github.com/Aakash-M-z/Dsa-ProgressTracker.git`
+   - Vercel will automatically detect it's a Vite project
+   - Add environment variables in Vercel dashboard:
+     - `DATABASE_URL`: Your Neon database connection string
+     - `VITE_API_URL`: Your backend API URL
+
+2. **Backend Deployment:**
+   - Deploy the backend separately to Vercel or other platforms
+   - Update the `VITE_API_URL` in frontend environment variables
+
+### Environment Variables
+
+**Required for Production:**
+- `DATABASE_URL`: Neon PostgreSQL connection string
+- `VITE_API_URL`: Backend API URL
+
+**Local Development:**
+- `DATABASE_URL`: Your local or development database URL
+- `VITE_API_URL`: `http://localhost:3001`
 
 ## Usage
 
