@@ -319,6 +319,11 @@ body {
   animation: titleGlow 2.8s ease-in-out infinite;
 }
 
+.hero-title-animate:hover {
+  animation: titleGlow 1.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 40px rgba(99, 102, 241, 0.25)) drop-shadow(0 0 60px rgba(79, 70, 229, 0.15));
+}
+
 .hero-loading-animate {
   animation: loadingPulse 2s ease-in-out infinite;
 }
