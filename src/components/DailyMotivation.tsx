@@ -98,7 +98,7 @@ const DailyMotivation: React.FC = () => {
             <div className="flex items-center gap-3">
               <div className="text-4xl animate-bounce">{currentQuote.icon}</div>
               <div>
-                <h3 className="text-xl font-bold">Daily Motivation</h3>
+                <h3 className="text-xl font-bold animate-text-glow">Daily Motivation</h3>
                 <p className="text-white/80 text-sm">Hello, {user?.name?.split(' ')[0]}! 👋</p>
               </div>
             </div>
@@ -113,10 +113,10 @@ const DailyMotivation: React.FC = () => {
           </div>
 
           <div className={`transition-all duration-300 ${isAnimating ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'}`}>
-            <blockquote className="text-lg font-medium mb-3 italic">
+            <blockquote className="text-lg font-medium mb-3 italic animate-text-glow">
               "{currentQuote.text}"
             </blockquote>
-            <cite className="text-white/90 text-sm font-semibold">
+            <cite className="text-white/90 text-sm font-semibold text-shadow-sm">
               — {currentQuote.author}
             </cite>
           </div>
@@ -126,11 +126,10 @@ const DailyMotivation: React.FC = () => {
               {MOTIVATION_QUOTES.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    index === MOTIVATION_QUOTES.findIndex(q => q.text === currentQuote.text)
-                      ? 'bg-white'
-                      : 'bg-white/40'
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${index === MOTIVATION_QUOTES.findIndex(q => q.text === currentQuote.text)
+                    ? 'bg-white'
+                    : 'bg-white/40'
+                    }`}
                 />
               ))}
             </div>
