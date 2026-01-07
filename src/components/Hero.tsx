@@ -15,7 +15,7 @@ const Hero: React.FC = () => {
           Dashboard • Productivity • Dev Friendly
         </div>
 
-        <h1 className="hero-title-animate bg-gradient-to-r from-white via-indigo-100 to-white bg-clip-text text-4xl font-black leading-tight text-transparent sm:text-5xl md:text-6xl">
+        <h1 className="hero-title-animate bg-gradient-to-r from-white via-indigo-100 to-white bg-clip-text text-4xl font-black leading-tight text-transparent sm:text-5xl md:text-6xl cursor-pointer transition-all duration-300 hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-102 active:scale-98">
           Progress Tracker
         </h1>
 
