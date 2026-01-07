@@ -15,6 +15,8 @@ import SolutionResources from './components/SolutionResources';
 import QuickAddProblem from './components/QuickAddProblem';
 import DailyMotivation from './components/DailyMotivation';
 import UserProfile from './components/UserProfile';
+import Hero from './components/Hero';
+import HomePage from './components/HomePage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Activity } from './types';
 import { databaseAPI } from './api/database';
@@ -26,6 +28,7 @@ const AppContent: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'profile' | 'roadmap' | 'stats' | 'badges' | 'resources' | 'admin'>('overview');
   const [showDailyProblem, setShowDailyProblem] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -35,7 +38,7 @@ const AppContent: React.FC = () => {
 
   const loadActivities = async () => {
     if (!user) return;
-    
+
     try {
       setLoading(true);
       const dbActivities = await databaseAPI.getUserActivities(user.id);
@@ -55,11 +58,11 @@ const AppContent: React.FC = () => {
 
   const addActivity = async (activity: Activity) => {
     if (!user) return;
-    
+
     try {
       const dbActivityData = frontendToDbActivity(activity, user.id);
       const newDbActivity = await databaseAPI.createActivity(dbActivityData);
-      
+
       if (newDbActivity) {
         const newFrontendActivity = dbToFrontendActivity(newDbActivity);
         setActivities([...activities, newFrontendActivity]);
@@ -87,10 +90,15 @@ const AppContent: React.FC = () => {
   ];
 
   if (!isAuthenticated) {
-    return <Login onLogin={(user) => {
-      // Handle login logic here if needed
-      console.log('User logged in:', user);
-    }} />;
+    return showLogin ? (
+      <Login
+        onLogin={(user) => {
+          console.log('User logged in:', user);
+        }}
+      />
+    ) : (
+      <HomePage onGetStarted={() => setShowLogin(true)} />
+    );
   }
 
   if (loading) {
@@ -109,13 +117,14 @@ const AppContent: React.FC = () => {
       <Header />
       <DailyProblemNotification />
       {showDailyProblem && (
-        <DailyProblemNotification 
-          forceShow={true} 
-          onClose={() => setShowDailyProblem(false)} 
+        <DailyProblemNotification
+          forceShow={true}
+          onClose={() => setShowDailyProblem(false)}
         />
       )}
       <NotificationSettings onTriggerDailyProblem={() => setShowDailyProblem(true)} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Hero />
         <DailyMotivation />
         {/* Tab Navigation */}
         <div className="mb-8">
@@ -125,11 +134,10 @@ const AppContent: React.FC = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`py-3 px-4 font-medium text-sm flex items-center space-x-2 rounded-lg transition-all duration-200 whitespace-nowrap ${
-                    activeTab === tab.id
+                  className={`py-3 px-4 font-medium text-sm flex items-center space-x-2 rounded-lg transition-all duration-200 whitespace-nowrap ${activeTab === tab.id
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md transform scale-105'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'
-                  }`}
+                    }`}
                 >
                   <span className="text-lg">{tab.icon}</span>
                   <span>{tab.name}</span>
@@ -171,7 +179,7 @@ const AppContent: React.FC = () => {
                 </div>
                 <div className="text-sm text-green-700 dark:text-green-300 font-medium">Problems Solved</div>
               </div>
-              
+
               <div className="bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 rounded-2xl p-6 border border-orange-200 dark:border-orange-700 text-center transform hover:scale-105 transition-all duration-300">
                 <div className="text-4xl mb-3">🔥</div>
                 <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
@@ -194,7 +202,7 @@ const AppContent: React.FC = () => {
                 </div>
                 <div className="text-sm text-orange-700 dark:text-orange-300 font-medium">Day Streak</div>
               </div>
-              
+
               <div className="bg-gradient-to-br from-purple-100 to-violet-100 dark:from-purple-900/30 dark:to-violet-900/30 rounded-2xl p-6 border border-purple-200 dark:border-purple-700 text-center transform hover:scale-105 transition-all duration-300">
                 <div className="text-4xl mb-3">⏱️</div>
                 <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
@@ -202,7 +210,7 @@ const AppContent: React.FC = () => {
                 </div>
                 <div className="text-sm text-purple-700 dark:text-purple-300 font-medium">Time Invested</div>
               </div>
-              
+
               <div className="bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-2xl p-6 border border-blue-200 dark:border-blue-700 text-center transform hover:scale-105 transition-all duration-300">
                 <div className="text-4xl mb-3">📚</div>
                 <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
@@ -227,7 +235,7 @@ const AppContent: React.FC = () => {
                   </div>
                   <SimpleHeatmap activities={activities} />
                 </div>
-                
+
                 <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 card-hover">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-2xl text-white">
@@ -256,9 +264,9 @@ const AppContent: React.FC = () => {
                     <ActivityForm onAddActivity={addActivity} />
                   </RoleBasedRoute>
                 </div>
-                
+
                 <QuickAddProblem onAddActivity={addActivity} />
-                
+
                 <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-800 dark:to-gray-700 rounded-3xl shadow-xl border border-orange-200 dark:border-gray-600 p-6">
                   <StreakTracker activities={activities} />
                 </div>
