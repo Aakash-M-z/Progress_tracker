@@ -4,7 +4,7 @@ A comprehensive web application designed to help you track your Data Structures 
 
 ## Features
 
-### 📊 **Activity Tracking**
+###  **Activity Tracking**
 
 - Log DSA problems with detailed information
 - Track time complexity and space complexity
@@ -12,14 +12,14 @@ A comprehensive web application designed to help you track your Data Structures 
 - Add notes and insights for each problem
 - Support for multiple platforms (LeetCode, HackerRank, CodeForces, etc.)
 
-### 🗺️ **DSA Roadmap**
+###  **DSA Roadmap**
 
 - Structured learning path covering all major DSA topics
 - Progress tracking for each topic category
 - Filter by difficulty level and topic category
 - Visual progress indicators
 
-### 📈 **Analytics & Statistics**
+###  **Analytics & Statistics**
 
 - Activity heatmap showing daily progress
 - Success rate tracking
@@ -34,7 +34,7 @@ A comprehensive web application designed to help you track your Data Structures 
 - Motivational quotes
 - Progress milestones
 
-### 🎨 **Modern UI/UX**
+### **Modern UI/UX**
 
 - Responsive design for all devices
 - Dark/Light theme support
@@ -81,36 +81,53 @@ A comprehensive web application designed to help you track your Data Structures 
 
 ```bash
 git clone https://github.com/Aakash-M-z/Dsa-ProgressTracker.git
-cd Progress_track
+cd Progress_tracker
 ```
 
-2. Install dependencies:
+2. Install dependencies (frontend):
 
 ```bash
 npm install
 ```
 
-3. Set up environment variables:
+3. Install dependencies (backend):
+
+```bash
+cd server
+npm install
+cd ..
+```
+
+4. Set up environment variables:
 
 Create a `.env` file in the root directory:
+
 ```bash
 DATABASE_URL=your_neon_database_url_here
 VITE_API_URL=http://localhost:3001
 ```
 
-4. Start the development server:
+Create a `.env` file in the `server/` directory:
+
+```bash
+DATABASE_URL=your_neon_database_url_here
+PORT=3001
+```
+
+5. Start the backend server (from `server/`):
+
+```bash
+cd server
+npm run dev
+```
+
+6. Start the frontend (new terminal in project root):
 
 ```bash
 npm run dev
 ```
 
-5. Start the backend server (in a separate terminal):
-
-```bash
-npx tsx server/index.ts
-```
-
-6. Open your browser and navigate to `http://localhost:5000`
+7. Open your browser and navigate to `http://localhost:5000`
 
 ### Building for Production
 
@@ -123,6 +140,7 @@ npm run build
 ### Vercel Deployment
 
 1. **Frontend Deployment:**
+
    - Go to [Vercel](https://vercel.com)
    - Import your GitHub repository: `https://github.com/Aakash-M-z/Dsa-ProgressTracker.git`
    - Vercel will automatically detect it's a Vite project
@@ -137,10 +155,12 @@ npm run build
 ### Environment Variables
 
 **Required for Production:**
+
 - `DATABASE_URL`: Neon PostgreSQL connection string
 - `VITE_API_URL`: Backend API URL
 
 **Local Development:**
+
 - `DATABASE_URL`: Your local or development database URL
 - `VITE_API_URL`: `http://localhost:3001`
 
@@ -219,5 +239,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 **Happy Coding! 🎉**
+
+Track your DSA progress, stay motivated, and become a better problem solver!
 
 Track your DSA progress, stay motivated, and become a better problem solver!
