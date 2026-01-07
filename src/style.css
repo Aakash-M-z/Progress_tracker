@@ -219,6 +219,25 @@ body {
   animation: shimmer 2s infinite;
 }
 
+/* Hero animations */
+@keyframes titleGlow {
+  0%, 100% { text-shadow: 0 0 16px rgba(99, 102, 241, 0.45), 0 0 32px rgba(79, 70, 229, 0.35); }
+  50% { text-shadow: 0 0 22px rgba(99, 102, 241, 0.7), 0 0 44px rgba(79, 70, 229, 0.6); }
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.35; letter-spacing: 0.08em; }
+  50% { opacity: 1; letter-spacing: 0.16em; }
+}
+
+.hero-title-animate {
+  animation: titleGlow 2.8s ease-in-out infinite;
+}
+
+.hero-loading-animate {
+  animation: loadingPulse 2s ease-in-out infinite;
+}
+
 /* Loading skeleton */
 .skeleton {
   @apply animate-pulse bg-gray-200 dark:bg-gray-700 rounded-lg;
