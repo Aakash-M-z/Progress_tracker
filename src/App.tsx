@@ -125,7 +125,6 @@ const AppContent: React.FC = () => {
       <NotificationSettings onTriggerDailyProblem={() => setShowDailyProblem(true)} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Hero />
-        <DailyMotivation />
         {/* Tab Navigation */}
         <div className="mb-8">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-2">
@@ -135,8 +134,8 @@ const AppContent: React.FC = () => {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`py-3 px-4 font-medium text-sm flex items-center space-x-2 rounded-lg transition-all duration-200 whitespace-nowrap ${activeTab === tab.id
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md transform scale-105'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md transform scale-105'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'
                     }`}
                 >
                   <span className="text-lg">{tab.icon}</span>
@@ -150,6 +149,15 @@ const AppContent: React.FC = () => {
         {/* Tab Content */}
         {activeTab === 'overview' && (
           <div className="animate-fadeIn space-y-8">
+            {/* Daily Motivation at the top with enhanced glow effect */}
+            <div className="relative mb-8">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-3xl blur-2xl opacity-40 animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-400 rounded-3xl blur-xl opacity-20 animate-ping"></div>
+              <div className="relative transform hover:scale-105 transition-all duration-300">
+                <DailyMotivation />
+              </div>
+            </div>
+
             {/* Welcome Hero Section */}
             <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-3xl shadow-2xl text-white p-8 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 animate-pulse"></div>
@@ -220,10 +228,10 @@ const AppContent: React.FC = () => {
               </div>
             </div>
 
-            {/* Main Content Grid - Fixed Layout */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-              {/* Left Column - Analytics (Takes 2/3 width) */}
-              <div className="xl:col-span-2 space-y-8">
+            {/* Main Content Grid - Reorganized Layout */}
+            <div className="space-y-8">
+              {/* Analytics Section - Full Width */}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 card-hover">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-2xl text-white">
@@ -236,8 +244,8 @@ const AppContent: React.FC = () => {
                   <SimpleHeatmap activities={activities} />
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 card-hover">
-                  <div className="flex items-center gap-3 mb-6">
+                <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 card-hover">
+                  <div className="flex items-center gap-3 mb-4">
                     <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-2xl text-white">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -249,8 +257,8 @@ const AppContent: React.FC = () => {
                 </div>
               </div>
 
-              {/* Right Column - Tools & Forms (Takes 1/3 width) */}
-              <div className="xl:col-span-1 space-y-6">
+              {/* Center Section - Quick Actions */}
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 rounded-3xl shadow-xl border border-blue-200 dark:border-gray-600 p-6">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-2 rounded-xl text-white">
