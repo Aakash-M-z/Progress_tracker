@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Activity } from '../types';
 
 interface ActivityFormProps {
-  onAddActivity: (activity: Activity) => void;
+  onAddActivity: (activity: Omit<Activity, 'id' | 'date'>) => void;
 }
 
 const DSA_CATEGORIES = [
@@ -50,7 +50,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onAddActivity }) => {
     const today = new Date();
     return today.toISOString().split('T')[0];
   });
-  
+
   // DSA specific fields
   const [dsaTopic, setDsaTopic] = useState('');
   const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard' | ''>('');
@@ -62,17 +62,15 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onAddActivity }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const finalCategory = category === 'Other' ? customCategory : category;
-    
+
     if (!finalCategory || !duration || !description || !date) {
       alert('Please fill in all required fields');
       return;
     }
-    
-    const newActivity: Activity = {
-      id: Date.now().toString(),
-      date: new Date(date).toISOString(),
+
+    const newActivity: Omit<Activity, 'id' | 'date'> = {
       category: finalCategory,
       duration: parseInt(duration, 10),
       description,
@@ -85,9 +83,9 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onAddActivity }) => {
       spaceComplexity: spaceComplexity || undefined,
       notes: notes || undefined
     };
-    
+
     onAddActivity(newActivity);
-    
+
     // Show success message for solved problems
     if (problemSolved) {
       const successMessage = document.createElement('div');
@@ -103,7 +101,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onAddActivity }) => {
         document.body.removeChild(successMessage);
       }, 3000);
     }
-    
+
     // Reset form
     setCategory('');
     setCustomCategory('');
@@ -134,7 +132,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onAddActivity }) => {
           required
         />
       </div>
-      
+
       <div>
         <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           DSA Category *
@@ -152,7 +150,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onAddActivity }) => {
           ))}
         </select>
       </div>
-      
+
       {category === 'Other' && (
         <div>
           <label htmlFor="customCategory" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -231,7 +229,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onAddActivity }) => {
           Problem Solved
         </label>
       </div>
-      
+
       <div>
         <label htmlFor="duration" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Time Spent (minutes) *
@@ -277,7 +275,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onAddActivity }) => {
           />
         </div>
       </div>
-      
+
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Problem Description *
@@ -306,7 +304,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onAddActivity }) => {
           className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white transition-colors resize-none"
         />
       </div>
-      
+
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
           Understanding Level (1-4)
@@ -329,7 +327,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onAddActivity }) => {
           </div>
         </div>
       </div>
-      
+
       <button
         type="submit"
         className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg btn-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 font-medium text-base animate-glow"
