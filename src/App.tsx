@@ -20,10 +20,11 @@ import HomePage from './components/HomePage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Activity } from './types';
 import { databaseAPI } from './api/database';
+import { SessionManager } from './utils/sessionManager';
 import { dbToFrontendActivity, frontendToDbActivity } from './utils/activityTransform';
 
 const AppContent: React.FC = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading } = useAuth();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'profile' | 'roadmap' | 'stats' | 'badges' | 'resources' | 'admin'>('overview');
@@ -33,8 +34,31 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated && user) {
       loadActivities();
+    } else {
+      // Clear activities when user logs out
+      setActivities([]);
+      setLoading(false);
     }
   }, [isAuthenticated, user]);
+
+  // Reset showLogin when authentication state changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      setShowLogin(false);
+    }
+  }, [isAuthenticated]);
+
+  // Session refresh mechanism
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Refresh session every 30 minutes
+      const interval = setInterval(() => {
+        SessionManager.refreshSession();
+      }, 30 * 60 * 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated]);
 
   const loadActivities = async () => {
     if (!user) return;
@@ -56,11 +80,18 @@ const AppContent: React.FC = () => {
     }
   };
 
-  const addActivity = async (activity: Activity) => {
+  const addActivity = async (activity: Omit<Activity, 'id' | 'date'>) => {
     if (!user) return;
 
+    // Generate the missing fields
+    const fullActivity: Activity = {
+      ...activity,
+      id: Date.now().toString(),
+      date: new Date().toISOString()
+    };
+
     try {
-      const dbActivityData = frontendToDbActivity(activity, user.id);
+      const dbActivityData = frontendToDbActivity(fullActivity, user.id);
       const newDbActivity = await databaseAPI.createActivity(dbActivityData);
 
       if (newDbActivity) {
@@ -68,14 +99,14 @@ const AppContent: React.FC = () => {
         setActivities([...activities, newFrontendActivity]);
       } else {
         // Fallback to localStorage
-        setActivities([...activities, activity]);
-        localStorage.setItem(`activities_${user.id}`, JSON.stringify([...activities, activity]));
+        setActivities([...activities, fullActivity]);
+        localStorage.setItem(`activities_${user.id}`, JSON.stringify([...activities, fullActivity]));
       }
     } catch (error) {
       console.error('Failed to save activity:', error);
       // Fallback to localStorage
-      setActivities([...activities, activity]);
-      localStorage.setItem(`activities_${user.id}`, JSON.stringify([...activities, activity]));
+      setActivities([...activities, fullActivity]);
+      localStorage.setItem(`activities_${user.id}`, JSON.stringify([...activities, fullActivity]));
     }
   };
 
@@ -89,12 +120,24 @@ const AppContent: React.FC = () => {
     ...(user?.role === 'admin' ? [{ id: 'admin', name: 'Admin Panel', icon: '⚙️' }] : []),
   ];
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center animate-fadeIn">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!isAuthenticated) {
     return showLogin ? (
       <Login
         onLogin={(user) => {
           console.log('User logged in:', user);
         }}
+        onBack={() => setShowLogin(false)}
       />
     ) : (
       <HomePage onGetStarted={() => setShowLogin(true)} />
