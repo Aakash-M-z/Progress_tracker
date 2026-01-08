@@ -235,12 +235,12 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
         problemSolved: solved,
         notes: notes || `Solved ${selectedProblem.title} from DSA Roadmap`
       });
-      
+
       // Reset form
       setSolved(false);
       setNotes('');
       setDuration(30);
-      
+
       // Show success message
       alert(`Successfully logged ${selectedProblem.title}!`);
     }
@@ -281,10 +281,10 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
             {selectedProblem.difficulty}
           </span>
         </div>
-        
+
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{selectedProblem.title}</h1>
         <p className="text-gray-600 dark:text-gray-400">Category: {category}</p>
-        
+
         {/* Problem selector */}
         {problems.length > 1 && (
           <div className="mt-4 flex flex-wrap gap-2">
@@ -292,11 +292,10 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
               <button
                 key={problem.id}
                 onClick={() => setSelectedProblem(problem)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  selectedProblem.id === problem.id
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${selectedProblem.id === problem.id
                     ? 'bg-blue-500 text-white shadow-md'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
+                  }`}
               >
                 {problem.title}
               </button>
@@ -440,7 +439,7 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
                   <span className="font-medium text-gray-700 dark:text-gray-300">Problem Solved</span>
                 </label>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Time Spent (minutes)
@@ -453,7 +452,7 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
                   min="1"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Notes (optional)
@@ -466,7 +465,7 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
                   rows={3}
                 />
               </div>
-              
+
               <button
                 onClick={handleSolveProblem}
                 className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105"
