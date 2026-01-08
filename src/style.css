@@ -277,11 +277,11 @@ body {
 
   0%,
   100% {
-    text-shadow: 0 0 16px rgba(99, 102, 241, 0.45), 0 0 32px rgba(79, 70, 229, 0.35);
+    text-shadow: 0 0 12px rgba(99, 102, 241, 0.25), 0 0 24px rgba(79, 70, 229, 0.20);
   }
 
   50% {
-    text-shadow: 0 0 22px rgba(99, 102, 241, 0.7), 0 0 44px rgba(79, 70, 229, 0.6);
+    text-shadow: 0 0 16px rgba(99, 102, 241, 0.40), 0 0 32px rgba(79, 70, 229, 0.35);
   }
 }
 
@@ -289,12 +289,12 @@ body {
 
   0%,
   100% {
-    opacity: 0.35;
+    opacity: 0.25;
     letter-spacing: 0.08em;
   }
 
   50% {
-    opacity: 1;
+    opacity: 0.7;
     letter-spacing: 0.16em;
   }
 }
@@ -305,7 +305,7 @@ body {
 
 .hero-title-animate:hover {
   animation: titleGlow 1.2s ease-in-out infinite;
-  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 40px rgba(99, 102, 241, 0.25)) drop-shadow(0 0 60px rgba(79, 70, 229, 0.15));
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)) drop-shadow(0 0 30px rgba(99, 102, 241, 0.15)) drop-shadow(0 0 45px rgba(79, 70, 229, 0.10));
 }
 
 .hero-loading-animate {
@@ -395,4 +395,72 @@ body {
 .animate-slow-pulse {
   animation: slowPulse 6s ease-in-out infinite;
   will-change: transform, opacity;
+}
+
+/* Enhanced touch effects for HomePage */
+.touch-effect {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.touch-effect:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.touch-effect:active {
+  transform: translateY(0) scale(0.98);
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ripple effect for buttons */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.ripple-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple-effect:active::before {
+  width: 300px;
+  height: 300px;
+  transition: 0s;
+}
+
+/* Glass morphism enhancement */
+.glass-enhanced {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.glass-enhanced:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
