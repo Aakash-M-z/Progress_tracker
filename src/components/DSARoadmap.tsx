@@ -17,7 +17,7 @@ const DSA_ROADMAP: DSATopic[] = [
   { name: 'Heap/Priority Queue', category: 'Data Structures', difficulty: 'Intermediate', status: 'Not Started', problemsSolved: 0, totalProblems: 10 },
   { name: 'Trie', category: 'Data Structures', difficulty: 'Advanced', status: 'Not Started', problemsSolved: 0, totalProblems: 8 },
   { name: 'Union Find', category: 'Data Structures', difficulty: 'Advanced', status: 'Not Started', problemsSolved: 0, totalProblems: 6 },
-  
+
   // Algorithms
   { name: 'Binary Search', category: 'Algorithms', difficulty: 'Beginner', status: 'Not Started', problemsSolved: 0, totalProblems: 15 },
   { name: 'Two Pointers', category: 'Algorithms', difficulty: 'Beginner', status: 'Not Started', problemsSolved: 0, totalProblems: 12 },
@@ -38,13 +38,13 @@ const DSARoadmap: React.FC<DSARoadmapProps> = ({ activities, onAddActivity }) =>
 
   // Calculate progress for each topic based on activities
   const roadmapWithProgress = DSA_ROADMAP.map(topic => {
-    const topicActivities = activities.filter(activity => 
+    const topicActivities = activities.filter(activity =>
       activity.category === topic.name || activity.dsaTopic?.includes(topic.name)
     );
-    
+
     const problemsSolved = topicActivities.filter(activity => activity.problemSolved).length;
     const totalProblems = topicActivities.length;
-    
+
     let status: DSATopic['status'] = 'Not Started';
     if (problemsSolved > 0) {
       if (problemsSolved >= topic.totalProblems * 0.8) status = 'Mastered';
@@ -98,17 +98,17 @@ const DSARoadmap: React.FC<DSARoadmapProps> = ({ activities, onAddActivity }) =>
     return acc;
   }, { totalProblems: 0, solvedProblems: 0 });
 
-  const overallProgress = totalProgress.totalProblems > 0 
-    ? (totalProgress.solvedProblems / totalProgress.totalProblems) * 100 
+  const overallProgress = totalProgress.totalProblems > 0
+    ? (totalProgress.solvedProblems / totalProgress.totalProblems) * 100
     : 0;
 
   // If a topic is selected, show the problem page
   if (selectedTopic) {
     return (
-      <ProblemPage 
-        category={selectedTopic} 
+      <ProblemPage
+        category={selectedTopic}
         onBack={() => setSelectedTopic(null)}
-        onAddActivity={onAddActivity || (() => {})}
+        onAddActivity={onAddActivity || (() => { })}
       />
     );
   }
@@ -122,14 +122,14 @@ const DSARoadmap: React.FC<DSARoadmapProps> = ({ activities, onAddActivity }) =>
           DSA Learning Roadmap
         </h2>
         <p className="text-blue-100 mb-6 text-lg">Track your progress through the complete DSA curriculum</p>
-        
+
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-lg">Overall Progress</span>
             <span className="text-2xl font-bold">{Math.round(overallProgress)}%</span>
           </div>
           <div className="w-full bg-white/20 rounded-full h-4">
-            <div 
+            <div
               className="bg-white h-4 rounded-full transition-all duration-500"
               style={{ width: `${overallProgress}%` }}
             ></div>
@@ -157,7 +157,7 @@ const DSARoadmap: React.FC<DSARoadmapProps> = ({ activities, onAddActivity }) =>
               <option value="Algorithms">Algorithms</option>
             </select>
           </div>
-          
+
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Difficulty
@@ -179,7 +179,7 @@ const DSARoadmap: React.FC<DSARoadmapProps> = ({ activities, onAddActivity }) =>
       {/* Roadmap Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredRoadmap.map((topic, index) => (
-          <div 
+          <div
             key={index}
             onClick={() => setSelectedTopic(topic.name)}
             className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 hover:scale-105 cursor-pointer group"
@@ -193,7 +193,7 @@ const DSARoadmap: React.FC<DSARoadmapProps> = ({ activities, onAddActivity }) =>
                 {topic.status}
               </span>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(topic.difficulty)}`}>
@@ -203,20 +203,20 @@ const DSARoadmap: React.FC<DSARoadmapProps> = ({ activities, onAddActivity }) =>
                   {topic.problemsSolved}/{topic.totalProblems}
                 </span>
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400">
                   <span>Progress</span>
                   <span>{Math.round((topic.problemsSolved / topic.totalProblems) * 100)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                  <div 
+                  <div
                     className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
                     style={{ width: `${(topic.problemsSolved / topic.totalProblems) * 100}%` }}
                   ></div>
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
                 <div className="text-xs text-gray-500 dark:text-gray-400">
                   {topic.category} • {topic.totalProblems} problems
