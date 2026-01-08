@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Activity } from '../types';
 
 interface QuickAddProblemProps {
-  onAddActivity: (activity: Activity) => void;
+  onAddActivity: (activity: Omit<Activity, 'id' | 'date'>) => void;
 }
 
 const POPULAR_PROBLEMS = [
@@ -20,9 +20,7 @@ const QuickAddProblem: React.FC<QuickAddProblemProps> = ({ onAddActivity }) => {
   const [solved, setSolved] = useState<boolean>(false);
 
   const handleQuickAdd = (problem: typeof POPULAR_PROBLEMS[0]) => {
-    const newActivity: Activity = {
-      id: Date.now().toString(),
-      date: new Date().toISOString(),
+    const newActivity: Omit<Activity, 'id' | 'date'> = {
       category: problem.category,
       duration: timeSpent,
       description: `Worked on ${problem.name}`,
@@ -46,7 +44,7 @@ const QuickAddProblem: React.FC<QuickAddProblemProps> = ({ onAddActivity }) => {
       </div>
     `;
     document.body.appendChild(successDiv);
-    
+
     setTimeout(() => {
       successDiv.style.transform = 'translate(-50%, -50%) scale(0)';
       setTimeout(() => document.body.removeChild(successDiv), 300);
@@ -59,7 +57,7 @@ const QuickAddProblem: React.FC<QuickAddProblemProps> = ({ onAddActivity }) => {
         <span className="text-xl">⚡</span>
         Quick Add Popular Problems
       </h3>
-      
+
       <div className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div>
@@ -99,13 +97,12 @@ const QuickAddProblem: React.FC<QuickAddProblemProps> = ({ onAddActivity }) => {
                 {problem.name}
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  problem.difficulty === 'Easy' 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                    : problem.difficulty === 'Medium'
+                <span className={`px-2 py-1 rounded text-xs font-medium ${problem.difficulty === 'Easy'
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                  : problem.difficulty === 'Medium'
                     ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
                     : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                }`}>
+                  }`}>
                   {problem.difficulty}
                 </span>
                 <span className="text-gray-500 dark:text-gray-400">
