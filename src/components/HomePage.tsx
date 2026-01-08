@@ -37,7 +37,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
     video.load();
   }, []);
   return (
-    <div className="min-h-screen relative overflow-hidden" onClick={() => {
+    <div className="min-h-screen relative overflow-hidden transition-all duration-300 hover:bg-slate-900/5" onClick={() => {
       // Manual play trigger on click if autoplay failed
       const video = document.querySelector('video');
       if (video && video.paused) {
@@ -106,11 +106,11 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
         </div>
       </div>
 
-      {/* Content - Left Aligned */}
-      <div className="relative z-10 text-white">
+      {/* Content - Left Aligned with Reduced Opacity */}
+      <div className="relative z-10 text-white" style={{ opacity: 0.9 }}>
         <header className="px-8 pt-10 flex items-center justify-between w-full">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-500 shadow-lg shadow-indigo-500/30 flex items-center justify-center text-lg font-bold backdrop-blur-sm border border-white/10">
+          <div className="flex items-center gap-3 cursor-pointer transform transition-all duration-200 hover:scale-105 active:scale-95 hover:opacity-100 opacity-80">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-500 shadow-lg shadow-indigo-500/30 flex items-center justify-center text-lg font-bold backdrop-blur-sm border border-white/10 transition-all duration-200 hover:shadow-indigo-500/50 hover:border-white/20">
               PT
             </div>
             <div>
@@ -120,7 +120,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
           </div>
           <button
             onClick={onGetStarted}
-            className="rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 px-4 py-2 text-sm font-semibold shadow-lg shadow-indigo-500/30 transition hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2 focus:ring-offset-slate-950 backdrop-blur-sm border border-white/10"
+            className="rounded-full bg-gradient-to-r from-indigo-500 to-blue-500 px-4 py-2 text-sm font-semibold shadow-lg shadow-indigo-500/30 transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-indigo-500/50 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2 focus:ring-offset-slate-950 backdrop-blur-sm border border-white/10 hover:border-white/20"
           >
             Get Started
           </button>
@@ -128,7 +128,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
 
         <main className="px-8 pb-16 w-full">
           {/* Left-aligned Hero Section */}
-          <div className="mt-8 mb-12 text-left max-w-4xl">
+          <div className="mt-8 mb-12 text-left max-w-4xl opacity-85 transform transition-all duration-300 hover:opacity-100 hover:scale-[1.01] cursor-pointer">
             <Hero />
           </div>
 
@@ -137,11 +137,11 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
             {featureCards.map((card) => (
               <div
                 key={card.title}
-                className={`relative overflow-hidden rounded-2xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-lg transition transform hover:-translate-y-1 hover:shadow-2xl hover:bg-white/15`}
+                className={`relative overflow-hidden rounded-2xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-lg transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl hover:bg-white/15 active:scale-95 cursor-pointer opacity-80 hover:opacity-100 hover:border-white/30`}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.tone}`} aria-hidden="true" />
                 <div className="relative space-y-3">
-                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 text-2xl backdrop-blur-sm">
+                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white/20 text-2xl backdrop-blur-sm transition-all duration-200 hover:bg-white/30 hover:scale-110">
                     {card.icon}
                   </div>
                   <h3 className="text-lg font-semibold text-white">{card.title}</h3>
@@ -153,7 +153,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
 
           {/* Left-aligned Bottom Section */}
           <section className="grid gap-6 lg:grid-cols-2 max-w-6xl">
-            <div className="rounded-3xl border border-white/20 bg-gradient-to-br from-indigo-600/40 via-indigo-700/30 to-slate-900/40 p-8 shadow-2xl backdrop-blur-lg">
+            <div className="rounded-3xl border border-white/20 bg-gradient-to-br from-indigo-600/40 via-indigo-700/30 to-slate-900/40 p-8 shadow-2xl backdrop-blur-lg opacity-85 hover:opacity-100 transform transition-all duration-300 hover:scale-[1.02] hover:border-white/30 cursor-pointer">
               <p className="text-xs uppercase tracking-[0.2em] text-indigo-100/80 mb-4">Why builders love it</p>
               <h2 className="text-2xl font-bold mb-3 text-white">Developer-first productivity</h2>
               <p className="text-indigo-50/90 leading-relaxed">
@@ -162,13 +162,13 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
               </p>
               <div className="mt-6 flex flex-wrap gap-3 text-sm">
                 {['Clean dashboards', 'Heatmaps', 'Streaks', 'Topic progress', 'Role-aware access'].map((pill) => (
-                  <span key={pill} className="rounded-full border border-white/30 bg-white/10 px-3 py-1 text-indigo-50/90 backdrop-blur-sm">
+                  <span key={pill} className="rounded-full border border-white/30 bg-white/10 px-3 py-1 text-indigo-50/90 backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:border-white/40 hover:scale-105 cursor-pointer">
                     {pill}
                   </span>
                 ))}
               </div>
             </div>
-            <div className="rounded-3xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-lg flex flex-col justify-between">
+            <div className="rounded-3xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-lg flex flex-col justify-between opacity-85 hover:opacity-100 transform transition-all duration-300 hover:scale-[1.02] hover:border-white/30 cursor-pointer">
               <div className="space-y-2">
                 <p className="text-xs uppercase tracking-[0.2em] text-indigo-100/80">Get started</p>
                 <h3 className="text-xl font-semibold text-white">Spin it up locally</h3>
@@ -178,7 +178,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
               </div>
               <button
                 onClick={onGetStarted}
-                className="mt-6 rounded-xl bg-gradient-to-r from-emerald-400 to-green-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/30 transition hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:ring-offset-2 focus:ring-offset-slate-950 backdrop-blur-sm"
+                className="mt-6 rounded-xl bg-gradient-to-r from-emerald-400 to-green-500 px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/30 transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:ring-offset-2 focus:ring-offset-slate-950 backdrop-blur-sm"
               >
                 Continue to Login
               </button>
