@@ -258,18 +258,6 @@ body {
 }
 
 /* Enhanced animations */
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);
@@ -278,10 +266,6 @@ body {
   100% {
     transform: translateX(100%);
   }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
 }
 
 .animate-shimmer {
@@ -370,4 +354,45 @@ body {
 
 .animate-text-glow {
   animation: textGlow 2s ease-in-out infinite;
+}
+
+/* Optimized animations for HomePage background - GPU accelerated */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translate3d(0, 0px, 0) rotate(0deg);
+  }
+
+  33% {
+    transform: translate3d(0, -20px, 0) rotate(1deg);
+  }
+
+  66% {
+    transform: translate3d(0, 10px, 0) rotate(-1deg);
+  }
+}
+
+@keyframes slowPulse {
+
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    opacity: 0.25;
+    transform: translate3d(0, 0, 0) scale(1.03);
+  }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-slow-pulse {
+  animation: slowPulse 6s ease-in-out infinite;
+  will-change: transform, opacity;
 }
