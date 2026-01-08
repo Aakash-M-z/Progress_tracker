@@ -4,8 +4,23 @@ import { useAuth } from '../contexts/AuthContext';
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const [isDark, setIsDark] = useState(() => {
-    return document.documentElement.classList.contains('dark');
+    // Initialize theme from localStorage or system preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      return savedTheme === 'dark';
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
+
+  useEffect(() => {
+    // Apply theme on component mount
+    const html = document.documentElement;
+    if (isDark) {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark');
+    }
+  }, []);
 
   useEffect(() => {
     // Listen for theme changes
@@ -28,7 +43,7 @@ const Header: React.FC = () => {
   const toggleTheme = () => {
     const html = document.documentElement;
     const newIsDark = !html.classList.contains('dark');
-    
+
     if (newIsDark) {
       html.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -36,7 +51,7 @@ const Header: React.FC = () => {
       html.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
-    
+
     setIsDark(newIsDark);
   };
 
@@ -56,7 +71,7 @@ const Header: React.FC = () => {
               <div className="text-xs text-blue-100">Welcome, {user?.name}</div>
               <div className="text-sm font-semibold capitalize">{user?.role} Access</div>
             </div>
-            <button 
+            <button
               className="bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium btn-hover border border-white/30 text-sm transition-all duration-200 hover:bg-white/30 active:scale-95"
               onClick={toggleTheme}
               title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
@@ -64,9 +79,13 @@ const Header: React.FC = () => {
               <span className="mr-1">{isDark ? '☀️' : '🌙'}</span>
               <span className="hidden sm:inline">{isDark ? 'Light' : 'Dark'}</span>
             </button>
-            <button 
+            <button
               className="bg-red-500/80 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium btn-hover border border-red-400/30 text-sm transition-all duration-200 hover:bg-red-600/80 active:scale-95"
-              onClick={logout}
+              onClick={() => {
+                if (window.confirm('Are you sure you want to logout?')) {
+                  logout();
+                }
+              }}
               title="Sign out"
             >
               <span className="mr-1">🚪</span>
