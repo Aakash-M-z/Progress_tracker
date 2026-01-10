@@ -31,6 +31,52 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
     return () => clearInterval(quoteInterval);
   }, []);
 
+  // Enhanced sparkle effect function
+  const createSparkleEffect = (button: HTMLButtonElement) => {
+    const sparkles = ['✨', '⭐', '💫', '🌟'];
+    const sparkleCount = 6;
+
+    for (let i = 0; i < sparkleCount; i++) {
+      const sparkle = document.createElement('span');
+      sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+      sparkle.style.position = 'absolute';
+      sparkle.style.pointerEvents = 'none';
+      sparkle.style.fontSize = '1.5rem';
+      sparkle.style.zIndex = '50';
+      sparkle.style.opacity = '0';
+      sparkle.style.transition = 'all 0.8s ease-out';
+
+      // Random position around button
+      const angle = (i / sparkleCount) * 2 * Math.PI;
+      const radius = 60 + Math.random() * 40;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+
+      sparkle.style.left = `calc(50% + ${x}px)`;
+      sparkle.style.top = `calc(50% + ${y}px)`;
+      sparkle.style.transform = 'translate(-50%, -50%) scale(0) rotate(0deg)';
+
+      button.appendChild(sparkle);
+
+      // Animate sparkle
+      setTimeout(() => {
+        sparkle.style.opacity = '1';
+        sparkle.style.transform = `translate(-50%, -50%) scale(1.2) rotate(${Math.random() * 360}deg)`;
+      }, i * 100);
+
+      // Remove sparkle
+      setTimeout(() => {
+        sparkle.style.opacity = '0';
+        sparkle.style.transform = `translate(-50%, -50%) scale(0) rotate(${Math.random() * 360}deg)`;
+        setTimeout(() => {
+          if (sparkle.parentNode) {
+            sparkle.parentNode.removeChild(sparkle);
+          }
+        }, 800);
+      }, 1000 + i * 100);
+    }
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden" onClick={() => {
       // Manual play trigger on click if autoplay failed
@@ -161,15 +207,29 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
             <div className="flex items-center justify-center mb-16 animate-fadeIn" style={{ animationDelay: '0.6s' }}>
               <button
                 onClick={onGetStarted}
-                className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-12 py-5 rounded-2xl font-bold text-xl hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 hover:scale-105 active:scale-95 shadow-2xl border-2 border-white/20 sparkle-button min-w-[320px]"
+                className="sparkle-button relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-12 py-5 rounded-2xl font-bold text-xl hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 hover:scale-105 active:scale-95 shadow-2xl border-2 border-white/20 min-w-[320px]"
                 onMouseEnter={(e) => {
                   e.currentTarget.classList.add('sparkle-active');
+                  createSparkleEffect(e.currentTarget);
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.classList.remove('sparkle-active');
                 }}
+                onTouchStart={(e) => {
+                  e.currentTarget.classList.add('sparkle-active');
+                  createSparkleEffect(e.currentTarget);
+                }}
+                onTouchEnd={(e) => {
+                  setTimeout(() => {
+                    e.currentTarget.classList.remove('sparkle-active');
+                  }, 300);
+                }}
+                onClick={(e) => {
+                  createSparkleEffect(e.currentTarget);
+                  onGetStarted();
+                }}
               >
-                <span className="relative z-10 flex items-center justify-center gap-3">
+                <span className="relative z-40 flex items-center justify-center gap-3">
                   <span>🚀</span>
                   Start Your Journey
                 </span>
