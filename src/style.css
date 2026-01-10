@@ -492,7 +492,7 @@ body {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
 }
 
-/* Enhanced Sparkle Effect for Buttons */
+/* Enhanced Sparkle Effect for Buttons - Fixed Implementation */
 @keyframes sparkle {
 
   0%,
@@ -509,23 +509,28 @@ body {
 
 @keyframes sparkleMove {
   0% {
-    transform: translateX(-100%) translateY(-100%) rotate(0deg);
+    transform: translateX(-50%) translateY(-50%) rotate(0deg);
+    opacity: 0;
   }
 
   25% {
-    transform: translateX(100%) translateY(-100%) rotate(90deg);
+    transform: translateX(50%) translateY(-50%) rotate(90deg);
+    opacity: 1;
   }
 
   50% {
-    transform: translateX(100%) translateY(100%) rotate(180deg);
+    transform: translateX(50%) translateY(50%) rotate(180deg);
+    opacity: 1;
   }
 
   75% {
-    transform: translateX(-100%) translateY(100%) rotate(270deg);
+    transform: translateX(-50%) translateY(50%) rotate(270deg);
+    opacity: 1;
   }
 
   100% {
-    transform: translateX(-100%) translateY(-100%) rotate(360deg);
+    transform: translateX(-50%) translateY(-50%) rotate(360deg);
+    opacity: 0;
   }
 }
 
@@ -534,14 +539,17 @@ body {
   0%,
   100% {
     transform: translateY(0px) rotate(0deg);
+    opacity: 0.6;
   }
 
   33% {
-    transform: translateY(-10px) rotate(120deg);
+    transform: translateY(-15px) rotate(120deg);
+    opacity: 1;
   }
 
   66% {
-    transform: translateY(5px) rotate(240deg);
+    transform: translateY(10px) rotate(240deg);
+    opacity: 0.8;
   }
 }
 
@@ -550,16 +558,17 @@ body {
   overflow: hidden;
 }
 
+/* Main sparkle in center */
 .sparkle-button::before {
   content: '✨';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
-  font-size: 1.5rem;
+  font-size: 2rem;
   opacity: 0;
   transition: all 0.3s ease;
-  z-index: 20;
+  z-index: 30;
   pointer-events: none;
 }
 
@@ -567,32 +576,34 @@ body {
 .sparkle-button.sparkle-active::before {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
-  animation: sparkle 0.8s ease-in-out;
+  animation: sparkle 1s ease-in-out;
 }
 
+/* Sparkle overlay effect */
 .sparkle-overlay {
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  animation: sparkleMove 2s ease-in-out infinite;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 40%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .sparkle-button:hover .sparkle-overlay,
 .sparkle-button.sparkle-active .sparkle-overlay {
   opacity: 1;
+  animation: sparkleMove 2s ease-in-out infinite;
 }
 
-/* Multiple sparkle particles */
+/* Multiple sparkle particles around button */
 .sparkle-button::after {
-  content: '✨ ⭐ 💫 ✨';
+  content: '⭐ ✨ 💫 ⭐';
   position: absolute;
-  top: -15px;
-  left: -15px;
-  right: -15px;
-  bottom: -15px;
-  font-size: 1rem;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  font-size: 1.2rem;
   opacity: 0;
-  animation: sparkleFloat 3s ease-in-out infinite;
   pointer-events: none;
-  z-index: 15;
+  z-index: 25;
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -601,22 +612,24 @@ body {
 
 .sparkle-button:hover::after,
 .sparkle-button.sparkle-active::after {
-  opacity: 0.8;
+  opacity: 0.9;
+  animation: sparkleFloat 2.5s ease-in-out infinite;
 }
 
 /* Touch-friendly sparkle effect */
 .sparkle-button:active::before {
-  transform: translate(-50%, -50%) scale(1.3);
+  transform: translate(-50%, -50%) scale(1.4);
   opacity: 1;
-  animation: sparkle 0.4s ease-in-out;
+  animation: sparkle 0.5s ease-in-out;
 }
 
 /* Enhanced button glow effect */
 .sparkle-button:hover {
   box-shadow:
-    0 0 20px rgba(59, 130, 246, 0.4),
-    0 0 40px rgba(59, 130, 246, 0.2),
-    0 8px 32px rgba(0, 0, 0, 0.3);
+    0 0 30px rgba(59, 130, 246, 0.5),
+    0 0 60px rgba(59, 130, 246, 0.3),
+    0 10px 40px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
 }
 
 /* Motivational quote styling */
