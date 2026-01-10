@@ -104,10 +104,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
               <span>🏠</span> Home
             </a>
             <a href="#" className="text-gray-800 hover:text-blue-600 transition-colors text-sm font-semibold flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50">
-              <span>📊</span> Plus Dashboard
-            </a>
-            <a href="#" className="text-gray-800 hover:text-blue-600 transition-colors text-sm font-semibold flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50">
-              <span>💎</span> Pricing
+              <span>📊</span> Dashboard
             </a>
           </nav>
 
@@ -160,11 +157,11 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
               </div>
             </div>
 
-            {/* Action Buttons with Enhanced Sparkle Effect */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16 animate-fadeIn" style={{ animationDelay: '0.6s' }}>
+            {/* Action Button */}
+            <div className="flex items-center justify-center mb-16 animate-fadeIn" style={{ animationDelay: '0.6s' }}>
               <button
                 onClick={onGetStarted}
-                className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 hover:scale-105 active:scale-95 shadow-2xl border-2 border-white/20 sparkle-button min-w-[280px]"
+                className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-12 py-5 rounded-2xl font-bold text-xl hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 hover:scale-105 active:scale-95 shadow-2xl border-2 border-white/20 sparkle-button min-w-[320px]"
                 onMouseEnter={(e) => {
                   e.currentTarget.classList.add('sparkle-active');
                 }}
@@ -172,24 +169,9 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                   e.currentTarget.classList.remove('sparkle-active');
                 }}
               >
-                <span className="relative z-10 flex items-center justify-center gap-2">
+                <span className="relative z-10 flex items-center justify-center gap-3">
                   <span>🚀</span>
-                  Start Tracking for Free
-                </span>
-                <div className="sparkle-overlay absolute inset-0 opacity-0 transition-opacity duration-300"></div>
-              </button>
-              <button
-                className="relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:from-orange-600 hover:to-red-700 transition-all duration-300 hover:scale-105 active:scale-95 shadow-2xl border-2 border-white/20 sparkle-button min-w-[280px]"
-                onMouseEnter={(e) => {
-                  e.currentTarget.classList.add('sparkle-active');
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.classList.remove('sparkle-active');
-                }}
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  <span>💎</span>
-                  Explore Premium →
+                  Start Your Journey
                 </span>
                 <div className="sparkle-overlay absolute inset-0 opacity-0 transition-opacity duration-300"></div>
               </button>
