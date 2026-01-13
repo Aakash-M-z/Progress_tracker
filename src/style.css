@@ -616,12 +616,12 @@ body {
   animation: sparkleFloat 2.5s ease-in-out infinite;
 }
 
-/* Touch-friendly sparkle effect */
-.sparkle-button:active::before {
+/* Touch-friendly sparkle effect - REMOVED */
+/* .sparkle-button:active::before {
   transform: translate(-50%, -50%) scale(1.4);
   opacity: 1;
   animation: sparkle 0.5s ease-in-out;
-}
+} */
 
 /* Enhanced button glow effect */
 .sparkle-button:hover {
