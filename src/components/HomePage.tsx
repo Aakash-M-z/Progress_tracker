@@ -4,213 +4,178 @@ interface HomePageProps {
   onGetStarted: () => void;
 }
 
-const motivationalQuotes = [
-  "Every expert was once a beginner. Every pro was once an amateur.",
-  "The journey of a thousand miles begins with one step.",
-  "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-  "The only way to do great work is to love what you do.",
-  "Code is like humor. When you have to explain it, it's bad."
-];
-
 const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
-  const [currentQuote, setCurrentQuote] = useState(0);
+  const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     // Preload video for better performance
     const video = document.createElement('video');
-    video.src = '/background-video.mp4';
+    video.src = '/5485148-hd_1920_1080_25fps (1) (1).mp4';
     video.load();
 
-    // Rotate quotes every 5 seconds
-    const quoteInterval = setInterval(() => {
-      setCurrentQuote((prev) => (prev + 1) % motivationalQuotes.length);
-    }, 5000);
+    // Show loading animation for 3 seconds
+    const loadingTimer = setTimeout(() => {
+      setShowLoading(false);
+    }, 3000);
 
-    return () => clearInterval(quoteInterval);
+    return () => clearTimeout(loadingTimer);
   }, []);
 
   // Enhanced sparkle effect function
-  const createSparkleEffect = (button: HTMLButtonElement) => {
-    const sparkles = ['✨', '⭐'];
-    const sparkleCount = 3;
-
-    for (let i = 0; i < sparkleCount; i++) {
-      const sparkle = document.createElement('span');
-      sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
-      sparkle.style.position = 'absolute';
-      sparkle.style.pointerEvents = 'none';
-      sparkle.style.fontSize = '1.2rem';
-      sparkle.style.zIndex = '50';
-      sparkle.style.opacity = '0';
-      sparkle.style.transition = 'all 0.6s ease-out';
-
-      // Simple position around button
-      const angle = (i / sparkleCount) * 2 * Math.PI;
-      const radius = 40;
-      const x = Math.cos(angle) * radius;
-      const y = Math.sin(angle) * radius;
-
-      sparkle.style.left = `calc(50% + ${x}px)`;
-      sparkle.style.top = `calc(50% + ${y}px)`;
-      sparkle.style.transform = 'translate(-50%, -50%) scale(0)';
-
-      button.appendChild(sparkle);
-
-      // Simple animation
-      setTimeout(() => {
-        sparkle.style.opacity = '0.8';
-        sparkle.style.transform = `translate(-50%, -50%) scale(1)`;
-      }, i * 100);
-
-      // Remove sparkle
-      setTimeout(() => {
-        sparkle.style.opacity = '0';
-        sparkle.style.transform = `translate(-50%, -50%) scale(0)`;
-        setTimeout(() => {
-          if (sparkle.parentNode) {
-            sparkle.parentNode.removeChild(sparkle);
-          }
-        }, 600);
-      }, 800 + i * 100);
-    }
-  };
-
   return (
-    <div className="min-h-screen relative overflow-hidden" onClick={() => {
-      // Manual play trigger on click if autoplay failed
-      const video = document.querySelector('video');
-      if (video && video.paused) {
-        video.play().catch(err => console.log('Manual play failed:', err));
-      }
-    }}>
-      {/* Background Video */}
-      <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          className="w-full h-full object-cover"
-          onLoadedData={() => {
-            console.log('Video loaded successfully');
-            setVideoLoaded(true);
-          }}
-          onError={(e) => {
-            console.error('Video error:', e);
-            setVideoError(true);
-          }}
-          onCanPlay={() => {
-            console.log('Video can play');
-            setVideoLoaded(true);
-          }}
-          style={{
-            filter: 'brightness(0.7) contrast(1.2) saturate(1.1)',
-            opacity: videoLoaded ? 1 : 0,
-            transition: 'opacity 1.5s ease-in-out'
-          }}
-        >
-          <source src="/background-video.mp4" type="video/mp4" />
-        </video>
-
-        {/* Subtle gradient overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40"
-          style={{ opacity: videoLoaded ? 1 : 0 }}></div>
-
-        {/* Fallback gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"
-          style={{ opacity: videoLoaded ? 0 : 1 }}></div>
-
-        {/* Loading indicator */}
-        {!videoLoaded && !videoError && (
-          <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="text-white/80 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/80 mx-auto mb-4"></div>
-              <p className="text-lg font-semibold">Loading experience...</p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Content Layer */}
-      <div className="relative z-10 min-h-screen flex flex-col">
-        {/* Navigation Header */}
-        <header className="flex items-center justify-center px-8 py-8 backdrop-blur-xl bg-white/95 border-b border-white/30 shadow-lg">
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 flex items-center justify-center text-white font-black text-xl shadow-2xl transform hover:scale-110 transition-all duration-300 hover:shadow-blue-500/30">
-              PT
-            </div>
-            <div className="text-center">
-              <h1 className="text-gray-900 font-black text-2xl md:text-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent hover:from-purple-600 hover:via-indigo-600 hover:to-blue-600 transition-all duration-500">
-                Progress Tracker
-              </h1>
-              <p className="text-gray-600 text-sm font-medium">Master Your DSA Journey</p>
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="flex-1 flex items-center justify-center px-8 py-16">
-          <div className="max-w-5xl text-center animate-fadeIn">
-            {/* Main Heading */}
-            <h1 className="text-white text-6xl md:text-7xl lg:text-8xl font-black leading-tight mb-12 animate-fadeIn" style={{
-              animationDelay: '0.2s',
-              textShadow: '0 4px 8px rgba(0,0,0,0.8), 0 8px 16px rgba(0,0,0,0.6), 0 12px 24px rgba(0,0,0,0.4)'
-            }}>
-              ONE STOP<br />
-              <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent font-black drop-shadow-2xl">
-                Progress Platform
-              </span><br />
-              For <span className="bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent font-black drop-shadow-2xl">
-                TECH Growth
-              </span>
-            </h1>
-
-            {/* Motivational Quote */}
-            <div className="mb-12 animate-fadeIn" style={{ animationDelay: '0.4s' }}>
-              <div className="bg-black/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl max-w-4xl mx-auto">
-                <blockquote
-                  key={currentQuote}
-                  className="text-white text-xl md:text-2xl lg:text-3xl font-semibold italic text-center animate-fadeIn"
-                  style={{
-                    textShadow: '0 2px 4px rgba(0,0,0,0.8)',
-                    minHeight: '4rem'
-                  }}
-                >
-                  "{motivationalQuotes[currentQuote]}"
-                </blockquote>
-                <p className="text-cyan-300 text-lg text-center mt-6 font-semibold">
-                  ✨ Start your journey today ✨
-                </p>
+    <>
+      {/* Loading Screen */}
+      {showLoading && (
+        <div className="fixed inset-0 z-50 bg-gradient-to-br from-gray-950 via-black to-gray-950 flex items-center justify-center">
+          <div className="text-center animate-fadeIn">
+            {/* Progress Tracker Logo */}
+            <div className="mb-8">
+              <div className="h-20 w-20 mx-auto rounded-3xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-3xl shadow-2xl animate-pulse">
+                PT
               </div>
             </div>
 
-            {/* Action Button */}
-            <div className="flex items-center justify-center mb-16 animate-fadeIn" style={{ animationDelay: '0.6s' }}>
-              <button
-                onClick={onGetStarted}
-                className="sparkle-button relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-12 py-5 rounded-2xl font-bold text-xl hover:from-blue-700 hover:to-indigo-800 transition-all duration-300 hover:scale-105 active:scale-95 shadow-2xl border-2 border-white/20 min-w-[320px]"
-                onMouseEnter={(e) => {
-                  e.currentTarget.classList.add('sparkle-active');
-                  createSparkleEffect(e.currentTarget);
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.classList.remove('sparkle-active');
-                }}
-              >
-                <span className="relative z-40 flex items-center justify-center gap-3">
-                  <span>🚀</span>
-                  Start Your Journey
-                </span>
-                <div className="sparkle-overlay absolute inset-0 opacity-0 transition-opacity duration-300"></div>
-              </button>
+            {/* Progress Tracker Title */}
+            <h1 className="text-white font-black text-4xl md:text-5xl mb-4 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
+              Progress Tracker
+            </h1>
+
+            {/* Loading Animation */}
+            <div className="mb-6">
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+            </div>
+
+            {/* Loading Text */}
+            <p className="text-gray-300 text-lg font-medium animate-pulse">
+              Loading your journey...
+            </p>
+
+            {/* Progress Bar */}
+            <div className="mt-8 w-64 mx-auto">
+              <div className="w-full bg-gray-800 rounded-full h-2">
+                <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full animate-pulse" style={{
+                  width: '100%',
+                  animation: 'loadingProgress 3s ease-in-out'
+                }}></div>
+              </div>
             </div>
           </div>
-        </main>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <div className={`min-h-screen relative overflow-hidden transition-opacity duration-1000 ${showLoading ? 'opacity-0' : 'opacity-100'}`}>
+        {/* Background Video */}
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover"
+            onLoadedData={() => {
+              console.log('Video loaded successfully');
+              setVideoLoaded(true);
+            }}
+            onError={(e) => {
+              console.error('Video error:', e);
+              setVideoError(true);
+            }}
+            onCanPlay={() => {
+              console.log('Video can play');
+              setVideoLoaded(true);
+            }}
+            style={{
+              filter: 'brightness(0.8) contrast(1.1) saturate(1.0)',
+              opacity: videoLoaded ? 1 : 0,
+              transition: 'opacity 1.5s ease-in-out'
+            }}
+          >
+            <source src="/5485148-hd_1920_1080_25fps (1) (1).mp4" type="video/mp4" />
+          </video>
+
+          {/* Fallback dark gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-black to-gray-950"
+            style={{ opacity: videoLoaded ? 0 : 1 }}></div>
+
+          {/* Loading indicator */}
+          {!videoLoaded && !videoError && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <div className="text-white/80 text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/80 mx-auto mb-4"></div>
+                <p className="text-lg font-semibold">Loading experience...</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Content Layer - Enhanced button layout */}
+        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-8">
+          {/* Start Your Journey Button - appears after loading */}
+          {!showLoading && (
+            <div className="animate-slideInFromBottom">
+              {/* Decorative elements around button */}
+              <div className="relative">
+                {/* Subtle decorative elements */}
+                <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-blue-400/30 to-transparent animate-pulse"></div>
+
+                <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent animate-pulse"></div>
+
+                {/* Reduced side dots */}
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-20">
+                  <div className="flex flex-col space-y-4">
+                    <div className="w-1.5 h-1.5 bg-blue-400/40 rounded-full animate-pulse" style={{ animationDelay: '0s' }}></div>
+                    <div className="w-1 h-1 bg-indigo-400/30 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                    <div className="w-1.5 h-1.5 bg-purple-400/40 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+                  </div>
+                </div>
+
+                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-20">
+                  <div className="flex flex-col space-y-4">
+                    <div className="w-1.5 h-1.5 bg-purple-400/40 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }}></div>
+                    <div className="w-1 h-1 bg-indigo-400/30 rounded-full animate-pulse" style={{ animationDelay: '0.8s' }}></div>
+                    <div className="w-1.5 h-1.5 bg-blue-400/40 rounded-full animate-pulse" style={{ animationDelay: '1.3s' }}></div>
+                  </div>
+                </div>
+
+                <div className="relative floating-particles">
+                  <button
+                    onClick={onGetStarted}
+                    className="group relative overflow-hidden bg-transparent backdrop-blur-none border-2 border-transparent text-white px-16 py-8 rounded-3xl font-bold text-2xl hover:bg-black/15 hover:border-gray-500/15 transition-all duration-500 hover:scale-110 active:scale-95 shadow-none hover:shadow-none min-w-[400px] max-w-[500px] dark-theme-button opacity-50 hover:opacity-80"
+                  >
+                    {/* Minimal glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-indigo-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+
+                    {/* Removed inner shadow for text-like appearance */}
+
+                    {/* Button content */}
+                    <span className="relative z-10 flex items-center justify-center gap-4">
+                      <span className="text-4xl group-hover:animate-bounce transition-transform duration-300">🚀</span>
+                      <span className="bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent group-hover:from-blue-300 group-hover:via-white group-hover:to-purple-300 transition-all duration-500 font-black tracking-wide">
+                        Start Your Journey
+                      </span>
+                    </span>
+
+                    {/* Minimal border glow */}
+                    <div className="absolute inset-0 rounded-3xl border border-transparent bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
+
+                    {/* Subtle ripple effect */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-400/3 to-purple-400/3 scale-0 group-hover:scale-100 transition-transform duration-700 ease-out"></div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
