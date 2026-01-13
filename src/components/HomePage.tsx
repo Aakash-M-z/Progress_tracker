@@ -33,47 +33,47 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
 
   // Enhanced sparkle effect function
   const createSparkleEffect = (button: HTMLButtonElement) => {
-    const sparkles = ['✨', '⭐', '💫', '🌟'];
-    const sparkleCount = 6;
+    const sparkles = ['✨', '⭐'];
+    const sparkleCount = 3;
 
     for (let i = 0; i < sparkleCount; i++) {
       const sparkle = document.createElement('span');
       sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
       sparkle.style.position = 'absolute';
       sparkle.style.pointerEvents = 'none';
-      sparkle.style.fontSize = '1.5rem';
+      sparkle.style.fontSize = '1.2rem';
       sparkle.style.zIndex = '50';
       sparkle.style.opacity = '0';
-      sparkle.style.transition = 'all 0.8s ease-out';
+      sparkle.style.transition = 'all 0.6s ease-out';
 
-      // Random position around button
+      // Simple position around button
       const angle = (i / sparkleCount) * 2 * Math.PI;
-      const radius = 60 + Math.random() * 40;
+      const radius = 40;
       const x = Math.cos(angle) * radius;
       const y = Math.sin(angle) * radius;
 
       sparkle.style.left = `calc(50% + ${x}px)`;
       sparkle.style.top = `calc(50% + ${y}px)`;
-      sparkle.style.transform = 'translate(-50%, -50%) scale(0) rotate(0deg)';
+      sparkle.style.transform = 'translate(-50%, -50%) scale(0)';
 
       button.appendChild(sparkle);
 
-      // Animate sparkle
+      // Simple animation
       setTimeout(() => {
-        sparkle.style.opacity = '1';
-        sparkle.style.transform = `translate(-50%, -50%) scale(1.2) rotate(${Math.random() * 360}deg)`;
+        sparkle.style.opacity = '0.8';
+        sparkle.style.transform = `translate(-50%, -50%) scale(1)`;
       }, i * 100);
 
       // Remove sparkle
       setTimeout(() => {
         sparkle.style.opacity = '0';
-        sparkle.style.transform = `translate(-50%, -50%) scale(0) rotate(${Math.random() * 360}deg)`;
+        sparkle.style.transform = `translate(-50%, -50%) scale(0)`;
         setTimeout(() => {
           if (sparkle.parentNode) {
             sparkle.parentNode.removeChild(sparkle);
           }
-        }, 800);
-      }, 1000 + i * 100);
+        }, 600);
+      }, 800 + i * 100);
     }
   };
 
@@ -137,26 +137,16 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
       {/* Content Layer */}
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Navigation Header */}
-        <header className="flex items-center justify-between px-8 py-6 backdrop-blur-xl bg-white/95 border-b border-white/30 shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-lg shadow-xl">
+        <header className="flex items-center justify-center px-8 py-8 backdrop-blur-xl bg-white/95 border-b border-white/30 shadow-lg">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 flex items-center justify-center text-white font-black text-xl shadow-2xl transform hover:scale-110 transition-all duration-300 hover:shadow-blue-500/30">
               PT
             </div>
-            <span className="text-gray-900 font-bold text-xl">Progress Tracker</span>
-          </div>
-
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-gray-800 hover:text-blue-600 transition-colors text-sm font-semibold flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50">
-              <span>🏠</span> Home
-            </a>
-            <a href="#" className="text-gray-800 hover:text-blue-600 transition-colors text-sm font-semibold flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50">
-              <span>📊</span> Dashboard
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center shadow-xl border-2 border-white/20">
-              <span className="text-white text-sm font-bold">U</span>
+            <div className="text-center">
+              <h1 className="text-gray-900 font-black text-2xl md:text-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent hover:from-purple-600 hover:via-indigo-600 hover:to-blue-600 transition-all duration-500">
+                Progress Tracker
+              </h1>
+              <p className="text-gray-600 text-sm font-medium">Master Your DSA Journey</p>
             </div>
           </div>
         </header>
@@ -164,12 +154,6 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
         {/* Main Content */}
         <main className="flex-1 flex items-center justify-center px-8 py-16">
           <div className="max-w-5xl text-center animate-fadeIn">
-            {/* Learners Count Badge */}
-            <div className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-xl border-2 border-white/40 rounded-full px-6 py-3 mb-12 animate-slideIn shadow-2xl">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-gray-900 text-sm font-bold">15,847+ Learners</span>
-            </div>
-
             {/* Main Heading */}
             <h1 className="text-white text-6xl md:text-7xl lg:text-8xl font-black leading-tight mb-12 animate-fadeIn" style={{
               animationDelay: '0.2s',
