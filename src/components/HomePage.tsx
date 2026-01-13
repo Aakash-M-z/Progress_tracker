@@ -215,19 +215,6 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                 onMouseLeave={(e) => {
                   e.currentTarget.classList.remove('sparkle-active');
                 }}
-                onTouchStart={(e) => {
-                  e.currentTarget.classList.add('sparkle-active');
-                  createSparkleEffect(e.currentTarget);
-                }}
-                onTouchEnd={(e) => {
-                  setTimeout(() => {
-                    e.currentTarget.classList.remove('sparkle-active');
-                  }, 300);
-                }}
-                onClick={(e) => {
-                  createSparkleEffect(e.currentTarget);
-                  onGetStarted();
-                }}
               >
                 <span className="relative z-40 flex items-center justify-center gap-3">
                   <span>🚀</span>
