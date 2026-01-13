@@ -695,3 +695,199 @@ blockquote::after {
 .animate-enhanced-spin {
   animation: enhancedSpin 1.5s linear infinite;
 }
+
+/* Progress Tracker Loading Animation */
+@keyframes loadingProgress {
+  0% {
+    width: 0%;
+  }
+
+  50% {
+    width: 70%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+/* Enhanced loading animations */
+@keyframes logoGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(59, 130, 246, 0.8), 0 0 60px rgba(147, 51, 234, 0.6);
+  }
+}
+
+.animate-logo-glow {
+  animation: logoGlow 2s ease-in-out infinite;
+}
+
+/* Smooth fade transitions */
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 1000ms ease-in;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 1000ms ease-out;
+}
+
+/* Button slide-in animation from bottom */
+@keyframes slideInFromBottom {
+  0% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+
+  60% {
+    transform: translateY(-20px);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideInFromBottom {
+  animation: slideInFromBottom 1.2s ease-out;
+}
+
+/* Dark theme button effects */
+@keyframes darkGlow {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(0, 0, 0, 0.8),
+      0 0 40px rgba(59, 130, 246, 0.2),
+      inset 0 0 20px rgba(255, 255, 255, 0.05);
+  }
+
+  50% {
+    box-shadow:
+      0 0 30px rgba(0, 0, 0, 0.9),
+      0 0 60px rgba(59, 130, 246, 0.4),
+      inset 0 0 30px rgba(255, 255, 255, 0.1);
+  }
+}
+
+.dark-theme-button:hover {
+  animation: darkGlow 2s ease-in-out infinite;
+}
+
+/* Enhanced backdrop blur for dark theme */
+.dark-backdrop {
+  backdrop-filter: blur(20px) brightness(0.3) contrast(1.2);
+  -webkit-backdrop-filter: blur(20px) brightness(0.3) contrast(1.2);
+}
+
+/* Subtle particle effect for dark theme */
+@keyframes floatingParticles {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.2;
+  }
+
+  33% {
+    transform: translateY(-10px) rotate(120deg);
+    opacity: 0.4;
+  }
+
+  66% {
+    transform: translateY(5px) rotate(240deg);
+    opacity: 0.3;
+  }
+}
+
+.floating-particles::before {
+  content: '✦ ✧ ✦';
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  color: rgba(59, 130, 246, 0.2);
+  animation: floatingParticles 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Enhanced button responsive design */
+@media (max-width: 768px) {
+  .dark-theme-button {
+    min-width: 300px !important;
+    max-width: 350px !important;
+    padding: 1.5rem 3rem !important;
+    font-size: 1.25rem !important;
+  }
+
+  .dark-theme-button span:first-child {
+    font-size: 2.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .dark-theme-button {
+    min-width: 280px !important;
+    max-width: 320px !important;
+    padding: 1.25rem 2.5rem !important;
+    font-size: 1.125rem !important;
+  }
+
+  .dark-theme-button span:first-child {
+    font-size: 2rem !important;
+  }
+}
+
+/* Enhanced decorative elements */
+@keyframes decorativePulse {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.decorative-dot {
+  animation: decorativePulse 2s ease-in-out infinite;
+}
+
+/* Enhanced floating particles for text-like appearance */
+.floating-particles::before {
+  content: '✦ ✧ ✦';
+  font-size: 0.8rem;
+  top: -40px;
+  color: rgba(59, 130, 246, 0.15);
+}
+
+/* Button glow enhancement for larger size */
+.dark-theme-button:hover {
+  box-shadow:
+    0 0 40px rgba(59, 130, 246, 0.15),
+    0 0 80px rgba(59, 130, 246, 0.1),
+    0 10px 50px rgba(0, 0, 0, 0.3);
+}
