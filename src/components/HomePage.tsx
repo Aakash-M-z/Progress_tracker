@@ -8,6 +8,8 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const [cursorState, setCursorState] = useState('default');
 
   useEffect(() => {
     // Preload video for better performance
@@ -23,12 +25,87 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
     return () => clearTimeout(loadingTimer);
   }, []);
 
+  // Custom cursor logic
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Direct position update without delay
+      setCursorPosition({ x: e.clientX, y: e.clientY });
+
+      // Create particle effect less frequently for better performance
+      if (Math.random() > 0.95) {
+        createCursorParticle(e.clientX, e.clientY);
+      }
+    };
+
+    const handleMouseDown = () => {
+      setCursorState('click');
+      setTimeout(() => setCursorState('default'), 200);
+    };
+
+    const handleMouseEnter = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'BUTTON' || target.classList.contains('clickable')) {
+        setCursorState('hover');
+      }
+    };
+
+    const handleMouseLeave = () => {
+      setCursorState('default');
+    };
+
+    // Add event listeners with passive option for better performance
+    document.addEventListener('mousemove', handleMouseMove, { passive: true });
+    document.addEventListener('mousedown', handleMouseDown);
+
+    // Add hover listeners to interactive elements
+    const interactiveElements = document.querySelectorAll('button, .clickable, input, textarea');
+    interactiveElements.forEach(element => {
+      element.addEventListener('mouseenter', handleMouseEnter);
+      element.addEventListener('mouseleave', handleMouseLeave);
+    });
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mousedown', handleMouseDown);
+      interactiveElements.forEach(element => {
+        element.removeEventListener('mouseenter', handleMouseEnter);
+        element.removeEventListener('mouseleave', handleMouseLeave);
+      });
+    };
+  }, [showLoading]);
+
+  // Create cursor particle effect
+  const createCursorParticle = (x: number, y: number) => {
+    const particle = document.createElement('div');
+    particle.className = 'cursor-particle';
+    particle.style.left = `${x}px`;
+    particle.style.top = `${y}px`;
+    particle.style.transform = `translate(-50%, -50%) translate(${(Math.random() - 0.5) * 20}px, ${(Math.random() - 0.5) * 20}px)`;
+
+    document.body.appendChild(particle);
+
+    setTimeout(() => {
+      if (particle.parentNode) {
+        particle.parentNode.removeChild(particle);
+      }
+    }, 800);
+  };
+
   // Enhanced sparkle effect function
   return (
     <>
+      {/* Custom Cursor */}
+      <div
+        className={`custom-cursor ${cursorState} ${showLoading ? 'loading' : ''}`}
+        style={{
+          left: `${cursorPosition.x}px`,
+          top: `${cursorPosition.y}px`,
+        }}
+      />
+
       {/* Loading Screen */}
       {showLoading && (
-        <div className="fixed inset-0 z-50 bg-gradient-to-br from-gray-950 via-black to-gray-950 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 bg-gradient-to-br from-gray-950 via-black to-gray-950 flex items-center justify-center loading-screen">
           <div className="text-center animate-fadeIn">
             {/* Progress Tracker Logo */}
             <div className="mb-8">
@@ -148,7 +225,32 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                 <div className="relative floating-particles">
                   <button
                     onClick={onGetStarted}
-                    className="group relative overflow-hidden bg-transparent backdrop-blur-none border-2 border-transparent text-white px-16 py-8 rounded-3xl font-bold text-2xl hover:bg-black/15 hover:border-gray-500/15 transition-all duration-500 hover:scale-110 active:scale-95 shadow-none hover:shadow-none min-w-[400px] max-w-[500px] dark-theme-button opacity-50 hover:opacity-80"
+                    className="group relative overflow-hidden bg-transparent backdrop-blur-none border-2 border-transparent text-white px-16 py-8 rounded-3xl font-bold text-2xl hover:bg-black/15 hover:border-gray-500/15 transition-all duration-500 hover:scale-110 active:scale-95 shadow-none hover:shadow-none min-w-[400px] max-w-[500px] dark-theme-button opacity-50 hover:opacity-80 clickable magnetic-cursor"
+                    onMouseEnter={(e) => {
+                      setCursorState('hover');
+                      // Magnetic effect
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const centerX = rect.left + rect.width / 2;
+                      const centerY = rect.top + rect.height / 2;
+                      setCursorPosition({ x: centerX, y: centerY });
+                    }}
+                    onMouseLeave={() => {
+                      setCursorState('default');
+                    }}
+                    onMouseMove={(e) => {
+                      // Reduced magnetic pull for faster response
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const centerX = rect.left + rect.width / 2;
+                      const centerY = rect.top + rect.height / 2;
+                      const mouseX = e.clientX;
+                      const mouseY = e.clientY;
+
+                      // Calculate minimal magnetic pull (5% towards center)
+                      const magneticX = mouseX + (centerX - mouseX) * 0.05;
+                      const magneticY = mouseY + (centerY - mouseY) * 0.05;
+
+                      setCursorPosition({ x: magneticX, y: magneticY });
+                    }}
                   >
                     {/* Minimal glow effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-indigo-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
