@@ -147,7 +147,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
       )}
 
       {/* Main Content */}
-      <div className={`min-h-screen relative overflow-hidden transition-opacity duration-1000 ${showLoading ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`homepage-container min-h-screen relative overflow-hidden transition-opacity duration-1000 ${showLoading ? 'opacity-0' : 'opacity-100'}`}>
         {/* Background Video */}
         <div className="absolute inset-0 z-0">
           <video
