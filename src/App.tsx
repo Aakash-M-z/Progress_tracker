@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Header from './components/Header';
 import Login from './components/Login';
 import HomePage from './components/HomePage';
@@ -8,22 +8,22 @@ import { databaseAPI } from './api/database';
 import { SessionManager } from './utils/sessionManager';
 import { dbToFrontendActivity, frontendToDbActivity } from './utils/activityTransform';
 
-// Lazy load heavy components
-const SimpleHeatmap = lazy(() => import('./components/SimpleHeatmap'));
-const ProgressStats = lazy(() => import('./components/ProgressStats'));
-const ActivityForm = lazy(() => import('./components/ActivityForm'));
-const DSARoadmap = lazy(() => import('./components/DSARoadmap'));
-const StreakTracker = lazy(() => import('./components/StreakTracker'));
-const RoleBasedRoute = lazy(() => import('./components/RoleBasedRoute'));
-const AdminPanel = lazy(() => import('./components/AdminPanel'));
-const DailyProblemNotification = lazy(() => import('./components/DailyProblemNotification'));
-const NotificationSettings = lazy(() => import('./components/NotificationSettings'));
-const BadgeSystem = lazy(() => import('./components/BadgeSystem'));
-const SolutionResources = lazy(() => import('./components/SolutionResources'));
-const QuickAddProblem = lazy(() => import('./components/QuickAddProblem'));
-const DailyMotivation = lazy(() => import('./components/DailyMotivation'));
-const UserProfile = lazy(() => import('./components/UserProfile'));
-const Hero = lazy(() => import('./components/Hero'));
+// Eager load critical components (no lazy loading for better UX)
+import SimpleHeatmap from './components/SimpleHeatmap';
+import ProgressStats from './components/ProgressStats';
+import ActivityForm from './components/ActivityForm';
+import DSARoadmap from './components/DSARoadmap';
+import StreakTracker from './components/StreakTracker';
+import RoleBasedRoute from './components/RoleBasedRoute';
+import AdminPanel from './components/AdminPanel';
+import DailyProblemNotification from './components/DailyProblemNotification';
+import NotificationSettings from './components/NotificationSettings';
+import BadgeSystem from './components/BadgeSystem';
+import SolutionResources from './components/SolutionResources';
+import QuickAddProblem from './components/QuickAddProblem';
+import DailyMotivation from './components/DailyMotivation';
+import UserProfile from './components/UserProfile';
+import Hero from './components/Hero';
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, user, isLoading } = useAuth();
@@ -189,24 +189,16 @@ const AppContent: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 animate-fadeIn">
       <Header />
-      <Suspense fallback={null}>
-        <DailyProblemNotification />
-      </Suspense>
+      <DailyProblemNotification />
       {showDailyProblem && (
-        <Suspense fallback={null}>
-          <DailyProblemNotification
-            forceShow={true}
-            onClose={() => setShowDailyProblem(false)}
-          />
-        </Suspense>
+        <DailyProblemNotification
+          forceShow={true}
+          onClose={() => setShowDailyProblem(false)}
+        />
       )}
-      <Suspense fallback={null}>
-        <NotificationSettings onTriggerDailyProblem={() => setShowDailyProblem(true)} />
-      </Suspense>
+      <NotificationSettings onTriggerDailyProblem={() => setShowDailyProblem(true)} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Suspense fallback={<div className="animate-pulse h-32 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-8"></div>}>
-          <Hero />
-        </Suspense>
+        <Hero />
         {/* Tab Navigation */}
         <div className="mb-8">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-2">
@@ -236,9 +228,7 @@ const AppContent: React.FC = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-3xl blur-2xl opacity-40 animate-pulse"></div>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-400 rounded-3xl blur-xl opacity-20 animate-ping"></div>
               <div className="relative transform hover:scale-105 transition-all duration-300">
-                <Suspense fallback={<div className="bg-white dark:bg-gray-800 rounded-3xl p-8 animate-pulse"><div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div></div>}>
-                  <DailyMotivation />
-                </Suspense>
+                <DailyMotivation />
               </div>
             </div>
 
@@ -310,9 +300,7 @@ const AppContent: React.FC = () => {
                     </div>
                     <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Activity Heatmap</h2>
                   </div>
-                  <Suspense fallback={<div className="animate-pulse space-y-4"><div className="h-32 bg-gray-200 dark:bg-gray-700 rounded"></div></div>}>
-                    <SimpleHeatmap activities={activities} />
-                  </Suspense>
+                  <SimpleHeatmap activities={activities} />
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 card-hover group relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-green-500/20">
@@ -329,9 +317,7 @@ const AppContent: React.FC = () => {
                       </div>
                       <h2 className="text-2xl font-bold text-gray-800 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">Progress Statistics</h2>
                     </div>
-                    <Suspense fallback={<div className="animate-pulse space-y-3"><div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div><div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div></div>}>
-                      <ProgressStats activities={activities} />
-                    </Suspense>
+                    <ProgressStats activities={activities} />
                   </div>
                 </div>
               </div>
@@ -347,21 +333,15 @@ const AppContent: React.FC = () => {
                     </div>
                     <h2 className="text-xl font-bold text-gray-800 dark:text-white">Log Activity</h2>
                   </div>
-                  <Suspense fallback={<div className="animate-pulse h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>}>
-                    <RoleBasedRoute allowedRoles={user?.role === 'admin' ? ['admin'] : ['admin', 'user']}>
-                      <ActivityForm onAddActivity={addActivity} />
-                    </RoleBasedRoute>
-                  </Suspense>
+                  <RoleBasedRoute allowedRoles={user?.role === 'admin' ? ['admin'] : ['admin', 'user']}>
+                    <ActivityForm onAddActivity={addActivity} />
+                  </RoleBasedRoute>
                 </div>
 
-                <Suspense fallback={<div className="animate-pulse h-64 bg-gray-200 dark:bg-gray-700 rounded-3xl"></div>}>
-                  <QuickAddProblem onAddActivity={addActivity} />
-                </Suspense>
+                <QuickAddProblem onAddActivity={addActivity} />
 
                 <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-800 dark:to-gray-700 rounded-3xl shadow-xl border border-orange-200 dark:border-gray-600 p-6">
-                  <Suspense fallback={<div className="animate-pulse h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>}>
-                    <StreakTracker activities={activities} />
-                  </Suspense>
+                  <StreakTracker activities={activities} />
                 </div>
               </div>
             </div>
@@ -372,9 +352,7 @@ const AppContent: React.FC = () => {
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 animate-fadeIn">
             <div className="xl:col-span-8">
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 card-hover">
-                <Suspense fallback={<div className="animate-pulse space-y-4"><div className="h-96 bg-gray-200 dark:bg-gray-700 rounded"></div></div>}>
-                  <DSARoadmap activities={activities} onAddActivity={addActivity} />
-                </Suspense>
+                <DSARoadmap activities={activities} onAddActivity={addActivity} />
               </div>
             </div>
             <div className="xl:col-span-4">
@@ -383,11 +361,9 @@ const AppContent: React.FC = () => {
                   <span className="mr-3 text-2xl">📝</span>
                   Log New Activity
                 </h2>
-                <Suspense fallback={<div className="animate-pulse h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>}>
-                  <RoleBasedRoute allowedRoles={['admin', 'user']}>
-                    <ActivityForm onAddActivity={addActivity} />
-                  </RoleBasedRoute>
-                </Suspense>
+                <RoleBasedRoute allowedRoles={['admin', 'user']}>
+                  <ActivityForm onAddActivity={addActivity} />
+                </RoleBasedRoute>
               </div>
             </div>
           </div>
@@ -401,11 +377,9 @@ const AppContent: React.FC = () => {
                   <span className="mr-3 text-3xl">📈</span>
                   Detailed Analytics
                 </h2>
-                <Suspense fallback={<div className="animate-pulse space-y-3"><div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div><div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div></div>}>
-                  <RoleBasedRoute allowedRoles={['admin', 'user']}>
-                    <ProgressStats activities={activities} />
-                  </RoleBasedRoute>
-                </Suspense>
+                <RoleBasedRoute allowedRoles={['admin', 'user']}>
+                  <ProgressStats activities={activities} />
+                </RoleBasedRoute>
               </div>
             </div>
             <div className="xl:col-span-4">
@@ -414,11 +388,9 @@ const AppContent: React.FC = () => {
                   <span className="mr-3 text-2xl">📝</span>
                   Log New Activity
                 </h2>
-                <Suspense fallback={<div className="animate-pulse h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>}>
-                  <RoleBasedRoute allowedRoles={['admin', 'user']}>
-                    <ActivityForm onAddActivity={addActivity} />
-                  </RoleBasedRoute>
-                </Suspense>
+                <RoleBasedRoute allowedRoles={['admin', 'user']}>
+                  <ActivityForm onAddActivity={addActivity} />
+                </RoleBasedRoute>
               </div>
             </div>
           </div>
@@ -426,34 +398,26 @@ const AppContent: React.FC = () => {
 
         {activeTab === 'profile' && (
           <div className="animate-fadeIn">
-            <Suspense fallback={<div className="animate-pulse h-96 bg-gray-200 dark:bg-gray-700 rounded-2xl"></div>}>
-              <UserProfile activities={activities} />
-            </Suspense>
+            <UserProfile activities={activities} />
           </div>
         )}
 
         {activeTab === 'badges' && (
           <div className="animate-fadeIn">
-            <Suspense fallback={<div className="animate-pulse h-96 bg-gray-200 dark:bg-gray-700 rounded-2xl"></div>}>
-              <BadgeSystem activities={activities} />
-            </Suspense>
+            <BadgeSystem activities={activities} />
           </div>
         )}
 
         {activeTab === 'resources' && (
           <div className="animate-fadeIn">
-            <Suspense fallback={<div className="animate-pulse h-96 bg-gray-200 dark:bg-gray-700 rounded-2xl"></div>}>
-              <SolutionResources />
-            </Suspense>
+            <SolutionResources />
           </div>
         )}
 
         {activeTab === 'admin' && user?.role === 'admin' && (
           <div className="animate-fadeIn">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 card-hover">
-              <Suspense fallback={<div className="animate-pulse h-96 bg-gray-200 dark:bg-gray-700 rounded"></div>}>
-                <AdminPanel />
-              </Suspense>
+              <AdminPanel />
             </div>
           </div>
         )}
