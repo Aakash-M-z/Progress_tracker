@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Activity } from '../types';
 
 interface ProgressStatsProps {
@@ -19,8 +19,7 @@ interface CachedStats {
 }
 
 const ProgressStats: React.FC<ProgressStatsProps> = ({ activities }) => {
-  const [visibleElements, setVisibleElements] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [visibleElements] = useState<number>(6); // Show all immediately
 
   // Memoized cached statistics calculation
   const cachedStats = useMemo<CachedStats>(() => {
@@ -76,12 +75,6 @@ const ProgressStats: React.FC<ProgressStatsProps> = ({ activities }) => {
     };
   }, [activities]);
 
-  // Immediate element reveal - no artificial delays
-  useEffect(() => {
-    setIsLoading(false);
-    setVisibleElements(6); // Show all elements immediately
-  }, [activities]);
-
   const formatTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
@@ -96,26 +89,6 @@ const ProgressStats: React.FC<ProgressStatsProps> = ({ activities }) => {
       default: return 'text-gray-600 bg-gray-100 dark:bg-gray-700 dark:text-gray-400';
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-3">
-        <div className="animate-pulse">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-xl h-20"></div>
-            ))}
-          </div>
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-xl h-24 mb-3"></div>
-          ))}
-        </div>
-        <div className="text-center text-gray-500 dark:text-gray-400 text-sm animate-pulse">
-          📊 Calculating statistics...
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-3">
