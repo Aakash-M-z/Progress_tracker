@@ -893,9 +893,13 @@ blockquote::after {
 }
 
 /* Custom Mouse Cursor with Adaptive Effects */
-* {
+/* Custom Mouse Cursor - Only hide default cursor on HomePage */
+.homepage-container {
   cursor: none;
-  /* Hide default cursor */
+}
+
+.homepage-container * {
+  cursor: none;
 }
 
 /* Custom cursor container */
@@ -1043,15 +1047,15 @@ blockquote::after {
   }
 }
 
-/* Adaptive cursor for different elements */
-button,
-.clickable {
+/* Adaptive cursor for different elements - Only on HomePage */
+.homepage-container button,
+.homepage-container .clickable {
   cursor: none !important;
 }
 
-input,
-textarea,
-[contenteditable] {
+.homepage-container input,
+.homepage-container textarea,
+.homepage-container [contenteditable] {
   cursor: none !important;
 }
 
