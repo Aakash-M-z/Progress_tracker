@@ -289,103 +289,78 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
           {/* Start Your Journey Button - appears after loading */}
           {!showLoading && (
             <div className="animate-slideInFromBottom">
-              {/* Enhanced decorative elements */}
+              {/* Circular button without decorative elements */}
               <div className="relative">
-                {/* Glowing lines */}
-                <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-32 h-0.5 bg-gradient-to-r from-transparent via-blue-400/50 to-transparent animate-pulse"></div>
-                <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-32 h-0.5 bg-gradient-to-r from-transparent via-purple-400/50 to-transparent animate-pulse"></div>
+                <button
+                  onClick={(e) => {
+                    createRipple(e);
+                    onGetStarted();
+                  }}
+                  className="group relative overflow-hidden bg-black/30 border border-yellow-600/50 text-yellow-100 w-80 h-80 rounded-full font-bold text-2xl hover:bg-black/50 hover:border-yellow-500/80 hover:text-yellow-50 transition-all duration-700 hover:scale-110 active:scale-95 shadow-lg shadow-black/50 hover:shadow-2xl hover:shadow-yellow-900/30 gold-theme-button opacity-100 clickable magnetic-cursor water-drop-button flex items-center justify-center animate-pulse-slow"
+                  onMouseEnter={(e) => {
+                    setCursorState('hover');
+                    // Enhanced magnetic effect
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    setCursorPosition({ x: centerX, y: centerY });
+                  }}
+                  onMouseLeave={() => {
+                    setCursorState('default');
+                  }}
+                  onMouseMove={(e) => {
+                    // Enhanced magnetic pull
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    const mouseX = e.clientX;
+                    const mouseY = e.clientY;
 
-                {/* Enhanced side elements */}
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-24">
-                  <div className="flex flex-col space-y-6">
-                    <div className="w-2 h-2 bg-blue-400/60 rounded-full animate-pulse" style={{ animationDelay: '0s' }}></div>
-                    <div className="w-1.5 h-1.5 bg-indigo-400/50 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-                    <div className="w-2 h-2 bg-purple-400/60 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
-                  </div>
-                </div>
+                    const magneticX = mouseX + (centerX - mouseX) * 0.08;
+                    const magneticY = mouseY + (centerY - mouseY) * 0.08;
 
-                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-24">
-                  <div className="flex flex-col space-y-6">
-                    <div className="w-2 h-2 bg-purple-400/60 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }}></div>
-                    <div className="w-1.5 h-1.5 bg-indigo-400/50 rounded-full animate-pulse" style={{ animationDelay: '0.8s' }}></div>
-                    <div className="w-2 h-2 bg-blue-400/60 rounded-full animate-pulse" style={{ animationDelay: '1.3s' }}></div>
-                  </div>
-                </div>
-
-                {/* Enhanced button with cosmic effects */}
-                <div className="relative">
-                  <button
-                    onClick={(e) => {
-                      createRipple(e);
-                      onGetStarted();
-                    }}
-                    className="group relative overflow-hidden bg-black/60 backdrop-blur-md border-2 border-yellow-600/50 text-yellow-100 px-16 py-8 rounded-3xl font-bold text-2xl hover:bg-black/40 hover:border-yellow-500/70 hover:text-yellow-50 transition-all duration-500 hover:scale-105 active:scale-95 shadow-2xl hover:shadow-yellow-500/20 min-w-[420px] max-w-[520px] gold-theme-button opacity-90 hover:opacity-100 clickable magnetic-cursor water-drop-button"
-                    onMouseEnter={(e) => {
-                      setCursorState('hover');
-                      // Enhanced magnetic effect
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const centerX = rect.left + rect.width / 2;
-                      const centerY = rect.top + rect.height / 2;
-                      setCursorPosition({ x: centerX, y: centerY });
-                    }}
-                    onMouseLeave={() => {
-                      setCursorState('default');
-                    }}
-                    onMouseMove={(e) => {
-                      // Enhanced magnetic pull
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const centerX = rect.left + rect.width / 2;
-                      const centerY = rect.top + rect.height / 2;
-                      const mouseX = e.clientX;
-                      const mouseY = e.clientY;
-
-                      const magneticX = mouseX + (centerX - mouseX) * 0.08;
-                      const magneticY = mouseY + (centerY - mouseY) * 0.08;
-
-                      setCursorPosition({ x: magneticX, y: magneticY });
-                    }}
-                  >
-                    {/* Enhanced glow effects with gold theme */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/10 via-yellow-500/15 to-yellow-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-yellow-400/10 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl blur-xl"></div>
-
-                    {/* Enhanced border effect with gold */}
-                    <div className="absolute inset-0 rounded-3xl border border-transparent bg-gradient-to-r from-yellow-600/30 via-yellow-500/40 to-yellow-600/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
-
-                    {/* Button content with enhanced text clarity */}
-                    <span className="relative z-10 flex items-center justify-center gap-4">
-                      <span className="text-4xl group-hover:animate-bounce transition-transform duration-300 filter drop-shadow-lg">🚀</span>
-                      <span className="text-yellow-100 group-hover:text-yellow-50 transition-all duration-500 font-black tracking-wide filter drop-shadow-lg" style={{
-                        textShadow: '0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.3)'
-                      }}>
-                        Start Your Journey
-                      </span>
+                    setCursorPosition({ x: magneticX, y: magneticY });
+                  }}
+                >
+                  {/* Button content with enhanced visibility - Text Only */}
+                  <span className="relative z-10 flex flex-col items-center justify-center">
+                    <span className="text-yellow-50 group-hover:text-white transition-all duration-700 font-light tracking-widest text-center leading-relaxed text-3xl group-hover:animate-pulse" style={{
+                      fontFamily: 'Georgia, "Times New Roman", serif',
+                      textShadow: '0 4px 12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4)',
+                      filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8))',
+                      letterSpacing: '0.15em',
+                      transform: 'group-hover:scale(1.05)'
+                    }}>
+                      Start Your<br />Journey
                     </span>
+                  </span>
 
-                    {/* Enhanced ripple effects with gold theme */}
-                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-yellow-600/8 to-yellow-500/8 scale-0 group-hover:scale-100 transition-transform duration-700 ease-out"></div>
-                    <div className="absolute inset-0 rounded-3xl bg-yellow-400/10 scale-0 group-active:scale-100 transition-transform duration-200 ease-out"></div>
-                  </button>
+                  {/* Golden dark theme interactive animations */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-900/20 via-yellow-600/30 to-yellow-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-spin-slow"></div>
+                  <div className="absolute inset-0 rounded-full bg-gradient-radial from-yellow-500/10 via-black/20 to-transparent scale-0 group-hover:scale-100 transition-transform duration-700 ease-out animate-pulse"></div>
+                  <div className="absolute inset-0 rounded-full bg-yellow-800/30 scale-0 group-active:scale-100 transition-transform duration-200 ease-out"></div>
 
-                  {/* Orbiting particles around button with cosmic colors */}
+                  {/* Golden floating particles around button */}
                   <div className="absolute inset-0 pointer-events-none">
                     {[...Array(8)].map((_, i) => (
                       <div
                         key={i}
-                        className={`absolute w-1.5 h-1.5 rounded-full animate-orbit ${i % 4 === 0 ? 'bg-purple-400/70 shadow-purple-400/50' :
-                          i % 4 === 1 ? 'bg-blue-400/70 shadow-blue-400/50' :
-                            i % 4 === 2 ? 'bg-cyan-400/70 shadow-cyan-400/50' :
-                              'bg-white/80 shadow-white/50'
-                          }`}
+                        className="absolute w-1.5 h-1.5 bg-yellow-500/70 rounded-full animate-float opacity-0 group-hover:opacity-100 transition-opacity duration-500 shadow-lg shadow-yellow-500/50"
                         style={{
+                          left: `${15 + i * 45}%`,
+                          top: `${15 + (i % 3) * 35}%`,
                           animationDelay: `${i * 0.4}s`,
-                          animationDuration: '10s',
-                          boxShadow: `0 0 8px currentColor`
+                          animationDuration: `${4 + i * 0.3}s`,
+                          boxShadow: '0 0 8px rgba(255, 215, 0, 0.6)'
                         }}
                       ></div>
                     ))}
                   </div>
-                </div>
+
+                  {/* Golden ring effect */}
+                  <div className="absolute inset-2 rounded-full border border-yellow-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-spin-slow"></div>
+                  <div className="absolute inset-4 rounded-full border border-yellow-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-spin-reverse"></div>
+                </button>
               </div>
             </div>
           )}
