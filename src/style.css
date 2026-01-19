@@ -1620,42 +1620,24 @@ blockquote::after {
   }
 }
 
-/* Gold Theme Button Effects */
+/* Gold Theme Button Effects - Dark Theme Border */
 .gold-theme-button {
   position: relative;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.7), rgba(184, 134, 11, 0.1));
-  backdrop-filter: blur(15px) brightness(1.1);
-  -webkit-backdrop-filter: blur(15px) brightness(1.1);
-  border: 2px solid rgba(255, 215, 0, 0.5);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 215, 0, 0.2);
+  background: transparent !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(75, 85, 99, 0.4) !important;
+  box-shadow: none !important;
 }
 
 .gold-theme-button::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  background: linear-gradient(45deg, #ffd700, #b8860b, #daa520, #ffd700);
-  background-size: 400% 400%;
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  animation: goldGradientRotate 6s ease-in-out infinite;
-  z-index: -1;
-}
-
-.gold-theme-button:hover::before {
-  opacity: 0.3;
+  display: none;
 }
 
 .gold-theme-button:hover {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(184, 134, 11, 0.2));
-  border-color: rgba(255, 215, 0, 0.7);
-  box-shadow:
-    0 12px 48px rgba(0, 0, 0, 0.3),
-    0 0 40px rgba(255, 215, 0, 0.2),
-    inset 0 1px 0 rgba(255, 215, 0, 0.3);
+  background: transparent !important;
+  border: 1px solid rgba(107, 114, 128, 0.6) !important;
+  box-shadow: none !important;
 }
 
 @keyframes goldGradientRotate {
@@ -1779,4 +1761,295 @@ blockquote::after {
 
 .custom-cursor.hover::before {
   background: radial-gradient(circle, rgba(255, 215, 0, 0.5) 0%, rgba(218, 165, 32, 0.4) 40%, transparent 70%);
+}
+
+/* Dark Theme Interactive Button Animations */
+@keyframes pulse-slow {
+
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes spin-slow {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dark-glow {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(75, 85, 99, 0.3),
+      0 0 40px rgba(107, 114, 128, 0.2),
+      inset 0 0 20px rgba(255, 255, 255, 0.02);
+  }
+
+  50% {
+    box-shadow:
+      0 0 30px rgba(75, 85, 99, 0.5),
+      0 0 60px rgba(107, 114, 128, 0.4),
+      inset 0 0 30px rgba(255, 255, 255, 0.05);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* Enhanced Gold Theme Button Effects - Dark Interactive */
+.gold-theme-button {
+  position: relative;
+  background: transparent !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(75, 85, 99, 0.4) !important;
+  box-shadow: none !important;
+  transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gold-theme-button::before {
+  display: none;
+}
+
+.gold-theme-button:hover {
+  background: rgba(17, 24, 39, 0.2) !important;
+  border: 1px solid rgba(156, 163, 175, 0.8) !important;
+  box-shadow:
+    0 0 40px rgba(75, 85, 99, 0.4),
+    0 0 80px rgba(107, 114, 128, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.03) !important;
+  animation: dark-glow 3s ease-in-out infinite;
+}
+
+.gold-theme-button:active {
+  transform: scale(0.95);
+  box-shadow:
+    0 0 20px rgba(75, 85, 99, 0.6),
+    inset 0 0 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Enhanced floating animation for dark theme */
+@keyframes float-dark {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.4;
+  }
+
+  25% {
+    transform: translateY(-15px) rotate(90deg);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translateY(-30px) rotate(180deg);
+    opacity: 1;
+  }
+
+  75% {
+    transform: translateY(-15px) rotate(270deg);
+    opacity: 0.8;
+  }
+}
+
+.animate-float {
+  animation: float-dark 4s ease-in-out infinite;
+}
+
+/* Text glow animation on hover */
+.gold-theme-button:hover span {
+  animation: text-glow-dark 2s ease-in-out infinite;
+}
+
+@keyframes text-glow-dark {
+
+  0%,
+  100% {
+    text-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.9),
+      0 0 30px rgba(255, 215, 0, 0.8),
+      0 0 60px rgba(255, 215, 0, 0.4);
+  }
+
+  50% {
+    text-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.9),
+      0 0 40px rgba(255, 215, 0, 1),
+      0 0 80px rgba(255, 215, 0, 0.6),
+      0 0 120px rgba(255, 215, 0, 0.3);
+  }
+}
+
+/* Golden Dark Theme Interactive Button Animations - Override */
+@keyframes spin-reverse {
+  0% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes golden-glow {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(255, 215, 0, 0.3),
+      0 0 40px rgba(184, 134, 11, 0.2),
+      inset 0 0 20px rgba(255, 215, 0, 0.05);
+  }
+
+  50% {
+    box-shadow:
+      0 0 40px rgba(255, 215, 0, 0.5),
+      0 0 80px rgba(184, 134, 11, 0.4),
+      inset 0 0 30px rgba(255, 215, 0, 0.1);
+  }
+}
+
+@keyframes golden-pulse {
+
+  0%,
+  100% {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 215, 0, 0.5);
+  }
+
+  50% {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 215, 0, 0.8);
+  }
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 6s linear infinite;
+}
+
+/* Override Gold Theme Button Effects - Golden Dark Interactive */
+.gold-theme-button {
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 215, 0, 0.5) !important;
+  box-shadow:
+    0 0 20px rgba(0, 0, 0, 0.5),
+    inset 0 0 20px rgba(255, 215, 0, 0.05) !important;
+  animation: golden-pulse 6s ease-in-out infinite !important;
+}
+
+.gold-theme-button::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg,
+      rgba(255, 215, 0, 0.3),
+      rgba(184, 134, 11, 0.2),
+      rgba(218, 165, 32, 0.3),
+      rgba(255, 215, 0, 0.3)) !important;
+  background-size: 400% 400%;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+  animation: goldGradientRotate 8s ease-in-out infinite;
+  z-index: -1;
+}
+
+.gold-theme-button:hover::before {
+  opacity: 0.4 !important;
+}
+
+.gold-theme-button:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(255, 215, 0, 0.8) !important;
+  box-shadow:
+    0 0 40px rgba(255, 215, 0, 0.4),
+    0 0 80px rgba(184, 134, 11, 0.3),
+    0 0 120px rgba(218, 165, 32, 0.2),
+    inset 0 0 30px rgba(255, 215, 0, 0.1) !important;
+  animation: golden-glow 3s ease-in-out infinite !important;
+}
+
+/* Enhanced floating animation for golden theme */
+@keyframes float-golden {
+
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+    opacity: 0.5;
+    filter: brightness(1);
+  }
+
+  25% {
+    transform: translateY(-20px) rotate(90deg) scale(1.1);
+    opacity: 0.8;
+    filter: brightness(1.2);
+  }
+
+  50% {
+    transform: translateY(-35px) rotate(180deg) scale(1.2);
+    opacity: 1;
+    filter: brightness(1.4);
+  }
+
+  75% {
+    transform: translateY(-20px) rotate(270deg) scale(1.1);
+    opacity: 0.8;
+    filter: brightness(1.2);
+  }
+}
+
+.animate-float {
+  animation: float-golden 5s ease-in-out infinite !important;
+}
+
+/* Golden text glow animation on hover */
+.gold-theme-button:hover span {
+  animation: text-glow-golden 2.5s ease-in-out infinite !important;
+}
+
+@keyframes text-glow-golden {
+
+  0%,
+  100% {
+    text-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.9),
+      0 0 30px rgba(255, 215, 0, 0.8),
+      0 0 60px rgba(255, 215, 0, 0.4);
+  }
+
+  50% {
+    text-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.9),
+      0 0 40px rgba(255, 215, 0, 1),
+      0 0 80px rgba(255, 215, 0, 0.7),
+      0 0 120px rgba(184, 134, 11, 0.5),
+      0 0 160px rgba(218, 165, 32, 0.3);
+  }
+}
+
+/* Radial gradient utility */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
 }
