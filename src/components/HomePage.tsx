@@ -199,7 +199,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
               setVideoLoaded(true);
             }}
             style={{
-              filter: 'brightness(0.7) contrast(1.3) saturate(1.0)',
+              filter: 'brightness(0.5) contrast(1.4) saturate(0.9)',
               opacity: videoLoaded ? 1 : 0,
               transition: 'opacity 1.5s ease-in-out'
             }}
@@ -207,10 +207,10 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
             <source src="/27669-365224683_small.mp4" type="video/mp4" />
           </video>
 
-          {/* Reduced overlay gradients for better video visibility */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30"></div>
-          <div className="absolute inset-0 bg-radial-gradient from-transparent via-black/15 to-black/40"></div>
+          {/* Enhanced overlay gradients for better text clarity */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40"></div>
+          <div className="absolute inset-0 bg-radial-gradient from-transparent via-black/20 to-black/50"></div>
 
           {/* Animated floating particles with cosmic colors */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -319,7 +319,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                       createRipple(e);
                       onGetStarted();
                     }}
-                    className="group relative overflow-hidden bg-black/50 backdrop-blur-lg border-2 border-white/40 text-white px-16 py-8 rounded-3xl font-bold text-2xl hover:bg-black/30 hover:border-white/60 transition-all duration-500 hover:scale-105 active:scale-95 shadow-2xl hover:shadow-white/30 min-w-[420px] max-w-[520px] cosmic-button opacity-95 hover:opacity-100 clickable magnetic-cursor water-drop-button"
+                    className="group relative overflow-hidden bg-black/40 backdrop-blur-md border-2 border-white/30 text-white px-16 py-8 rounded-3xl font-bold text-2xl hover:bg-black/20 hover:border-white/50 transition-all duration-500 hover:scale-105 active:scale-95 shadow-2xl hover:shadow-white/20 min-w-[420px] max-w-[520px] cosmic-button opacity-90 hover:opacity-100 clickable magnetic-cursor water-drop-button"
                     onMouseEnter={(e) => {
                       setCursorState('hover');
                       // Enhanced magnetic effect
@@ -356,7 +356,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                     <span className="relative z-10 flex items-center justify-center gap-4">
                       <span className="text-4xl group-hover:animate-bounce transition-transform duration-300 filter drop-shadow-lg">🚀</span>
                       <span className="text-white group-hover:text-white transition-all duration-500 font-black tracking-wide filter drop-shadow-lg" style={{
-                        textShadow: '0 2px 8px rgba(0, 0, 0, 0.9), 0 4px 16px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 255, 255, 0.3)'
+                        textShadow: '0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.3)'
                       }}>
                         Start Your Journey
                       </span>
