@@ -319,7 +319,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                       createRipple(e);
                       onGetStarted();
                     }}
-                    className="group relative overflow-hidden bg-black/40 backdrop-blur-md border-2 border-white/30 text-white px-16 py-8 rounded-3xl font-bold text-2xl hover:bg-black/20 hover:border-white/50 transition-all duration-500 hover:scale-105 active:scale-95 shadow-2xl hover:shadow-white/20 min-w-[420px] max-w-[520px] cosmic-button opacity-90 hover:opacity-100 clickable magnetic-cursor water-drop-button"
+                    className="group relative overflow-hidden bg-black/60 backdrop-blur-md border-2 border-yellow-600/50 text-yellow-100 px-16 py-8 rounded-3xl font-bold text-2xl hover:bg-black/40 hover:border-yellow-500/70 hover:text-yellow-50 transition-all duration-500 hover:scale-105 active:scale-95 shadow-2xl hover:shadow-yellow-500/20 min-w-[420px] max-w-[520px] gold-theme-button opacity-90 hover:opacity-100 clickable magnetic-cursor water-drop-button"
                     onMouseEnter={(e) => {
                       setCursorState('hover');
                       // Enhanced magnetic effect
@@ -345,26 +345,26 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                       setCursorPosition({ x: magneticX, y: magneticY });
                     }}
                   >
-                    {/* Enhanced glow effects with better contrast */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-blue-400/10 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/3 via-cyan-400/8 to-white/3 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl blur-xl"></div>
+                    {/* Enhanced glow effects with gold theme */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/10 via-yellow-500/15 to-yellow-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-yellow-400/10 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl blur-xl"></div>
 
-                    {/* Enhanced border effect */}
-                    <div className="absolute inset-0 rounded-3xl border border-transparent bg-gradient-to-r from-white/20 via-blue-400/30 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
+                    {/* Enhanced border effect with gold */}
+                    <div className="absolute inset-0 rounded-3xl border border-transparent bg-gradient-to-r from-yellow-600/30 via-yellow-500/40 to-yellow-600/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
 
                     {/* Button content with enhanced text clarity */}
                     <span className="relative z-10 flex items-center justify-center gap-4">
                       <span className="text-4xl group-hover:animate-bounce transition-transform duration-300 filter drop-shadow-lg">🚀</span>
-                      <span className="text-white group-hover:text-white transition-all duration-500 font-black tracking-wide filter drop-shadow-lg" style={{
-                        textShadow: '0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.3)'
+                      <span className="text-yellow-100 group-hover:text-yellow-50 transition-all duration-500 font-black tracking-wide filter drop-shadow-lg" style={{
+                        textShadow: '0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.3)'
                       }}>
                         Start Your Journey
                       </span>
                     </span>
 
-                    {/* Enhanced ripple effects */}
-                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-400/5 to-purple-400/5 scale-0 group-hover:scale-100 transition-transform duration-700 ease-out"></div>
-                    <div className="absolute inset-0 rounded-3xl bg-white/5 scale-0 group-active:scale-100 transition-transform duration-200 ease-out"></div>
+                    {/* Enhanced ripple effects with gold theme */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-yellow-600/8 to-yellow-500/8 scale-0 group-hover:scale-100 transition-transform duration-700 ease-out"></div>
+                    <div className="absolute inset-0 rounded-3xl bg-yellow-400/10 scale-0 group-active:scale-100 transition-transform duration-200 ease-out"></div>
                   </button>
 
                   {/* Orbiting particles around button with cosmic colors */}
