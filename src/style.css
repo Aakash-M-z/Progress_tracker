@@ -798,6 +798,348 @@ blockquote::after {
   -webkit-backdrop-filter: blur(20px) brightness(0.3) contrast(1.2);
 }
 
+/* Enhanced text clarity and readability */
+.text-clarity {
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.9),
+    0 4px 8px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(255, 255, 255, 0.2);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Enhanced button clarity */
+.cosmic-button {
+  position: relative;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(59, 130, 246, 0.1));
+  backdrop-filter: blur(15px) brightness(1.1);
+  -webkit-backdrop-filter: blur(15px) brightness(1.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.cosmic-button::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, #ffffff, #3b82f6, #8b5cf6, #ffffff);
+  background-size: 400% 400%;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  animation: gradientRotate 6s ease-in-out infinite;
+  z-index: -1;
+}
+
+.cosmic-button:hover::before {
+  opacity: 0.2;
+}
+
+.cosmic-button:hover {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(59, 130, 246, 0.2));
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Enhanced radial gradient for better background clarity */
+.bg-radial-gradient {
+  background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+/* Improved particle visibility */
+.particle-enhanced {
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* Better contrast for decorative elements */
+.decorative-enhanced {
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4));
+}
+
+/* Enhanced loading screen clarity */
+.loading-enhanced {
+  background: linear-gradient(135deg,
+      rgba(0, 0, 0, 0.95) 0%,
+      rgba(30, 30, 50, 0.9) 50%,
+      rgba(0, 0, 0, 0.95) 100%);
+  backdrop-filter: blur(20px);
+}
+
+/* Improved text shadows for better readability */
+.text-shadow-enhanced {
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.9),
+    0 4px 16px rgba(0, 0, 0, 0.7),
+    0 0 30px rgba(255, 255, 255, 0.2),
+    0 0 60px rgba(59, 130, 246, 0.1);
+}
+
+/* Enhanced glow effects with better performance */
+@keyframes enhancedGlow {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 10px currentColor) brightness(1);
+  }
+
+  50% {
+    filter: drop-shadow(0 0 20px currentColor) brightness(1.2);
+  }
+}
+
+.animate-enhanced-glow {
+  animation: enhancedGlow 3s ease-in-out infinite;
+}
+
+/* Better contrast for cosmic elements */
+.cosmic-enhanced {
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(59, 130, 246, 0.1) 25%,
+      rgba(147, 51, 234, 0.1) 75%,
+      rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(10px) contrast(1.2) brightness(1.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes gradientRotate {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Shooting star animation */
+@keyframes shooting-star {
+  0% {
+    transform: translateX(-100px) translateY(-100px) rotate(45deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(100vw) translateY(100vh) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+.animate-shooting-star {
+  animation: shooting-star 4s linear infinite;
+}
+
+/* Orbiting particles animation */
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(200px) rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg) translateX(200px) rotate(-360deg);
+  }
+}
+
+.animate-orbit {
+  animation: orbit 8s linear infinite;
+  transform-origin: center;
+}
+
+/* Enhanced floating animation with 3D effect */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translate3d(0, 0px, 0) rotate(0deg) scale(1);
+  }
+
+  25% {
+    transform: translate3d(10px, -20px, 0) rotate(1deg) scale(1.05);
+  }
+
+  50% {
+    transform: translate3d(-5px, -40px, 0) rotate(-1deg) scale(1.1);
+  }
+
+  75% {
+    transform: translate3d(-10px, -20px, 0) rotate(0.5deg) scale(1.05);
+  }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Pulsing glow effect for particles */
+@keyframes particleGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+    opacity: 0.6;
+  }
+
+  50% {
+    box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+    opacity: 1;
+  }
+}
+
+.particle-glow {
+  animation: particleGlow 2s ease-in-out infinite;
+}
+
+/* Enhanced button hover with cosmic glow */
+.cosmic-button:hover {
+  box-shadow:
+    0 0 30px rgba(59, 130, 246, 0.3),
+    0 0 60px rgba(147, 51, 234, 0.2),
+    0 0 90px rgba(6, 182, 212, 0.1),
+    0 10px 50px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Cosmic text glow effect */
+@keyframes cosmicTextGlow {
+
+  0%,
+  100% {
+    text-shadow:
+      0 0 10px rgba(255, 255, 255, 0.8),
+      0 0 20px rgba(59, 130, 246, 0.6),
+      0 0 30px rgba(147, 51, 234, 0.4);
+  }
+
+  50% {
+    text-shadow:
+      0 0 15px rgba(255, 255, 255, 1),
+      0 0 30px rgba(59, 130, 246, 0.8),
+      0 0 45px rgba(147, 51, 234, 0.6),
+      0 0 60px rgba(6, 182, 212, 0.4);
+  }
+}
+
+.animate-cosmic-glow {
+  animation: cosmicTextGlow 3s ease-in-out infinite;
+}
+
+/* Enhanced particle trail for cursor */
+.cursor-particle {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.8) 0%, rgba(147, 51, 234, 0.6) 50%, transparent 100%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  animation: particleTrail 1.2s ease-out forwards;
+}
+
+@keyframes particleTrail {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.2) translate(20px, 20px);
+  }
+}
+
+/* Cosmic loading animation enhancement */
+@keyframes cosmicSpin {
+  0% {
+    transform: rotate(0deg) scale(1);
+    filter: hue-rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.1);
+    filter: hue-rotate(180deg);
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
+    filter: hue-rotate(360deg);
+  }
+}
+
+.animate-cosmic-spin {
+  animation: cosmicSpin 2s linear infinite;
+}
+
+/* Enhanced backdrop effects */
+.cosmic-backdrop {
+  backdrop-filter: blur(20px) brightness(0.4) contrast(1.3) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) brightness(0.4) contrast(1.3) saturate(1.2);
+  background: linear-gradient(135deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(59, 130, 246, 0.1) 25%,
+      rgba(147, 51, 234, 0.1) 75%,
+      rgba(0, 0, 0, 0.4) 100%);
+}
+
+/* Responsive enhancements for mobile */
+@media (max-width: 768px) {
+  .cosmic-button {
+    min-width: 300px !important;
+    max-width: 350px !important;
+    padding: 1.5rem 3rem !important;
+    font-size: 1.25rem !important;
+  }
+
+  .animate-orbit {
+    animation-duration: 6s;
+  }
+
+  .animate-shooting-star {
+    animation-duration: 3s;
+  }
+}
+
+@media (max-width: 480px) {
+  .cosmic-button {
+    min-width: 280px !important;
+    max-width: 320px !important;
+    padding: 1.25rem 2.5rem !important;
+    font-size: 1.125rem !important;
+  }
+}
+
+/* Performance optimizations */
+.animate-float,
+.animate-orbit,
+.animate-shooting-star,
+.cosmic-button {
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+/* Smooth transitions for all cosmic elements */
+.cosmic-button,
+.cosmic-button * {
+  transition-property: transform, opacity, box-shadow, background, border-color, filter;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Subtle particle effect for dark theme */
 @keyframes floatingParticles {
 
@@ -902,80 +1244,89 @@ blockquote::after {
   cursor: none;
 }
 
-/* Custom cursor container */
+/* Custom cursor container - Updated for cosmic theme */
 .custom-cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 20px;
-  height: 20px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.8) 0%, rgba(59, 130, 246, 0.4) 50%, transparent 100%);
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.9) 0%, rgba(59, 130, 246, 0.6) 40%, rgba(6, 182, 212, 0.3) 70%, transparent 100%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
   transition: width 0.1s ease, height 0.1s ease, background 0.1s ease;
   transform: translate(-50%, -50%);
   mix-blend-mode: screen;
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.4), 0 0 40px rgba(59, 130, 246, 0.2);
 }
 
-/* Cursor trail effect */
+/* Cursor trail effect - Updated colors */
 .custom-cursor::before {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 40px;
-  height: 40px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.3) 0%, rgba(59, 130, 246, 0.2) 40%, rgba(6, 182, 212, 0.1) 70%, transparent 100%);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   transition: all 0.15s ease;
 }
 
-/* Cursor on hover over interactive elements */
+/* Cursor on hover over interactive elements - Enhanced cosmic colors */
 .custom-cursor.hover {
-  width: 40px;
-  height: 40px;
-  background: radial-gradient(circle, rgba(147, 51, 234, 0.9) 0%, rgba(59, 130, 246, 0.6) 50%, transparent 100%);
-  animation: cursorPulse 1s ease-in-out infinite;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(147, 51, 234, 0.8) 30%, rgba(59, 130, 246, 0.6) 60%, rgba(6, 182, 212, 0.4) 80%, transparent 100%);
+  animation: cosmicCursorPulse 1.5s ease-in-out infinite;
+  box-shadow:
+    0 0 30px rgba(147, 51, 234, 0.6),
+    0 0 60px rgba(59, 130, 246, 0.4),
+    0 0 90px rgba(6, 182, 212, 0.2);
 }
 
 .custom-cursor.hover::before {
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.4) 0%, rgba(59, 130, 246, 0.3) 40%, rgba(6, 182, 212, 0.2) 60%, transparent 80%);
+}
+
+/* Cursor on click - Cosmic explosion effect */
+.custom-cursor.click {
   width: 80px;
   height: 80px;
-  background: radial-gradient(circle, rgba(147, 51, 234, 0.3) 0%, rgba(59, 130, 246, 0.2) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(147, 51, 234, 0.9) 20%, rgba(59, 130, 246, 0.7) 40%, rgba(6, 182, 212, 0.5) 60%, transparent 80%);
+  animation: cosmicCursorClick 0.4s ease-out;
+  box-shadow:
+    0 0 40px rgba(255, 255, 255, 0.8),
+    0 0 80px rgba(147, 51, 234, 0.6),
+    0 0 120px rgba(59, 130, 246, 0.4);
 }
 
-/* Cursor on click */
-.custom-cursor.click {
-  width: 60px;
-  height: 60px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(147, 51, 234, 0.8) 30%, rgba(59, 130, 246, 0.6) 60%, transparent 100%);
-  animation: cursorClick 0.3s ease-out;
-}
-
-/* Cursor animations */
-@keyframes cursorPulse {
+/* Enhanced cursor animations with cosmic theme */
+@keyframes cosmicCursorPulse {
 
   0%,
   100% {
     transform: translate(-50%, -50%) scale(1);
-    opacity: 0.8;
+    opacity: 0.9;
   }
 
   50% {
-    transform: translate(-50%, -50%) scale(1.1);
+    transform: translate(-50%, -50%) scale(1.2);
     opacity: 1;
   }
 }
 
-@keyframes cursorClick {
+@keyframes cosmicCursorClick {
   0% {
     transform: translate(-50%, -50%) scale(1);
   }
 
   50% {
-    transform: translate(-50%, -50%) scale(1.3);
+    transform: translate(-50%, -50%) scale(1.5);
   }
 
   100% {
@@ -983,16 +1334,17 @@ blockquote::after {
   }
 }
 
-/* Cursor on text selection */
+/* Cursor on text selection - Cosmic beam */
 .custom-cursor.text {
-  width: 2px;
-  height: 24px;
-  background: linear-gradient(to bottom, rgba(59, 130, 246, 0.9), rgba(147, 51, 234, 0.9));
-  border-radius: 1px;
-  animation: cursorBlink 1s ease-in-out infinite;
+  width: 3px;
+  height: 28px;
+  background: linear-gradient(to bottom, rgba(147, 51, 234, 0.9), rgba(59, 130, 246, 0.8), rgba(6, 182, 212, 0.7));
+  border-radius: 2px;
+  animation: cosmicCursorBlink 1.2s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(147, 51, 234, 0.6);
 }
 
-@keyframes cursorBlink {
+@keyframes cosmicCursorBlink {
 
   0%,
   50% {
@@ -1005,15 +1357,18 @@ blockquote::after {
   }
 }
 
-/* Cursor on loading */
+/* Cursor on loading - Cosmic spinner */
 .custom-cursor.loading {
-  width: 30px;
-  height: 30px;
-  background: conic-gradient(from 0deg, rgba(59, 130, 246, 0.9), rgba(147, 51, 234, 0.9), rgba(59, 130, 246, 0.9));
-  animation: cursorSpin 1s linear infinite;
+  width: 36px;
+  height: 36px;
+  background: conic-gradient(from 0deg, rgba(147, 51, 234, 0.9), rgba(59, 130, 246, 0.8), rgba(6, 182, 212, 0.7), rgba(147, 51, 234, 0.9));
+  animation: cosmicCursorSpin 1.5s linear infinite;
+  box-shadow:
+    0 0 20px rgba(147, 51, 234, 0.5),
+    0 0 40px rgba(59, 130, 246, 0.3);
 }
 
-@keyframes cursorSpin {
+@keyframes cosmicCursorSpin {
   0% {
     transform: translate(-50%, -50%) rotate(0deg);
   }
@@ -1023,19 +1378,20 @@ blockquote::after {
   }
 }
 
-/* Cursor particles effect */
+/* Enhanced cursor particles effect with cosmic colors */
 .cursor-particle {
   position: fixed;
-  width: 4px;
-  height: 4px;
-  background: rgba(59, 130, 246, 0.6);
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.8) 0%, rgba(59, 130, 246, 0.6) 50%, rgba(6, 182, 212, 0.4) 100%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9998;
-  animation: particleFade 0.8s ease-out forwards;
+  animation: cosmicParticleFade 1s ease-out forwards;
+  box-shadow: 0 0 10px rgba(147, 51, 234, 0.4);
 }
 
-@keyframes particleFade {
+@keyframes cosmicParticleFade {
   0% {
     opacity: 1;
     transform: scale(1);
@@ -1043,36 +1399,190 @@ blockquote::after {
 
   100% {
     opacity: 0;
-    transform: scale(0.3);
+    transform: scale(0.2) translate(30px, 30px);
   }
 }
 
-/* Adaptive cursor for different elements - Only on HomePage */
-.homepage-container button,
-.homepage-container .clickable {
-  cursor: none !important;
-}
-
-.homepage-container input,
-.homepage-container textarea,
-.homepage-container [contenteditable] {
-  cursor: none !important;
-}
-
-/* Cursor magnetic effect for buttons */
-.magnetic-cursor {
-  transition: transform 0.05s ease;
-}
-
-/* Hide cursor during loading */
-.loading-screen * {
-  cursor: none !important;
-}
-
-/* Cursor glow effect */
+/* Cursor glow effect - Enhanced cosmic glow */
 .custom-cursor.glow {
   box-shadow:
-    0 0 20px rgba(59, 130, 246, 0.6),
-    0 0 40px rgba(59, 130, 246, 0.4),
-    0 0 60px rgba(59, 130, 246, 0.2);
+    0 0 30px rgba(147, 51, 234, 0.8),
+    0 0 60px rgba(59, 130, 246, 0.6),
+    0 0 90px rgba(6, 182, 212, 0.4),
+    0 0 120px rgba(147, 51, 234, 0.2);
+}
+
+/* Water Drop Ripple Effect */
+.water-ripple {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(59, 130, 246, 0.6);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  animation: waterRipple 1s ease-out forwards;
+}
+
+@keyframes waterRipple {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 1;
+    border-width: 3px;
+    border-color: rgba(59, 130, 246, 0.8);
+    box-shadow:
+      0 0 0 0 rgba(59, 130, 246, 0.4),
+      0 0 0 0 rgba(147, 51, 234, 0.3);
+  }
+
+  25% {
+    width: 60px;
+    height: 60px;
+    opacity: 0.8;
+    border-width: 2px;
+    border-color: rgba(59, 130, 246, 0.6);
+    box-shadow:
+      0 0 0 10px rgba(59, 130, 246, 0.2),
+      0 0 0 20px rgba(147, 51, 234, 0.1);
+  }
+
+  50% {
+    width: 120px;
+    height: 120px;
+    opacity: 0.6;
+    border-width: 1px;
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow:
+      0 0 0 20px rgba(59, 130, 246, 0.1),
+      0 0 0 40px rgba(147, 51, 234, 0.05);
+  }
+
+  75% {
+    width: 180px;
+    height: 180px;
+    opacity: 0.3;
+    border-width: 1px;
+    border-color: rgba(59, 130, 246, 0.2);
+    box-shadow:
+      0 0 0 30px rgba(59, 130, 246, 0.05),
+      0 0 0 60px rgba(147, 51, 234, 0.02);
+  }
+
+  100% {
+    width: 240px;
+    height: 240px;
+    opacity: 0;
+    border-width: 0px;
+    border-color: transparent;
+    box-shadow:
+      0 0 0 40px transparent,
+      0 0 0 80px transparent;
+  }
+}
+
+/* Enhanced water drop button effect */
+.water-drop-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.water-drop-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, rgba(147, 51, 234, 0.2) 50%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.6s ease;
+  pointer-events: none;
+}
+
+.water-drop-button:active::before {
+  width: 300px;
+  height: 300px;
+  opacity: 0;
+  transition: all 0.6s ease;
+}
+
+/* Hide particle effects */
+.cursor-particle {
+  display: none !important;
+}
+
+/* Enhanced water-themed animations */
+@keyframes waterCursorPulse {
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Hide all particle effects for clean water drop theme */
+.animate-float,
+.animate-shooting-star,
+.animate-orbit,
+.floating-particles,
+.cursor-particle {
+  display: none !important;
+}
+
+/* Remove cosmic particle animations */
+@keyframes orbit {
+  /* Disabled */
+}
+
+@keyframes shooting-star {
+  /* Disabled */
+}
+
+/* Clean water-themed cursor without particles */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.9) 0%, rgba(147, 51, 234, 0.6) 40%, rgba(6, 182, 212, 0.3) 70%, transparent 100%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transition: width 0.1s ease, height 0.1s ease, background 0.1s ease;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+.custom-cursor::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, rgba(147, 51, 234, 0.2) 40%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.15s ease;
+}
+
+.custom-cursor.hover {
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(59, 130, 246, 0.8) 30%, rgba(147, 51, 234, 0.6) 60%, transparent 100%);
+  animation: waterCursorPulse 1.5s ease-in-out infinite;
+  box-shadow:
+    0 0 30px rgba(59, 130, 246, 0.6),
+    0 0 60px rgba(59, 130, 246, 0.4);
 }
