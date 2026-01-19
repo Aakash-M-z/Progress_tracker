@@ -1417,7 +1417,7 @@ blockquote::after {
   position: fixed;
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(59, 130, 246, 0.6);
+  border: 3px solid rgba(59, 130, 246, 0.9);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
@@ -1430,59 +1430,64 @@ blockquote::after {
     width: 20px;
     height: 20px;
     opacity: 1;
-    border-width: 3px;
-    border-color: rgba(59, 130, 246, 0.8);
+    border-width: 4px;
+    border-color: rgba(59, 130, 246, 1);
     box-shadow:
-      0 0 0 0 rgba(59, 130, 246, 0.4),
-      0 0 0 0 rgba(147, 51, 234, 0.3);
+      0 0 0 0 rgba(59, 130, 246, 0.7),
+      0 0 0 0 rgba(147, 51, 234, 0.5),
+      0 0 20px rgba(59, 130, 246, 0.8);
   }
 
   25% {
     width: 60px;
     height: 60px;
-    opacity: 0.8;
-    border-width: 2px;
-    border-color: rgba(59, 130, 246, 0.6);
+    opacity: 0.9;
+    border-width: 3px;
+    border-color: rgba(59, 130, 246, 0.8);
     box-shadow:
-      0 0 0 10px rgba(59, 130, 246, 0.2),
-      0 0 0 20px rgba(147, 51, 234, 0.1);
+      0 0 0 15px rgba(59, 130, 246, 0.4),
+      0 0 0 30px rgba(147, 51, 234, 0.2),
+      0 0 30px rgba(59, 130, 246, 0.6);
   }
 
   50% {
     width: 120px;
     height: 120px;
-    opacity: 0.6;
-    border-width: 1px;
-    border-color: rgba(59, 130, 246, 0.4);
+    opacity: 0.7;
+    border-width: 2px;
+    border-color: rgba(59, 130, 246, 0.6);
     box-shadow:
-      0 0 0 20px rgba(59, 130, 246, 0.1),
-      0 0 0 40px rgba(147, 51, 234, 0.05);
+      0 0 0 25px rgba(59, 130, 246, 0.2),
+      0 0 0 50px rgba(147, 51, 234, 0.1),
+      0 0 40px rgba(59, 130, 246, 0.4);
   }
 
   75% {
     width: 180px;
     height: 180px;
-    opacity: 0.3;
-    border-width: 1px;
-    border-color: rgba(59, 130, 246, 0.2);
+    opacity: 0.4;
+    border-width: 2px;
+    border-color: rgba(59, 130, 246, 0.4);
     box-shadow:
-      0 0 0 30px rgba(59, 130, 246, 0.05),
-      0 0 0 60px rgba(147, 51, 234, 0.02);
+      0 0 0 35px rgba(59, 130, 246, 0.1),
+      0 0 0 70px rgba(147, 51, 234, 0.05),
+      0 0 50px rgba(59, 130, 246, 0.2);
   }
 
   100% {
     width: 240px;
     height: 240px;
     opacity: 0;
-    border-width: 0px;
-    border-color: transparent;
+    border-width: 1px;
+    border-color: rgba(59, 130, 246, 0.1);
     box-shadow:
-      0 0 0 40px transparent,
-      0 0 0 80px transparent;
+      0 0 0 45px rgba(59, 130, 246, 0.05),
+      0 0 0 90px rgba(147, 51, 234, 0.02),
+      0 0 60px rgba(59, 130, 246, 0.1);
   }
 }
 
-/* Enhanced water drop button effect */
+/* Enhanced water drop button effect - More Visible */
 .water-drop-button {
   position: relative;
   overflow: hidden;
@@ -1495,18 +1500,20 @@ blockquote::after {
   left: 50%;
   width: 0;
   height: 0;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, rgba(147, 51, 234, 0.2) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, rgba(147, 51, 234, 0.3) 50%, rgba(255, 255, 255, 0.1) 70%, transparent 80%);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   transition: all 0.6s ease;
   pointer-events: none;
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
 }
 
 .water-drop-button:active::before {
-  width: 300px;
-  height: 300px;
+  width: 350px;
+  height: 350px;
   opacity: 0;
-  transition: all 0.6s ease;
+  transition: all 0.8s ease;
+  box-shadow: 0 0 60px rgba(59, 130, 246, 0.2);
 }
 
 /* Hide particle effects */
@@ -1552,16 +1559,18 @@ blockquote::after {
   position: fixed;
   top: 0;
   left: 0;
-  width: 24px;
-  height: 24px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.9) 0%, rgba(147, 51, 234, 0.6) 40%, rgba(6, 182, 212, 0.3) 70%, transparent 100%);
+  width: 28px;
+  height: 28px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 1) 0%, rgba(147, 51, 234, 0.8) 40%, rgba(6, 182, 212, 0.5) 70%, transparent 100%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
   transition: width 0.1s ease, height 0.1s ease, background 0.1s ease;
   transform: translate(-50%, -50%);
   mix-blend-mode: screen;
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  box-shadow:
+    0 0 25px rgba(59, 130, 246, 0.6),
+    0 0 50px rgba(59, 130, 246, 0.3);
 }
 
 .custom-cursor::before {
@@ -1569,20 +1578,44 @@ blockquote::after {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 50px;
-  height: 50px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, rgba(147, 51, 234, 0.2) 40%, transparent 70%);
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, rgba(147, 51, 234, 0.3) 40%, transparent 70%);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   transition: all 0.15s ease;
 }
 
 .custom-cursor.hover {
-  width: 50px;
-  height: 50px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(59, 130, 246, 0.8) 30%, rgba(147, 51, 234, 0.6) 60%, transparent 100%);
+  width: 55px;
+  height: 55px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(59, 130, 246, 0.9) 30%, rgba(147, 51, 234, 0.7) 60%, transparent 100%);
   animation: waterCursorPulse 1.5s ease-in-out infinite;
   box-shadow:
-    0 0 30px rgba(59, 130, 246, 0.6),
-    0 0 60px rgba(59, 130, 246, 0.4);
+    0 0 35px rgba(59, 130, 246, 0.8),
+    0 0 70px rgba(59, 130, 246, 0.5),
+    0 0 105px rgba(147, 51, 234, 0.3);
+}
+
+.custom-cursor.hover::before {
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, rgba(147, 51, 234, 0.4) 40%, transparent 70%);
+}
+
+/* Enhanced water cursor pulse animation */
+@keyframes waterCursorPulse {
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.95;
+    filter: brightness(1);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 1;
+    filter: brightness(1.2);
+  }
 }
