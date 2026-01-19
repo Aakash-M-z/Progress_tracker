@@ -10,11 +10,12 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
   const [showLoading, setShowLoading] = useState(true);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [cursorState, setCursorState] = useState('default');
+  const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number; timestamp: number }>>([]);
 
   useEffect(() => {
     // Preload video for better performance
     const video = document.createElement('video');
-    video.src = '/5485148-hd_1920_1080_25fps (1) (1).mp4';
+    video.src = '/27669-365224683_small.mp4';
     video.load();
 
     // Show loading animation for 3 seconds
@@ -28,13 +29,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
   // Custom cursor logic
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Direct position update without delay
       setCursorPosition({ x: e.clientX, y: e.clientY });
-
-      // Create particle effect less frequently for better performance
-      if (Math.random() > 0.95) {
-        createCursorParticle(e.clientX, e.clientY);
-      }
     };
 
     const handleMouseDown = () => {
@@ -53,11 +48,9 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
       setCursorState('default');
     };
 
-    // Add event listeners with passive option for better performance
     document.addEventListener('mousemove', handleMouseMove, { passive: true });
     document.addEventListener('mousedown', handleMouseDown);
 
-    // Add hover listeners to interactive elements
     const interactiveElements = document.querySelectorAll('button, .clickable, input, textarea');
     interactiveElements.forEach(element => {
       element.addEventListener('mouseenter', handleMouseEnter);
@@ -74,21 +67,41 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
     };
   }, [showLoading]);
 
-  // Create cursor particle effect
-  const createCursorParticle = (x: number, y: number) => {
-    const particle = document.createElement('div');
-    particle.className = 'cursor-particle';
-    particle.style.left = `${x}px`;
-    particle.style.top = `${y}px`;
-    particle.style.transform = `translate(-50%, -50%) translate(${(Math.random() - 0.5) * 20}px, ${(Math.random() - 0.5) * 20}px)`;
+  // Create water drop ripple effect
+  const createRipple = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-    document.body.appendChild(particle);
+    const newRipple = {
+      id: Date.now(),
+      x,
+      y,
+      timestamp: Date.now()
+    };
+
+    setRipples(prev => [...prev, newRipple]);
+
+    // Remove ripple after animation completes
+    setTimeout(() => {
+      setRipples(prev => prev.filter(ripple => ripple.id !== newRipple.id));
+    }, 1000);
+  };
+
+  // Handle page click for water drop effect
+  const handlePageClick = (e: React.MouseEvent) => {
+    const newRipple = {
+      id: Date.now(),
+      x: e.clientX,
+      y: e.clientY,
+      timestamp: Date.now()
+    };
+
+    setRipples(prev => [...prev, newRipple]);
 
     setTimeout(() => {
-      if (particle.parentNode) {
-        particle.parentNode.removeChild(particle);
-      }
-    }, 800);
+      setRipples(prev => prev.filter(ripple => ripple.id !== newRipple.id));
+    }, 1000);
   };
 
   // Enhanced sparkle effect function
@@ -103,42 +116,43 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
         }}
       />
 
-      {/* Loading Screen */}
+      {/* Loading Screen with enhanced clarity */}
       {showLoading && (
-        <div className="fixed inset-0 z-50 bg-gradient-to-br from-gray-950 via-black to-gray-950 flex items-center justify-center loading-screen">
+        <div className="fixed inset-0 z-50 loading-enhanced flex items-center justify-center">
           <div className="text-center animate-fadeIn">
-            {/* Progress Tracker Logo */}
+            {/* Progress Tracker Logo with better visibility */}
             <div className="mb-8">
-              <div className="h-20 w-20 mx-auto rounded-3xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-3xl shadow-2xl animate-pulse">
+              <div className="h-24 w-24 mx-auto rounded-3xl bg-gradient-to-br from-white/20 via-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-4xl shadow-2xl animate-enhanced-glow border-2 border-white/30">
                 PT
               </div>
             </div>
 
-            {/* Progress Tracker Title */}
-            <h1 className="text-white font-black text-4xl md:text-5xl mb-4 bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
+            {/* Progress Tracker Title with enhanced readability */}
+            <h1 className="text-white font-black text-5xl md:text-6xl mb-6 text-shadow-enhanced animate-pulse">
               Progress Tracker
             </h1>
 
-            {/* Loading Animation */}
-            <div className="mb-6">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            {/* Loading Animation with cosmic colors and better visibility */}
+            <div className="mb-8">
+              <div className="flex items-center justify-center space-x-3">
+                <div className="w-4 h-4 bg-white rounded-full animate-bounce shadow-lg shadow-white/50" style={{ animationDelay: '0ms', boxShadow: '0 0 15px rgba(255, 255, 255, 0.8)' }}></div>
+                <div className="w-4 h-4 bg-blue-400 rounded-full animate-bounce shadow-lg shadow-blue-400/50" style={{ animationDelay: '150ms', boxShadow: '0 0 15px rgba(59, 130, 246, 0.6)' }}></div>
+                <div className="w-4 h-4 bg-purple-400 rounded-full animate-bounce shadow-lg shadow-purple-400/50" style={{ animationDelay: '300ms', boxShadow: '0 0 15px rgba(147, 51, 234, 0.6)' }}></div>
               </div>
             </div>
 
-            {/* Loading Text */}
-            <p className="text-gray-300 text-lg font-medium animate-pulse">
+            {/* Loading Text with better contrast */}
+            <p className="text-white/90 text-xl font-semibold animate-pulse text-shadow-enhanced">
               Loading your journey...
             </p>
 
-            {/* Progress Bar */}
-            <div className="mt-8 w-64 mx-auto">
-              <div className="w-full bg-gray-800 rounded-full h-2">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full animate-pulse" style={{
+            {/* Progress Bar with enhanced visibility */}
+            <div className="mt-10 w-80 mx-auto">
+              <div className="w-full bg-black/50 rounded-full h-3 border border-white/20">
+                <div className="bg-gradient-to-r from-white via-blue-400 to-purple-500 h-3 rounded-full animate-pulse shadow-lg" style={{
                   width: '100%',
-                  animation: 'loadingProgress 3s ease-in-out'
+                  animation: 'loadingProgress 3s ease-in-out',
+                  boxShadow: '0 0 20px rgba(255, 255, 255, 0.4)'
                 }}></div>
               </div>
             </div>
@@ -147,7 +161,22 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
       )}
 
       {/* Main Content */}
-      <div className={`homepage-container min-h-screen relative overflow-hidden transition-opacity duration-1000 ${showLoading ? 'opacity-0' : 'opacity-100'}`}>
+      <div
+        className={`homepage-container min-h-screen relative overflow-hidden transition-opacity duration-1000 ${showLoading ? 'opacity-0' : 'opacity-100'}`}
+        onClick={handlePageClick}
+      >
+        {/* Water Drop Ripples */}
+        {ripples.map((ripple) => (
+          <div
+            key={ripple.id}
+            className="water-ripple"
+            style={{
+              left: ripple.x,
+              top: ripple.y,
+            }}
+          />
+        ))}
+
         {/* Background Video */}
         <div className="absolute inset-0 z-0">
           <video
@@ -170,13 +199,64 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
               setVideoLoaded(true);
             }}
             style={{
-              filter: 'brightness(0.8) contrast(1.1) saturate(1.0)',
+              filter: 'brightness(0.5) contrast(1.4) saturate(0.9)',
               opacity: videoLoaded ? 1 : 0,
               transition: 'opacity 1.5s ease-in-out'
             }}
           >
-            <source src="/5485148-hd_1920_1080_25fps (1) (1).mp4" type="video/mp4" />
+            <source src="/27669-365224683_small.mp4" type="video/mp4" />
           </video>
+
+          {/* Enhanced overlay gradients for better text clarity */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40"></div>
+          <div className="absolute inset-0 bg-radial-gradient from-transparent via-black/20 to-black/50"></div>
+
+          {/* Animated floating particles with cosmic colors */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(20)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute animate-float opacity-40"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 5}s`,
+                  animationDuration: `${8 + Math.random() * 4}s`
+                }}
+              >
+                <div className={`w-2 h-2 rounded-full ${i % 4 === 0 ? 'bg-purple-400 shadow-purple-400/50' :
+                  i % 4 === 1 ? 'bg-blue-400 shadow-blue-400/50' :
+                    i % 4 === 2 ? 'bg-cyan-400 shadow-cyan-400/50' : 'bg-white shadow-white/50'
+                  } animate-pulse shadow-lg`} style={{
+                    boxShadow: `0 0 10px currentColor`
+                  }}></div>
+              </div>
+            ))}
+          </div>
+
+          {/* Enhanced shooting stars effect with cosmic colors */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute animate-shooting-star opacity-70"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 50}%`,
+                  animationDelay: `${i * 2.5 + Math.random() * 2}s`,
+                  animationDuration: '3.5s'
+                }}
+              >
+                <div className={`w-1 h-24 transform rotate-45 ${i % 3 === 0 ? 'bg-gradient-to-b from-white via-purple-300 to-transparent' :
+                  i % 3 === 1 ? 'bg-gradient-to-b from-white via-blue-300 to-transparent' :
+                    'bg-gradient-to-b from-white via-cyan-300 to-transparent'
+                  }`} style={{
+                    boxShadow: `0 0 20px rgba(255, 255, 255, 0.6)`
+                  }}></div>
+              </div>
+            ))}
+          </div>
 
           {/* Fallback dark gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-black to-gray-950"
@@ -195,40 +275,54 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
 
         {/* Content Layer - Enhanced button layout */}
         <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-8">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Pulsing rings */}
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 border border-blue-400/20 rounded-full animate-ping" style={{ animationDuration: '4s' }}></div>
+            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 border border-purple-400/20 rounded-full animate-ping" style={{ animationDuration: '6s', animationDelay: '2s' }}></div>
+
+            {/* Floating geometric shapes */}
+            <div className="absolute top-1/3 right-1/5 w-8 h-8 bg-gradient-to-br from-cyan-400/30 to-blue-500/30 transform rotate-45 animate-float" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute bottom-1/3 left-1/5 w-6 h-6 bg-gradient-to-br from-purple-400/30 to-pink-500/30 rounded-full animate-float" style={{ animationDelay: '3s' }}></div>
+          </div>
+
           {/* Start Your Journey Button - appears after loading */}
           {!showLoading && (
             <div className="animate-slideInFromBottom">
-              {/* Decorative elements around button */}
+              {/* Enhanced decorative elements */}
               <div className="relative">
-                {/* Subtle decorative elements */}
-                <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-blue-400/30 to-transparent animate-pulse"></div>
+                {/* Glowing lines */}
+                <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-32 h-0.5 bg-gradient-to-r from-transparent via-blue-400/50 to-transparent animate-pulse"></div>
+                <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 w-32 h-0.5 bg-gradient-to-r from-transparent via-purple-400/50 to-transparent animate-pulse"></div>
 
-                <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 w-24 h-0.5 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent animate-pulse"></div>
-
-                {/* Reduced side dots */}
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-20">
-                  <div className="flex flex-col space-y-4">
-                    <div className="w-1.5 h-1.5 bg-blue-400/40 rounded-full animate-pulse" style={{ animationDelay: '0s' }}></div>
-                    <div className="w-1 h-1 bg-indigo-400/30 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-                    <div className="w-1.5 h-1.5 bg-purple-400/40 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+                {/* Enhanced side elements */}
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-24">
+                  <div className="flex flex-col space-y-6">
+                    <div className="w-2 h-2 bg-blue-400/60 rounded-full animate-pulse" style={{ animationDelay: '0s' }}></div>
+                    <div className="w-1.5 h-1.5 bg-indigo-400/50 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                    <div className="w-2 h-2 bg-purple-400/60 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
                   </div>
                 </div>
 
-                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-20">
-                  <div className="flex flex-col space-y-4">
-                    <div className="w-1.5 h-1.5 bg-purple-400/40 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }}></div>
-                    <div className="w-1 h-1 bg-indigo-400/30 rounded-full animate-pulse" style={{ animationDelay: '0.8s' }}></div>
-                    <div className="w-1.5 h-1.5 bg-blue-400/40 rounded-full animate-pulse" style={{ animationDelay: '1.3s' }}></div>
+                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-24">
+                  <div className="flex flex-col space-y-6">
+                    <div className="w-2 h-2 bg-purple-400/60 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }}></div>
+                    <div className="w-1.5 h-1.5 bg-indigo-400/50 rounded-full animate-pulse" style={{ animationDelay: '0.8s' }}></div>
+                    <div className="w-2 h-2 bg-blue-400/60 rounded-full animate-pulse" style={{ animationDelay: '1.3s' }}></div>
                   </div>
                 </div>
 
-                <div className="relative floating-particles">
+                {/* Enhanced button with cosmic effects */}
+                <div className="relative">
                   <button
-                    onClick={onGetStarted}
-                    className="group relative overflow-hidden bg-transparent backdrop-blur-none border-2 border-transparent text-white px-16 py-8 rounded-3xl font-bold text-2xl hover:bg-black/15 hover:border-gray-500/15 transition-all duration-500 hover:scale-110 active:scale-95 shadow-none hover:shadow-none min-w-[400px] max-w-[500px] dark-theme-button opacity-50 hover:opacity-80 clickable magnetic-cursor"
+                    onClick={(e) => {
+                      createRipple(e);
+                      onGetStarted();
+                    }}
+                    className="group relative overflow-hidden bg-black/40 backdrop-blur-md border-2 border-white/30 text-white px-16 py-8 rounded-3xl font-bold text-2xl hover:bg-black/20 hover:border-white/50 transition-all duration-500 hover:scale-105 active:scale-95 shadow-2xl hover:shadow-white/20 min-w-[420px] max-w-[520px] cosmic-button opacity-90 hover:opacity-100 clickable magnetic-cursor water-drop-button"
                     onMouseEnter={(e) => {
                       setCursorState('hover');
-                      // Magnetic effect
+                      // Enhanced magnetic effect
                       const rect = e.currentTarget.getBoundingClientRect();
                       const centerX = rect.left + rect.width / 2;
                       const centerY = rect.top + rect.height / 2;
@@ -238,39 +332,59 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                       setCursorState('default');
                     }}
                     onMouseMove={(e) => {
-                      // Reduced magnetic pull for faster response
+                      // Enhanced magnetic pull
                       const rect = e.currentTarget.getBoundingClientRect();
                       const centerX = rect.left + rect.width / 2;
                       const centerY = rect.top + rect.height / 2;
                       const mouseX = e.clientX;
                       const mouseY = e.clientY;
 
-                      // Calculate minimal magnetic pull (5% towards center)
-                      const magneticX = mouseX + (centerX - mouseX) * 0.05;
-                      const magneticY = mouseY + (centerY - mouseY) * 0.05;
+                      const magneticX = mouseX + (centerX - mouseX) * 0.08;
+                      const magneticY = mouseY + (centerY - mouseY) * 0.08;
 
                       setCursorPosition({ x: magneticX, y: magneticY });
                     }}
                   >
-                    {/* Minimal glow effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-indigo-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                    {/* Enhanced glow effects with better contrast */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-blue-400/10 to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/3 via-cyan-400/8 to-white/3 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl blur-xl"></div>
 
-                    {/* Removed inner shadow for text-like appearance */}
+                    {/* Enhanced border effect */}
+                    <div className="absolute inset-0 rounded-3xl border border-transparent bg-gradient-to-r from-white/20 via-blue-400/30 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
 
-                    {/* Button content */}
+                    {/* Button content with enhanced text clarity */}
                     <span className="relative z-10 flex items-center justify-center gap-4">
-                      <span className="text-4xl group-hover:animate-bounce transition-transform duration-300">🚀</span>
-                      <span className="bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent group-hover:from-blue-300 group-hover:via-white group-hover:to-purple-300 transition-all duration-500 font-black tracking-wide">
+                      <span className="text-4xl group-hover:animate-bounce transition-transform duration-300 filter drop-shadow-lg">🚀</span>
+                      <span className="text-white group-hover:text-white transition-all duration-500 font-black tracking-wide filter drop-shadow-lg" style={{
+                        textShadow: '0 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.3)'
+                      }}>
                         Start Your Journey
                       </span>
                     </span>
 
-                    {/* Minimal border glow */}
-                    <div className="absolute inset-0 rounded-3xl border border-transparent bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
-
-                    {/* Subtle ripple effect */}
-                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-400/3 to-purple-400/3 scale-0 group-hover:scale-100 transition-transform duration-700 ease-out"></div>
+                    {/* Enhanced ripple effects */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-400/5 to-purple-400/5 scale-0 group-hover:scale-100 transition-transform duration-700 ease-out"></div>
+                    <div className="absolute inset-0 rounded-3xl bg-white/5 scale-0 group-active:scale-100 transition-transform duration-200 ease-out"></div>
                   </button>
+
+                  {/* Orbiting particles around button with cosmic colors */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    {[...Array(8)].map((_, i) => (
+                      <div
+                        key={i}
+                        className={`absolute w-1.5 h-1.5 rounded-full animate-orbit ${i % 4 === 0 ? 'bg-purple-400/70 shadow-purple-400/50' :
+                          i % 4 === 1 ? 'bg-blue-400/70 shadow-blue-400/50' :
+                            i % 4 === 2 ? 'bg-cyan-400/70 shadow-cyan-400/50' :
+                              'bg-white/80 shadow-white/50'
+                          }`}
+                        style={{
+                          animationDelay: `${i * 0.4}s`,
+                          animationDuration: '10s',
+                          boxShadow: `0 0 8px currentColor`
+                        }}
+                      ></div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
