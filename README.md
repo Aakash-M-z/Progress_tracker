@@ -1,145 +1,129 @@
-DSA Progress Tracker
-Overview
+ # DSA Progress Tracker
 
-DSA Progress Tracker is a comprehensive web application built to help users track their learning journey in Data Structures and Algorithms (DSA). The application provides detailed analytics, visual progress indicators, and an organized roadmap to support structured study and consistent improvement across multiple platforms such as LeetCode, CodeForces, and HackerRank.
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/50c6cfa1-fd58-4b96-a445-abad852fdbc5"
+    alt="Coming Soon"
+    style="max-width: 100%; height: auto; border-radius: 8px;"
+  />
+</p>
 
-Features
-Activity Logging
-
-Record solved problems with detailed attributes including difficulty, platform, time spent, and notes.
-
-Support for categorizing activities by topic and problem type.
-
-Multi-platform problem tracking and categorization.
-
-Learning Roadmap
-
-Structured DSA topic roadmap to guide learning from fundamentals to advanced concepts.
-
-Visual indicators for completed and in-progress topics.
-
-Filters for difficulty and topic categories.
-
-Analytics and Visualization
-
-Daily activity heatmap to show progress over time.
-
-Visual statistics including difficulty distribution and success rates.
-
-Insights on most studied topics and performance patterns.
-
-Motivation Tools
-
-Tracking of daily streaks to support consistent engagement.
-
-Custom milestones and achievement tracking.
-
-Responsive Design
-
-Adaptive layout for desktop and mobile experiences.
-
-Dark and light theme support.
-
-Modern UI with intuitive navigation.
-
-Technology Stack
-
-The project uses the following technologies:
-
-Frontend: React with TypeScript
-
-Styling: Tailwind CSS
-
-Build Tool: Vite
-
-Hosting / Deployment: Static hosting of frontend with optional backend integration
-
-Data Visualization: Visual charts and heatmaps
-
-Project Structure
-src/
-├── components/
-│   ├── ActivityForm.tsx
-│   ├── DSARoadmap.tsx
-│   ├── Header.tsx
-│   ├── ProgressStats.tsx
-│   ├── SimpleHeatmap.tsx
-│   └── StreakTracker.tsx
-├── App.tsx
-├── main.tsx
-├── types.ts
-└── style.css
-
-Getting Started
-Prerequisites
-
-Node.js (v16 or higher)
-
-npm or yarn
-
-Installation
-
-Clone the repository:
-
-git clone https://github.com/Aakash-M-z/Progress_tracker.git
-cd Progress_tracker
+🚀 UI previews, analytics dashboards, and interactive demos are coming soon.
 
 
-Install dependencies:
 
-npm install
-# or
-yarn install
+<!--## Overview
 
+DSA Progress Tracker is a web application designed to help developers systematically track and analyze their learning progress in Data Structures and Algorithms (DSA).  
+It supports structured study through progress visualization, analytics, and a guided roadmap across platforms such as LeetCode, CodeForces, and HackerRank.
 
-Start development server:
+---
 
-npm run dev
-# or
-yarn dev
+## Features
 
+### Activity Tracking
+- Log solved problems with difficulty, platform, time spent, and notes
+- Topic-wise and problem-type categorization
+- Multi-platform problem tracking
 
-Open your browser and navigate to:
+### Learning Roadmap
+- Structured DSA roadmap from fundamentals to advanced topics
+- Visual indicators for completed and in-progress topics
+- Filters for difficulty and topic categories
 
-http://localhost:3000
+### Analytics and Visualization
+- Daily activity heatmap for consistency tracking
+- Difficulty-wise and topic-wise performance statistics
+- Insights into learning patterns and progress trends
 
-Usage
+### Motivation and Productivity
+- Daily streak tracking
+- Milestone-based progress monitoring
 
-Use the Activity Logging interface to add new problem entries.
+### User Experience
+- Fully responsive layout for desktop and mobile
+- Dark and light theme support
+- Clean, intuitive user interface
 
-Navigate the DSA Roadmap to monitor your topic-wise progress.
+---
 
-View the Statistics section to analyze your performance trends.
+## Technology Stack
 
-Toggle dark/light themes as needed.
+- Frontend: React with TypeScript  
+- Styling: Tailwind CSS  
+- Build Tool: Vite  
+- Visualization: Charts and heatmaps  
+- Deployment: Static frontend hosting
 
-Deployment
+---
 
-To build the application for production:
+## Getting Started
 
-npm run build
-# or
-yarn build
+### Prerequisites
+- Node.js v16 or higher
+- npm or yarn
+### Installation
+  - git clone https://github.com/Aakash-M-z/Progress_tracker.git
+  - cd Progress_tracker
+  - npm install or yarn install
+---
+## Running the Application
+ - npm run dev or yarn dev
+---
+## Usage
 
+- Add solved problems using the Activity Logging interface
+- Track topic-wise progress via the DSA Roadmap
+- Analyze performance trends in the Statistics section
+- Switch between dark and light themes as required
+---
 
-Deploy the generated build folder to a static hosting provider of your choice.
+## Build for Production
+ - npm run build or yarn build
+ 
+Deploy the generated build directory to any static hosting provider.
 
-Contributing
+---
 
-Contributions are welcome. To propose improvements or fixes:
+## Contributing
 
-Fork the repository
+Contributions are welcome.
 
-Create a feature branch
+1. Fork the repository  
+2. Create a feature branch  
+3. Commit your changes with clear, descriptive messages  
+4. Open a pull request for review  
 
-Commit your changes with descriptive messages
+---
 
-Open a pull request for review
-
-License
+## License
 
 This project is licensed under the MIT License.
 
-Contact
+---
 
-For questions or feedback, refer to the main repository on GitHub.
+## Contact
+
+For questions, issues, or feedback, please use the GitHub repository issue tracker. -->
+
+## Project Structure
+
+```text
+src/
+├── components/
+│   ├── ActivityForm.tsx        # Handles problem logging
+│   ├── DSARoadmap.tsx          # Displays DSA topic roadmap
+│   ├── Header.tsx              # Application header
+│   ├── ProgressStats.tsx       # Analytics and statistics
+│   ├── SimpleHeatmap.tsx       # Daily activity heatmap
+│   └── StreakTracker.tsx       # Streak and consistency tracking
+|
+├── App.tsx                     # Root application component
+├── main.tsx                    # Application entry point
+├── types.ts                    # Global TypeScript types
+└── style.css                   # Global styles
+
+
+
+
+
