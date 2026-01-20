@@ -140,48 +140,47 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
           {/* Circular progress overlay */}
           <div className="relative z-10 h-full flex items-center justify-center">
             <div className="relative">
-              {/* Circular progress indicator - dark golden theme */}
+              {/* Circular progress indicator - increased clarity */}
               <svg className="w-72 h-72 md:w-96 md:h-96 transform -rotate-90" viewBox="0 0 200 200">
-                {/* Background circle - dark golden */}
+                {/* Background circle - more visible */}
                 <circle
                   cx="100"
                   cy="100"
                   r="90"
                   fill="none"
-                  stroke="rgba(184, 134, 11, 0.3)"
+                  stroke="rgba(255, 255, 255, 0.2)"
                   strokeWidth="10"
                 />
-                {/* Progress circle - bright golden */}
+                {/* Progress circle - brighter and thicker */}
                 <circle
                   cx="100"
                   cy="100"
                   r="90"
                   fill="none"
-                  stroke="rgba(255, 215, 0, 0.9)"
+                  stroke="rgba(255, 255, 255, 0.9)"
                   strokeWidth="10"
                   strokeLinecap="round"
                   strokeDasharray={`${2 * Math.PI * 90}`}
                   strokeDashoffset={`${2 * Math.PI * 90 * (1 - progress / 100)}`}
                   style={{
                     transition: 'stroke-dashoffset 0.1s linear',
-                    filter: 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))',
+                    filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.5))',
                   }}
                 />
               </svg>
               
-              {/* Progress number in center - golden theme */}
+              {/* Progress number in center - increased clarity */}
               <div 
                 className="absolute inset-0 flex items-center justify-center"
                 key={progress}
               >
                 <div 
-                  className="font-light text-7xl md:text-8xl tracking-tight"
+                  className="text-white font-light text-7xl md:text-8xl tracking-tight"
                   style={{
-                    color: '#FFD700',
                     fontFamily: 'system-ui, -apple-system, sans-serif',
                     fontWeight: 300,
                     letterSpacing: '-0.05em',
-                    textShadow: '0 0 60px rgba(255, 215, 0, 0.8), 0 0 100px rgba(255, 215, 0, 0.5), 0 0 140px rgba(184, 134, 11, 0.3)',
+                    textShadow: '0 0 60px rgba(255, 255, 255, 0.6), 0 0 100px rgba(255, 255, 255, 0.3)',
                     animation: 'countdownFade 0.3s ease-out',
                   }}
                 >
