@@ -8,6 +8,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const [cursorState, setCursorState] = useState('default');
   const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number; timestamp: number }>>([]);
@@ -18,12 +19,27 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
     video.src = '/27669-365224683_small.mp4';
     video.load();
 
-    // Show loading animation for 3 seconds
-    const loadingTimer = setTimeout(() => {
-      setShowLoading(false);
-    }, 3000);
+    // Progress counter from 0 to 100 over 3 seconds
+    const duration = 3000; // 3 seconds
+    const interval = 30; // Update every 30ms for smooth animation
+    const increment = 100 / (duration / interval);
+    
+    let currentProgress = 0;
+    const progressTimer = setInterval(() => {
+      currentProgress += increment;
+      if (currentProgress >= 100) {
+        setProgress(100);
+        clearInterval(progressTimer);
+        // Hide loading screen after reaching 100
+        setTimeout(() => {
+          setShowLoading(false);
+        }, 100);
+      } else {
+        setProgress(Math.floor(currentProgress));
+      }
+    }, interval);
 
-    return () => clearTimeout(loadingTimer);
+    return () => clearInterval(progressTimer);
   }, []);
 
   // Custom cursor logic
@@ -116,53 +132,71 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
         }}
       />
 
-      {/* Loading Screen with enhanced clarity */}
+      {/* Loading Screen with circular progress - no video background */}
       {showLoading && (
-        <div className="fixed inset-0 z-50 loading-enhanced flex items-center justify-center">
-          <div className="text-center animate-fadeIn">
-            {/* Progress Tracker Logo with better visibility */}
-            <div className="mb-8">
-              <div className="h-24 w-24 mx-auto rounded-3xl bg-gradient-to-br from-white/20 via-blue-500 to-purple-600 flex items-center justify-center text-white font-black text-4xl shadow-2xl animate-enhanced-glow border-2 border-white/30">
-                PT
-              </div>
-            </div>
-
-            {/* Progress Tracker Title with enhanced readability */}
-            <h1 className="text-white font-black text-5xl md:text-6xl mb-6 text-shadow-enhanced animate-pulse">
-              Progress Tracker
-            </h1>
-
-            {/* Loading Animation with cosmic colors and better visibility */}
-            <div className="mb-8">
-              <div className="flex items-center justify-center space-x-3">
-                <div className="w-4 h-4 bg-white rounded-full animate-bounce shadow-lg shadow-white/50" style={{ animationDelay: '0ms', boxShadow: '0 0 15px rgba(255, 255, 255, 0.8)' }}></div>
-                <div className="w-4 h-4 bg-blue-400 rounded-full animate-bounce shadow-lg shadow-blue-400/50" style={{ animationDelay: '150ms', boxShadow: '0 0 15px rgba(59, 130, 246, 0.6)' }}></div>
-                <div className="w-4 h-4 bg-purple-400 rounded-full animate-bounce shadow-lg shadow-purple-400/50" style={{ animationDelay: '300ms', boxShadow: '0 0 15px rgba(147, 51, 234, 0.6)' }}></div>
-              </div>
-            </div>
-
-            {/* Loading Text with better contrast */}
-            <p className="text-white/90 text-xl font-semibold animate-pulse text-shadow-enhanced">
-              Loading your journey...
-            </p>
-
-            {/* Progress Bar with enhanced visibility */}
-            <div className="mt-10 w-80 mx-auto">
-              <div className="w-full bg-black/50 rounded-full h-3 border border-white/20">
-                <div className="bg-gradient-to-r from-white via-blue-400 to-purple-500 h-3 rounded-full animate-pulse shadow-lg" style={{
-                  width: '100%',
-                  animation: 'loadingProgress 3s ease-in-out',
-                  boxShadow: '0 0 20px rgba(255, 255, 255, 0.4)'
-                }}></div>
+        <div className="fixed inset-0 z-50 overflow-hidden bg-black">
+          {/* Solid dark background - no video */}
+          
+          {/* Circular progress overlay */}
+          <div className="relative z-10 h-full flex items-center justify-center">
+            <div className="relative">
+              {/* Circular progress indicator - dark golden theme */}
+              <svg className="w-72 h-72 md:w-96 md:h-96 transform -rotate-90" viewBox="0 0 200 200">
+                {/* Background circle - dark golden */}
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="90"
+                  fill="none"
+                  stroke="rgba(184, 134, 11, 0.3)"
+                  strokeWidth="10"
+                />
+                {/* Progress circle - bright golden */}
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="90"
+                  fill="none"
+                  stroke="rgba(255, 215, 0, 0.9)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                  strokeDasharray={`${2 * Math.PI * 90}`}
+                  strokeDashoffset={`${2 * Math.PI * 90 * (1 - progress / 100)}`}
+                  style={{
+                    transition: 'stroke-dashoffset 0.1s linear',
+                    filter: 'drop-shadow(0 0 8px rgba(255, 215, 0, 0.6))',
+                  }}
+                />
+              </svg>
+              
+              {/* Progress number in center - golden theme */}
+              <div 
+                className="absolute inset-0 flex items-center justify-center"
+                key={progress}
+              >
+                <div 
+                  className="font-light text-7xl md:text-8xl tracking-tight"
+                  style={{
+                    color: '#FFD700',
+                    fontFamily: 'system-ui, -apple-system, sans-serif',
+                    fontWeight: 300,
+                    letterSpacing: '-0.05em',
+                    textShadow: '0 0 60px rgba(255, 215, 0, 0.8), 0 0 100px rgba(255, 215, 0, 0.5), 0 0 140px rgba(184, 134, 11, 0.3)',
+                    animation: 'countdownFade 0.3s ease-out',
+                  }}
+                >
+                  {String(Math.min(progress, 100)).padStart(2, '0')}
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Main Content */}
+      {/* Main Content - only shown after loading completes */}
+      {!showLoading && (
       <div
-        className={`homepage-container min-h-screen relative overflow-hidden transition-opacity duration-1000 ${showLoading ? 'opacity-0' : 'opacity-100'}`}
+        className="homepage-container min-h-screen relative overflow-hidden transition-opacity duration-1000 opacity-100"
         onClick={handlePageClick}
       >
         {/* Water Drop Ripples */}
@@ -261,16 +295,6 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
           {/* Fallback dark gradient background */}
           <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-black to-gray-950"
             style={{ opacity: videoLoaded ? 0 : 1 }}></div>
-
-          {/* Loading indicator */}
-          {!videoLoaded && !videoError && (
-            <div className="absolute inset-0 flex items-center justify-center z-10">
-              <div className="text-white/80 text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white/80 mx-auto mb-4"></div>
-                <p className="text-lg font-semibold">Loading experience...</p>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Content Layer - Enhanced button layout */}
@@ -366,6 +390,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
           )}
         </div>
       </div>
+      )}
     </>
   );
 };
