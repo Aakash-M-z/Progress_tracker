@@ -1,245 +1,129 @@
-# DSA Progress Tracker 🚀
+ # DSA Progress Tracker
 
-A comprehensive web application designed to help you track your Data Structures and Algorithms learning journey with detailed analytics, progress visualization, and a structured roadmap.
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/50c6cfa1-fd58-4b96-a445-abad852fdbc5"
+    alt="Coming Soon"
+    style="max-width: 100%; height: auto; border-radius: 8px;"
+  />
+</p>
+
+🚀 UI previews, analytics dashboards, and interactive demos are coming soon.
+
+
+
+<!--## Overview
+
+DSA Progress Tracker is a web application designed to help developers systematically track and analyze their learning progress in Data Structures and Algorithms (DSA).  
+It supports structured study through progress visualization, analytics, and a guided roadmap across platforms such as LeetCode, CodeForces, and HackerRank.
+
+---
 
 ## Features
 
-###  **Activity Tracking**
+### Activity Tracking
+- Log solved problems with difficulty, platform, time spent, and notes
+- Topic-wise and problem-type categorization
+- Multi-platform problem tracking
 
-- Log DSA problems with detailed information
-- Track time complexity and space complexity
-- Record problem difficulty (Easy, Medium, Hard)
-- Add notes and insights for each problem
-- Support for multiple platforms (LeetCode, HackerRank, CodeForces, etc.)
+### Learning Roadmap
+- Structured DSA roadmap from fundamentals to advanced topics
+- Visual indicators for completed and in-progress topics
+- Filters for difficulty and topic categories
 
-###  **DSA Roadmap**
+### Analytics and Visualization
+- Daily activity heatmap for consistency tracking
+- Difficulty-wise and topic-wise performance statistics
+- Insights into learning patterns and progress trends
 
-- Structured learning path covering all major DSA topics
-- Progress tracking for each topic category
-- Filter by difficulty level and topic category
-- Visual progress indicators
-
-###  **Analytics & Statistics**
-
-- Activity heatmap showing daily progress
-- Success rate tracking
-- Platform usage statistics
-- Difficulty distribution analysis
-- Most studied topics overview
-
-### 🔥 **Streak & Motivation**
-
+### Motivation and Productivity
 - Daily streak tracking
-- Achievement system with badges
-- Motivational quotes
-- Progress milestones
+- Milestone-based progress monitoring
 
-### **Modern UI/UX**
+### User Experience
+- Fully responsive layout for desktop and mobile
+- Dark and light theme support
+- Clean, intuitive user interface
 
-- Responsive design for all devices
-- Dark/Light theme support
-- Beautiful gradients and animations
-- Intuitive navigation with tabs
+---
 
-## DSA Topics Covered
+## Technology Stack
 
-### Data Structures
+- Frontend: React with TypeScript  
+- Styling: Tailwind CSS  
+- Build Tool: Vite  
+- Visualization: Charts and heatmaps  
+- Deployment: Static frontend hosting
 
-- Arrays & Strings
-- Linked Lists
-- Stacks & Queues
-- Trees & Binary Trees
-- Graphs
-- Heap/Priority Queue
-- Trie
-- Union Find
-
-### Algorithms
-
-- Binary Search
-- Two Pointers
-- Sliding Window
-- Sorting
-- Recursion
-- Backtracking
-- Dynamic Programming
-- Greedy Algorithms
-- Bit Manipulation
-- Math
+---
 
 ## Getting Started
 
 ### Prerequisites
-
-- Node.js (version 16 or higher)
+- Node.js v16 or higher
 - npm or yarn
-- Neon Database account (for production)
-
 ### Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/Aakash-M-z/Dsa-ProgressTracker.git
-cd Progress_tracker
-```
-
-2. Install dependencies (frontend):
-
-```bash
-npm install
-```
-
-3. Install dependencies (backend):
-
-```bash
-cd server
-npm install
-cd ..
-```
-
-4. Set up environment variables:
-
-Create a `.env` file in the root directory:
-
-```bash
-DATABASE_URL=your_neon_database_url_here
-VITE_API_URL=http://localhost:3001
-```
-
-Create a `.env` file in the `server/` directory:
-
-```bash
-DATABASE_URL=your_neon_database_url_here
-PORT=3001
-```
-
-5. Start the backend server (from `server/`):
-
-```bash
-cd server
-npm run dev
-```
-
-6. Start the frontend (new terminal in project root):
-
-```bash
-npm run dev
-```
-
-7. Open your browser and navigate to `http://localhost:5000`
-
-### Building for Production
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Vercel Deployment
-
-1. **Frontend Deployment:**
-
-   - Go to [Vercel](https://vercel.com)
-   - Import your GitHub repository: `https://github.com/Aakash-M-z/Dsa-ProgressTracker.git`
-   - Vercel will automatically detect it's a Vite project
-   - Add environment variables in Vercel dashboard:
-     - `DATABASE_URL`: Your Neon database connection string
-     - `VITE_API_URL`: Your backend API URL
-
-2. **Backend Deployment:**
-   - Deploy the backend separately to Vercel or other platforms
-   - Update the `VITE_API_URL` in frontend environment variables
-
-### Environment Variables
-
-**Required for Production:**
-
-- `DATABASE_URL`: Neon PostgreSQL connection string
-- `VITE_API_URL`: Backend API URL
-
-**Local Development:**
-
-- `DATABASE_URL`: Your local or development database URL
-- `VITE_API_URL`: `http://localhost:3001`
-
+  - git clone https://github.com/Aakash-M-z/Progress_tracker.git
+  - cd Progress_tracker
+  - npm install or yarn install
+---
+## Running the Application
+ - npm run dev or yarn dev
+---
 ## Usage
 
-### Logging Activities
+- Add solved problems using the Activity Logging interface
+- Track topic-wise progress via the DSA Roadmap
+- Analyze performance trends in the Statistics section
+- Switch between dark and light themes as required
+---
 
-1. Navigate to any tab (Overview, DSA Roadmap, or Statistics)
-2. Use the "Log DSA Activity" form on the right sidebar
-3. Fill in the required information:
-   - Date
-   - DSA Category
-   - Specific Topic/Problem
-   - Difficulty Level
-   - Platform
-   - Time Spent
-   - Problem Description
-   - Notes & Insights
-
-### Tracking Progress
-
-- **Overview Tab**: See your activity heatmap, quick stats, and streak information
-- **DSA Roadmap Tab**: View your progress through the structured learning path
-- **Statistics Tab**: Detailed analytics and performance metrics
-
-### Features
-
-- **Dark/Light Theme**: Toggle theme using the button in the header
-- **Local Storage**: All data is saved locally in your browser
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
-
-## Technology Stack
-
-- **Frontend**: React 18 with TypeScript
-- **Styling**: Tailwind CSS
-- **Build Tool**: Vite
-- **Charts**: React Calendar Heatmap
-- **Date Handling**: date-fns
-- **Deployment**: GitHub Pages
-
-## Project Structure
-
-```
-src/
-├── components/
-│   ├── ActivityForm.tsx      # DSA activity logging form
-│   ├── DSARoadmap.tsx        # Learning roadmap component
-│   ├── Header.tsx            # Application header
-│   ├── ProgressStats.tsx     # Statistics and analytics
-│   ├── SimpleHeatmap.tsx     # Activity heatmap
-│   └── StreakTracker.tsx     # Streak and achievements
-├── App.tsx                   # Main application component
-├── main.tsx                  # Application entry point
-├── types.ts                  # TypeScript type definitions
-└── style.css                 # Global styles
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Inspired by GitHub's contribution graph
-- Built with modern web technologies
-- Designed for DSA enthusiasts and competitive programmers
+## Build for Production
+ - npm run build or yarn build
+ 
+Deploy the generated build directory to any static hosting provider.
 
 ---
 
-**Happy Coding! 🎉**
+## Contributing
 
-Track your DSA progress, stay motivated, and become a better problem solver!
+Contributions are welcome.
 
-Track your DSA progress, stay motivated, and become a better problem solver!
+1. Fork the repository  
+2. Create a feature branch  
+3. Commit your changes with clear, descriptive messages  
+4. Open a pull request for review  
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+## Contact
+
+For questions, issues, or feedback, please use the GitHub repository issue tracker. -->
+
+## Project Structure
+
+```text
+src/
+├── components/
+│   ├── ActivityForm.tsx        # Handles problem logging
+│   ├── DSARoadmap.tsx          # Displays DSA topic roadmap
+│   ├── Header.tsx              # Application header
+│   ├── ProgressStats.tsx       # Analytics and statistics
+│   ├── SimpleHeatmap.tsx       # Daily activity heatmap
+│   └── StreakTracker.tsx       # Streak and consistency tracking
+|
+├── App.tsx                     # Root application component
+├── main.tsx                    # Application entry point
+├── types.ts                    # Global TypeScript types
+└── style.css                   # Global styles
+
+
+
+
+
