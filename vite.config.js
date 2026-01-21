@@ -5,7 +5,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5000,
-    host: 'localhost',
+    host: true, // Listen on all local IPs
+    historyApiFallback: true, // Ensure SPA routing works on refresh
     proxy: {
       '/api': {
         target: 'http://localhost:3001',

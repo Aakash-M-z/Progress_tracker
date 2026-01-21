@@ -55,8 +55,13 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
           {/* Subtle Particle Background for Left Side */}
           <ParticleBackground
             particleCount={50}
+<<<<<<< HEAD
             particleColor="rgba(251, 191, 36, 0.5)"
             lineColor="rgba(251, 191, 36, 0.15)"
+=======
+            particleColor="rgba(255, 215, 0, 0.5)"
+            lineColor="rgba(255, 215, 0, 0.15)"
+>>>>>>> local
             particleSpeed={0.2}
             lineDistance={100}
             className="z-0"
@@ -177,8 +182,13 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
           {/* Interactive Particle Network */}
           <ParticleBackground
             particleCount={100}
+<<<<<<< HEAD
             particleColor="rgba(251, 191, 36, 0.8)"
             lineColor="rgba(251, 191, 36, 0.25)"
+=======
+            particleColor="rgba(255, 215, 0, 0.9)"
+            lineColor="rgba(255, 215, 0, 0.25)"
+>>>>>>> local
             particleSpeed={0.3}
             lineDistance={120}
             className="z-10"
@@ -190,12 +200,20 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
               <h2 className="text-6xl font-bold text-white mb-4 tracking-tight">
                 Start Your
                 <br />
+<<<<<<< HEAD
                 <span className="bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-400 bg-clip-text text-transparent">
+=======
+                <span className="bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 bg-clip-text text-transparent">
+>>>>>>> local
                   Journey
                 </span>
               </h2>
               <p className="text-xl text-gray-300 max-w-md mx-auto">
+<<<<<<< HEAD
                 Master Data Structures & Algorithms with focused practice
+=======
+                Master Data Structures &amp; Algorithms with focused practice
+>>>>>>> local
               </p>
             </div>
           </div>
