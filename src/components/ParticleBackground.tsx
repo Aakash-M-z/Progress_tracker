@@ -97,11 +97,14 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({
                     particle.y -= (dy / distance) * force * 2;
                 }
 
-                // Draw particle
+                // Draw particle with glow effect
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = particle.color;
                 ctx.beginPath();
                 ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
                 ctx.fillStyle = particle.color;
                 ctx.fill();
+                ctx.shadowBlur = 0; // Reset shadow for lines
 
                 // Draw lines to nearby particles
                 particlesRef.current.slice(i + 1).forEach((otherParticle) => {
