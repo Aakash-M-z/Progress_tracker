@@ -63,7 +63,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
           />
 
           <div className="max-w-md w-full relative z-10">
-            <div className="bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-gray-700/50 transform transition-all duration-500">
+            <div className="bg-gray-900/20 backdrop-blur-sm rounded-3xl shadow-2xl p-10 border border-gray-700/30 transform transition-all duration-500">
               {onBack && (
                 <button
                   onClick={onBack}
@@ -92,7 +92,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
                     id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-5 py-4 bg-gray-800/50 border border-gray-600 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 transition-all duration-300 hover:bg-gray-800/70"
+                    className="w-full px-5 py-4 bg-gray-800/30 border border-gray-600/50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-400 transition-all duration-300 hover:bg-gray-800/50"
                     placeholder="Enter your email"
                     required
                   />
@@ -107,7 +107,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
                     id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-5 py-4 bg-gray-800/50 border border-gray-600 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 transition-all duration-300 hover:bg-gray-800/70"
+                    className="w-full px-5 py-4 bg-gray-800/30 border border-gray-600/50 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-400 transition-all duration-300 hover:bg-gray-800/50"
                     placeholder="Enter your password"
                     required
                   />
