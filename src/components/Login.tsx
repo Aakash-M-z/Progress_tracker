@@ -10,8 +10,10 @@ interface LoginProps {
 
 const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
   const { login } = useAuth();
+  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -26,24 +28,69 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
     setLoading(true);
     setError('');
 
-    // Simulate API call delay
-    setTimeout(() => {
-      const user = demoUsers.find(u => u.email === email && u.password === password);
-
-      if (user) {
-        const userData = {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role
-        };
-        login(userData);
-        onLogin(userData);
-      } else {
-        setError('Invalid email or password');
+    // Check for demo users first (bypass backend if matched)
+    if (isLogin) {
+      const demoUser = demoUsers.find(u => u.email === email && u.password === password);
+      if (demoUser) {
+        setTimeout(() => {
+          const userData: User = {
+            id: demoUser.id,
+            email: demoUser.email,
+            name: demoUser.name,
+            role: demoUser.role
+          };
+          login(userData);
+          onLogin(userData);
+          setLoading(false);
+        }, 1000);
+        return;
       }
-      setLoading(false);
-    }, 1000);
+    }
+
+    try {
+      const endpoint = isLogin ? '/api/login' : '/api/register';
+      const body = isLogin
+        ? { email, password }
+        : { email, password, username };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Authentication failed');
+      }
+
+      const userData: User = {
+        id: data.id,
+        email: data.email,
+        name: data.username,
+        role: data.role as 'admin' | 'user'
+      };
+
+      login(userData);
+      onLogin(userData);
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong');
+    } finally {
+      if (!isLogin || !demoUsers.some(u => u.email === email && u.password === password)) {
+        setLoading(false);
+      }
+    }
+  };
+
+  const toggleMode = () => {
+    setIsLogin(!isLogin);
+    setError('');
+    setEmail('');
+    setPassword('');
+    setUsername('');
   };
 
   return (
@@ -83,11 +130,32 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
 
               <div className="text-center mb-10">
                 <div className="text-7xl mb-6 animate-bounce inline-block">🚀</div>
-                <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">Welcome Back</h1>
-                <p className="text-gray-400 text-lg">Sign in to continue your DSA journey</p>
+                <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">
+                  {isLogin ? 'Welcome Back' : 'Create Account'}
+                </h1>
+                <p className="text-gray-400 text-lg">
+                  {isLogin ? 'Sign in to continue your DSA journey' : 'Start your DSA journey today'}
+                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                {!isLogin && (
+                  <div className="group animate-fadeIn">
+                    <label htmlFor="username" className="block text-sm font-semibold text-gray-300 mb-2">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      id="username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="w-full px-5 py-4 bg-gray-800/50 border border-gray-600 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-500 transition-all duration-300 hover:bg-gray-800/70"
+                      placeholder="Choose a username"
+                      required={!isLogin}
+                    />
+                  </div>
+                )}
+
                 <div className="group">
                   <label htmlFor="email" className="block text-sm font-semibold text-gray-300 mb-2">
                     Email Address
@@ -132,28 +200,61 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
                   {loading ? (
                     <div className="flex items-center justify-center">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
-                      Signing in...
+                      {isLogin ? 'Signing in...' : 'Creating Account...'}
                     </div>
                   ) : (
-                    'Sign In'
+                    isLogin ? 'Sign In' : 'Sign Up'
                   )}
                 </button>
               </form>
 
               <div className="mt-8 pt-6 border-t border-gray-700/50">
-                <div className="text-sm text-gray-400">
-                  <p className="mb-3 font-semibold text-gray-300">Demo Accounts:</p>
-                  <div className="space-y-2 text-xs bg-gray-800/30 p-4 rounded-xl">
-                    <p className="flex items-center justify-between">
-                      <span className="text-yellow-400 font-bold">Admin:</span>
-                      <span className="text-gray-300">admin@demo.com / admin123</span>
-                    </p>
-                    <p className="flex items-center justify-between">
-                      <span className="text-blue-400 font-bold">User:</span>
-                      <span className="text-gray-300">user@demo.com / user123</span>
-                    </p>
-                  </div>
+                <div className="text-center mb-6">
+                  <p className="text-gray-400">
+                    {isLogin ? "Don't have an account? " : "Already have an account? "}
+                    <button
+                      onClick={toggleMode}
+                      className="text-blue-400 font-semibold hover:text-blue-300 transition-colors duration-300 ml-1 hover:underline"
+                    >
+                      {isLogin ? 'Sign Up' : 'Sign In'}
+                    </button>
+                  </p>
                 </div>
+
+                {isLogin && (
+                  <div className="text-sm text-gray-400 animate-fadeIn">
+                    <p className="mb-3 font-semibold text-gray-300">Demo Accounts:</p>
+                    <div className="space-y-2 text-xs bg-gray-800/30 p-4 rounded-xl border border-gray-700/30">
+                      <p className="flex items-center justify-between group">
+                        <span className="text-yellow-400 font-bold">Admin:</span>
+                        <div className="flex gap-2">
+                          <code className="text-gray-300 bg-black/30 px-2 py-1 rounded cursor-pointer hover:bg-black/50 hover:text-white transition-colors"
+                            onClick={() => { setEmail('admin@demo.com'); setPassword('admin123'); }}
+                          >admin@demo.com</code>
+                          <span className="text-gray-500">/</span>
+                          <code className="text-gray-300 bg-black/30 px-2 py-1 rounded cursor-pointer hover:bg-black/50 hover:text-white transition-colors"
+                            onClick={() => { setEmail('admin@demo.com'); setPassword('admin123'); }}
+                          >admin123</code>
+                        </div>
+                      </p>
+                      <p className="flex items-center justify-between group">
+                        <span className="text-blue-400 font-bold">User:</span>
+                        <div className="flex gap-2">
+                          <code className="text-gray-300 bg-black/30 px-2 py-1 rounded cursor-pointer hover:bg-black/50 hover:text-white transition-colors"
+                            onClick={() => { setEmail('user@demo.com'); setPassword('user123'); }}
+                          >user@demo.com</code>
+                          <span className="text-gray-500">/</span>
+                          <code className="text-gray-300 bg-black/30 px-2 py-1 rounded cursor-pointer hover:bg-black/50 hover:text-white transition-colors"
+                            onClick={() => { setEmail('user@demo.com'); setPassword('user123'); }}
+                          >user123</code>
+                        </div>
+                      </p>
+                      <p className="text-[10px] text-gray-500 text-center mt-2 italic">
+                        Click credentials to auto-fill
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -210,10 +311,14 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
               </h2>
               <p className="text-xl text-gray-300 max-w-md mx-auto">
 <<<<<<< HEAD
+<<<<<<< HEAD
                 Master Data Structures & Algorithms with focused practice
 =======
                 Master Data Structures &amp; Algorithms with focused practice
 >>>>>>> local
+=======
+                Master Data Structures & Algorithms with focused practice
+>>>>>>> 8202891 (Update login component)
               </p>
             </div>
           </div>
