@@ -15,6 +15,24 @@ app.get('/health', (req, res) => {
 app.use(cors());
 app.use(express.json());
 
+// Auth routes
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await storage.getUserByEmail(email);
+
+    // In a real app, use bcrypt or similar for password hashing comparison
+    if (!user || user.password !== password) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // User routes
 app.get('/api/users/:id', async (req, res) => {
   try {
@@ -44,6 +62,46 @@ app.get('/api/users/by-username/:username', async (req, res) => {
   }
 });
 
+app.post('/api/register', async (req, res) => {
+  try {
+    const userData: InsertUser = req.body;
+
+    // Check if user already exists
+    const existingUser = await storage.getUserByEmail(userData.email);
+    if (existingUser) {
+      return res.status(409).json({ error: 'User with this email already exists' });
+    }
+
+    const existingUsername = await storage.getUserByUsername(userData.username);
+    if (existingUsername) {
+      return res.status(409).json({ error: 'User with this username already exists' });
+    }
+
+    const user = await storage.createUser(userData);
+    res.status(201).json(user);
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await storage.getUserByEmail(email);
+
+    if (!user || user.password !== password) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Deprecated or internal use only
 app.post('/api/users', async (req, res) => {
   try {
     const userData: InsertUser = req.body;
