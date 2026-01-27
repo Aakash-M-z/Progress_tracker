@@ -225,15 +225,17 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
   const handleSolveProblem = () => {
     if (selectedProblem) {
       onAddActivity({
-        problem: selectedProblem.title,
+        description: `Solved: ${selectedProblem.title}`,
         category: category,
+        dsaTopic: category,
         difficulty: selectedProblem.difficulty,
         platform: 'DSA Roadmap',
         timeComplexity: selectedProblem.timeComplexity,
         spaceComplexity: selectedProblem.spaceComplexity,
         duration: duration,
         problemSolved: solved,
-        notes: notes || `Solved ${selectedProblem.title} from DSA Roadmap`
+        notes: notes || `Solved ${selectedProblem.title} from DSA Roadmap`,
+        value: solved ? 3 : 1
       });
 
       // Reset form
@@ -293,8 +295,8 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
                 key={problem.id}
                 onClick={() => setSelectedProblem(problem)}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${selectedProblem.id === problem.id
-                    ? 'bg-blue-500 text-white shadow-md'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ? 'bg-blue-500 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
               >
                 {problem.title}
