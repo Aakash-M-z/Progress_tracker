@@ -1,5 +1,5 @@
-import { users, activities, type User, type InsertUser, type Activity, type InsertActivity } from "../shared/schema";
-import { db } from "./db";
+import { users, activities, type User, type InsertUser, type Activity, type InsertActivity } from "../shared/schema.js";
+import { db } from "./db.js";
 import { eq } from "drizzle-orm";
 
 export interface IStorage {
@@ -60,7 +60,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteActivity(id: number): Promise<boolean> {
     const result = await db.delete(activities).where(eq(activities.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 }
 
