@@ -14,7 +14,7 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
     const days = [];
     const today = new Date();
     const daysCount = selectedPeriod === '3months' ? 90 : selectedPeriod === '6months' ? 180 : 365;
-    
+
     for (let i = daysCount - 1; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
@@ -24,16 +24,16 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
   };
 
   const days = generateDays();
-  
+
   // Count activities per day
   const getActivityCount = (date: string) => {
-    return activities.filter(activity => 
+    return activities.filter(activity =>
       activity.date.startsWith(date)
     ).length;
   };
 
   const getActivityValue = (date: string) => {
-    const dayActivities = activities.filter(activity => 
+    const dayActivities = activities.filter(activity =>
       activity.date.startsWith(date)
     );
     if (dayActivities.length === 0) return 0;
@@ -51,11 +51,11 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 
@@ -69,41 +69,42 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
 
   function calculateStreak() {
     if (activities.length === 0) return 0;
-    
+
     let streak = 0;
     const today = new Date();
-    
+
     for (let i = 0; i < 365; i++) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
       const dateString = date.toISOString().split('T')[0];
-      
+
       if (getActivityCount(dateString) > 0) {
         streak++;
       } else if (i > 0) {
         break;
       }
     }
-    
+
     return streak;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h3 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <span className="text-2xl">🔥</span>
-            Activity Heatmap
-          </h3>
-          <div className="flex items-center gap-4 mt-2 text-sm text-gray-600 dark:text-gray-400">
-            <span>Total: <strong className="text-emerald-600 dark:text-emerald-400">{totalActivities}</strong></span>
-            <span>Streak: <strong className="text-orange-600 dark:text-orange-400">{currentStreak} days</strong></span>
+        <div className="flex items-center gap-6 mt-2 text-sm text-gray-400">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-600 mb-1">Total Activities</span>
+            <span className="text-xl font-black text-white">{totalActivities}</span>
+          </div>
+          <div className="w-px h-8 bg-white/10"></div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-600 mb-1">Current Streak</span>
+            <span className="text-xl font-black text-orange-400">{currentStreak} days</span>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
-          <select 
+          <select
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value as any)}
             className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -112,7 +113,7 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
             <option value="6months">6 Months</option>
             <option value="1year">1 Year</option>
           </select>
-          
+
           <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400 ml-4">
             <span>Less</span>
             <div className="flex space-x-1">
@@ -126,7 +127,7 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
           </div>
         </div>
       </div>
-      
+
       <div className="relative">
         <div className="overflow-x-auto pb-4">
           <div className="flex space-x-1 min-w-max p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
@@ -137,13 +138,12 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
                   const value = getActivityValue(day);
                   const isToday = day === new Date().toISOString().split('T')[0];
                   const isHovered = hoveredDay === day;
-                  
+
                   return (
                     <div
                       key={day}
-                      className={`w-3 h-3 rounded-sm transition-all duration-200 cursor-pointer transform ${
-                        getColorClass(value, isHovered)
-                      } ${isToday ? 'ring-2 ring-blue-500 ring-offset-1' : ''}`}
+                      className={`w-3 h-3 rounded-sm transition-all duration-200 cursor-pointer transform ${getColorClass(value, isHovered)
+                        } ${isToday ? 'ring-2 ring-blue-500 ring-offset-1' : ''}`}
                       onMouseEnter={() => setHoveredDay(day)}
                       onMouseLeave={() => setHoveredDay(null)}
                       title={`${formatDate(day)}: ${count} activities`}
@@ -154,7 +154,7 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
             ))}
           </div>
         </div>
-        
+
         {hoveredDay && (
           <div className="absolute bottom-full left-4 mb-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-3 py-2 rounded-lg text-sm shadow-lg z-10">
             <div className="font-semibold">{formatDate(hoveredDay)}</div>
@@ -162,7 +162,7 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
           </div>
         )}
       </div>
-      
+
       {activities.length === 0 && (
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
           <div className="text-6xl mb-4 animate-bounce">📅</div>
