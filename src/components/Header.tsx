@@ -56,41 +56,53 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-xl border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
-          <div className="flex-1">
-            <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-              <span className="text-xl sm:text-2xl">🚀</span>
-              <span>DSA Progress Tracker</span>
-            </h1>
-            <p className="text-blue-100 mt-1 text-xs sm:text-sm">Master Data Structures & Algorithms with systematic tracking</p>
-          </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <div className="text-right flex-1 sm:flex-none">
-              <div className="text-xs text-blue-100">Welcome, {user?.name}</div>
-              <div className="text-sm font-semibold capitalize">{user?.role} Access</div>
+    <header className="sticky top-0 z-50 bg-gray-900/40 backdrop-blur-xl border-b border-white/5 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4 group">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
+              🚀
             </div>
-            <button
-              className="bg-white/20 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium btn-hover border border-white/30 text-sm transition-all duration-200 hover:bg-white/30 active:scale-95"
-              onClick={toggleTheme}
-              title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
-            >
-              <span className="mr-1">{isDark ? '☀️' : '🌙'}</span>
-              <span className="hidden sm:inline">{isDark ? 'Light' : 'Dark'}</span>
-            </button>
-            <button
-              className="bg-red-500/80 backdrop-blur-sm text-white px-3 py-2 rounded-lg font-medium btn-hover border border-red-400/30 text-sm transition-all duration-200 hover:bg-red-600/80 active:scale-95"
-              onClick={() => {
-                if (window.confirm('Are you sure you want to logout?')) {
-                  logout();
-                }
-              }}
-              title="Sign out"
-            >
-              <span className="mr-1">🚪</span>
-              <span className="hidden sm:inline">Logout</span>
-            </button>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
+                DSA <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">Tracker</span>
+              </h1>
+              <p className="text-gray-400 mt-0.5 text-[10px] sm:text-xs font-medium uppercase tracking-[0.2em]">Mastering Algorithms</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <div className="hidden md:block text-right mr-4 border-r border-white/10 pr-6">
+              <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Authenticated as</div>
+              <div className="text-sm font-bold text-white flex items-center gap-2 justify-end">
+                {user?.name}
+                <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded-full text-[10px] uppercase text-blue-400">
+                  {user?.role}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-300 active:scale-95"
+                onClick={toggleTheme}
+                title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+              >
+                {isDark ? '☀️' : '🌙'}
+              </button>
+
+              <button
+                className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 text-white font-bold rounded-xl hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 transition-all duration-300 active:scale-95 group"
+                onClick={() => {
+                  if (window.confirm('Are you sure you want to logout?')) {
+                    logout();
+                  }
+                }}
+              >
+                <span className="text-lg group-hover:rotate-12 transition-transform">🚪</span>
+                <span className="text-sm">Logout</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
