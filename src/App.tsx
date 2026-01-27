@@ -233,89 +233,95 @@ const AppContent: React.FC = () => {
             </div>
 
             {/* Welcome Hero Section */}
-            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-3xl shadow-2xl text-white p-8 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 animate-pulse"></div>
-              <div className="relative z-10">
-                <div className="flex items-center justify-between flex-wrap gap-6">
-                  <div className="flex items-center gap-4">
-                    <div className="text-6xl animate-bounce">🚀</div>
+            <div className="relative group overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-indigo-600/20 blur-3xl opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative bg-gray-900/40 backdrop-blur-2xl rounded-[2.5rem] border border-white/5 p-10 shadow-2xl overflow-hidden">
+                <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+
+                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className="flex items-center gap-6">
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-[2rem] flex items-center justify-center text-5xl shadow-2xl shadow-blue-500/40 animate-float">
+                      🚀
+                    </div>
                     <div>
-                      <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name?.split(' ')[0]}!</h1>
-                      <p className="text-blue-100 text-lg">Ready to conquer more DSA challenges?</p>
+                      <h1 className="text-4xl font-black text-white tracking-tight mb-2">
+                        Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">{user?.name?.split(' ')[0]}!</span>
+                      </h1>
+                      <p className="text-gray-400 text-lg font-medium flex items-center gap-2">
+                        Ready to conquer more <span className="px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-lg border border-blue-500/20 text-sm">DSA Challenges</span> today?
+                      </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold">{quickStats.totalActivities}</div>
-                    <div className="text-blue-200 text-sm">Total Activities</div>
+
+                  <div className="flex items-center gap-12">
+                    <div className="text-center">
+                      <div className="text-4xl font-black text-white mb-1 tracking-tight">{quickStats.totalActivities}</div>
+                      <div className="text-[10px] font-bold text-blue-400/60 uppercase tracking-[0.2em]">Total Activities</div>
+                    </div>
+                    <div className="h-12 w-px bg-white/10 hidden md:block"></div>
+                    <div className="text-center">
+                      <div className="text-4xl font-black text-white mb-1 tracking-tight">{quickStats.problemsSolved}</div>
+                      <div className="text-[10px] font-bold text-green-400/60 uppercase tracking-[0.2em]">Solved</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Quick Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-2xl p-6 border border-green-200 dark:border-green-700 text-center transform hover:scale-105 transition-all duration-300">
-                <div className="text-4xl mb-3">✅</div>
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-                  {quickStats.problemsSolved}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[
+                { label: 'Problems Solved', value: quickStats.problemsSolved, icon: '✅', color: 'green' },
+                { label: 'Day Streak', value: quickStats.currentStreak, icon: '🔥', color: 'orange' },
+                { label: 'Time Invested', value: `${quickStats.totalTime}h`, icon: '⏱️', color: 'purple' },
+                { label: 'Topics Covered', value: quickStats.topicsCovered, icon: '📚', color: 'blue' }
+              ].map((stat, i) => (
+                <div key={i} className="group relative overflow-hidden">
+                  <div className={`absolute inset-0 bg-${stat.color}-500/5 blur-2xl group-hover:bg-${stat.color}-500/10 transition-colors duration-500`}></div>
+                  <div className="relative bg-gray-900/40 backdrop-blur-xl rounded-3xl p-6 border border-white/5 shadow-xl hover:-translate-y-2 transition-all duration-300">
+                    <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{stat.icon}</div>
+                    <div className={`text-4xl font-black text-white mb-2 tracking-tight group-hover:text-${stat.color}-400 transition-colors`}>
+                      {stat.value}
+                    </div>
+                    <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{stat.label}</div>
+                  </div>
                 </div>
-                <div className="text-sm text-green-700 dark:text-green-300 font-medium">Problems Solved</div>
-              </div>
-
-              <div className="bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 rounded-2xl p-6 border border-orange-200 dark:border-orange-700 text-center transform hover:scale-105 transition-all duration-300">
-                <div className="text-4xl mb-3">🔥</div>
-                <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
-                  {quickStats.currentStreak}
-                </div>
-                <div className="text-sm text-orange-700 dark:text-orange-300 font-medium">Day Streak</div>
-              </div>
-
-              <div className="bg-gradient-to-br from-purple-100 to-violet-100 dark:from-purple-900/30 dark:to-violet-900/30 rounded-2xl p-6 border border-purple-200 dark:border-purple-700 text-center transform hover:scale-105 transition-all duration-300">
-                <div className="text-4xl mb-3">⏱️</div>
-                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-                  {quickStats.totalTime}h
-                </div>
-                <div className="text-sm text-purple-700 dark:text-purple-300 font-medium">Time Invested</div>
-              </div>
-
-              <div className="bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-2xl p-6 border border-blue-200 dark:border-blue-700 text-center transform hover:scale-105 transition-all duration-300">
-                <div className="text-4xl mb-3">📚</div>
-                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                  {quickStats.topicsCovered}
-                </div>
-                <div className="text-sm text-blue-700 dark:text-blue-300 font-medium">Topics Covered</div>
-              </div>
+              ))}
             </div>
 
             {/* Main Content Grid - Reorganized Layout */}
             <div className="space-y-8">
               {/* Analytics Section - Full Width */}
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 card-hover">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-2xl text-white">
+                <div className="bg-gray-900/40 backdrop-blur-xl rounded-[2.5rem] shadow-xl border border-white/5 p-8 hover:bg-gray-900/50 transition-all duration-300">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 rounded-2xl text-white shadow-lg shadow-blue-500/20">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Activity Heatmap</h2>
+                    <div>
+                      <h2 className="text-2xl font-black text-white tracking-tight">Activity Heatmap</h2>
+                      <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">Consistency Tracker</p>
+                    </div>
                   </div>
                   <SimpleHeatmap activities={activities} />
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 card-hover group relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-green-500/20">
-                  {/* Glow effect overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-400/10 via-emerald-400/10 to-green-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 via-emerald-500/5 to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl blur-xl"></div>
+                <div className="bg-gray-900/40 backdrop-blur-xl rounded-[2.5rem] shadow-xl border border-white/5 p-8 group relative overflow-hidden transition-all duration-300 hover:bg-gray-900/50">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                   <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-2xl text-white group-hover:shadow-lg group-hover:shadow-green-500/30 transition-all duration-300">
+                    <div className="flex items-center gap-3 mb-8">
+                      <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-2xl text-white shadow-lg shadow-green-500/20">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                       </div>
-                      <h2 className="text-2xl font-bold text-gray-800 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">Progress Statistics</h2>
+                      <div>
+                        <h2 className="text-2xl font-black text-white tracking-tight">Progress Stats</h2>
+                        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">Detailed Analytics</p>
+                      </div>
                     </div>
                     <ProgressStats activities={activities} />
                   </div>
