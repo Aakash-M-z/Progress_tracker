@@ -106,7 +106,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
 
               <div className="text-center mb-10">
                 <div className="text-7xl mb-6">🚀</div>
-                <h1 className="text-4xl font-bold text-white mb-3">
+                <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">
                   {isLogin ? 'Welcome Back' : 'Create Account'}
                 </h1>
                 <p className="text-gray-400">
