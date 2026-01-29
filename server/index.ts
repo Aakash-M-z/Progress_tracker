@@ -1,8 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { storage } from './storage';
-import { InsertUser, InsertActivity } from '../shared/schema';
+import { storage } from './storage.js';
+import { InsertUser, InsertActivity } from '../shared/schema.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -36,7 +36,7 @@ app.post('/api/login', async (req, res) => {
 // User routes
 app.get('/api/users/:id', async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const user = await storage.getUser(id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -116,7 +116,7 @@ app.post('/api/users', async (req, res) => {
 // Activity routes
 app.get('/api/users/:userId/activities', async (req, res) => {
   try {
-    const userId = parseInt(req.params.userId);
+    const userId = req.params.userId;
     const activities = await storage.getUserActivities(userId);
     res.json(activities);
   } catch (error) {
@@ -138,7 +138,7 @@ app.post('/api/activities', async (req, res) => {
 
 app.put('/api/activities/:id', async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const activityData = req.body;
     const activity = await storage.updateActivity(id, activityData);
     if (!activity) {
@@ -153,7 +153,7 @@ app.put('/api/activities/:id', async (req, res) => {
 
 app.delete('/api/activities/:id', async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const deleted = await storage.deleteActivity(id);
     if (!deleted) {
       return res.status(404).json({ error: 'Activity not found' });
