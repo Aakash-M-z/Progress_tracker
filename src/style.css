@@ -670,8 +670,14 @@ blockquote::after {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Smooth transitions for all interactive elements */
-* {
+/* Smooth transitions for interactive elements only (not all elements) */
+button,
+a,
+input,
+select,
+textarea,
+.card-hover,
+.btn-hover {
   transition-property: transform, opacity, box-shadow, background-color, border-color;
   transition-duration: 0.2s;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -2159,4 +2165,37 @@ blockquote::after {
   pointer-events: none;
   animation: water-ripple 1s ease-out;
   z-index: 9999;
+}
+
+/* Navigation button optimization - ensure buttons are always clickable */
+nav button {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto !important;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform, background-color;
+}
+
+/* Ensure nav container doesn't block clicks */
+nav {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto !important;
+}
+
+/* Optimize button transitions for instant feedback */
+nav button:active {
+  transform: scale(0.95) !important;
+  transition: transform 0.05s ease-out !important;
+}
+
+/* Remove any potential overlay interference */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }

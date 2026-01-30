@@ -25,19 +25,29 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
 
   const days = generateDays();
 
-  // Count activities per day
-  const getActivityCount = (date: string) => {
-    return activities.filter(activity =>
-      activity.date.startsWith(date)
-    ).length;
-  };
+  // Optimize activity lookup
+  const activityMap = React.useMemo(() => {
+    const map = new Map<string, { count: number; value: number }>();
+    activities.forEach(activity => {
+      const dateKey = activity.date.split('T')[0];
+      const current = map.get(dateKey) || { count: 0, value: 0 };
+      map.set(dateKey, {
+        count: current.count + 1,
+        value: current.value + (activity.value || 1)
+      });
+    });
+    return map;
+  }, [activities]);
 
-  const getActivityValue = (date: string) => {
-    const dayActivities = activities.filter(activity =>
-      activity.date.startsWith(date)
-    );
-    if (dayActivities.length === 0) return 0;
-    return Math.min(dayActivities.reduce((sum, activity) => sum + (activity.value || 1), 0), 4);
+  const getActivityStats = (date: string) => {
+    // Check if the date key exists in the map
+    // The date passed here is already YYYY-MM-DD from generateDays
+    const stats = activityMap.get(date);
+    if (!stats) return { count: 0, value: 0 };
+    return {
+      count: stats.count,
+      value: Math.min(stats.value, 4)
+    };
   };
 
   const getColorClass = (value: number, isHovered: boolean = false) => {
@@ -134,8 +144,7 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
             {weeks.map((week, weekIndex) => (
               <div key={weekIndex} className="flex flex-col space-y-1">
                 {week.map((day) => {
-                  const count = getActivityCount(day);
-                  const value = getActivityValue(day);
+                  const { count, value } = getActivityStats(day);
                   const isToday = day === new Date().toISOString().split('T')[0];
                   const isHovered = hoveredDay === day;
 
@@ -158,7 +167,7 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
         {hoveredDay && (
           <div className="absolute bottom-full left-4 mb-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-3 py-2 rounded-lg text-sm shadow-lg z-10">
             <div className="font-semibold">{formatDate(hoveredDay)}</div>
-            <div>{getActivityCount(hoveredDay)} activities</div>
+            <div>{getActivityStats(hoveredDay).count} activities</div>
           </div>
         )}
       </div>

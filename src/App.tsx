@@ -152,6 +152,11 @@ const AppContent: React.FC = () => {
     ...(user?.role === 'admin' ? [{ id: 'admin', name: 'Admin Panel', icon: '⚙️' }] : []),
   ];
 
+  // Memoized tab change handler to prevent re-renders and ensure immediate response
+  const handleTabChange = useCallback((tabId: string) => {
+    setActiveTab(tabId as any);
+  }, []);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
@@ -207,8 +212,12 @@ const AppContent: React.FC = () => {
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`py-3 px-4 font-medium text-sm flex items-center space-x-2 rounded-lg transition-all duration-200 whitespace-nowrap ${activeTab === tab.id
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleTabChange(tab.id);
+                  }}
+                  className={`py-3 px-4 font-medium text-sm flex items-center space-x-2 rounded-lg transition-all duration-200 whitespace-nowrap touch-manipulation ${activeTab === tab.id
                     ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md transform scale-105'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'
                     }`}
