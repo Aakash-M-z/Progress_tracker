@@ -9,7 +9,7 @@ const userSchema = new Schema({
 });
 
 const activitySchema = new Schema({
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: String, required: true },
     date: { type: String, required: true },
     category: { type: String, required: true },
     topic: { type: String, required: true },
