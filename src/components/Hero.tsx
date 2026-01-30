@@ -25,7 +25,7 @@ const Hero: React.FC = () => {
 
         <div className="flex items-center gap-3 rounded-full border border-white/8 bg-white/3 px-4 py-2 text-sm text-indigo-50/70 shadow-lg backdrop-blur-sm hero-loading-animate opacity-75" role="status" aria-live="polite">
           <span className="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400/80 animate-ping" aria-hidden="true" />
-          <span className="font-semibold tracking-wide">Loading Progress…</span>
+          <span className="font-semibold tracking-wide">Track Your Progress</span>
         </div>
       </div>
     </section>
