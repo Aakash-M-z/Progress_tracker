@@ -20,6 +20,7 @@
     "vite": "^7.0.4"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.4",
     "@sendgrid/mail": "^8.1.5",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/cors": "^2.8.19",
@@ -30,6 +31,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "google-auth-library": "^10.5.0",
     "memoizee": "^0.4.17",
     "mongoose": "^9.1.5",
     "openid-client": "^6.6.2",

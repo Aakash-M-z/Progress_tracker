@@ -5,7 +5,7 @@ import { Activity as FrontendActivity } from '../types';
 export function dbToFrontendActivity(dbActivity: DBActivity): FrontendActivity {
   return {
     id: dbActivity.id.toString(),
-    date: dbActivity.date,
+    date: String(dbActivity.date),
     category: dbActivity.category,
     duration: dbActivity.timeSpent,
     description: dbActivity.problemDescription || dbActivity.topic,
@@ -23,10 +23,10 @@ export function dbToFrontendActivity(dbActivity: DBActivity): FrontendActivity {
 // Transform frontend activity to database activity format
 export function frontendToDbActivity(
   frontendActivity: Omit<FrontendActivity, 'id'>,
-  userId: number
+  userId: number | string
 ): Omit<DBActivity, 'id' | 'createdAt'> {
   return {
-    userId,
+    userId: userId.toString(),
     date: frontendActivity.date,
     category: frontendActivity.category,
     topic: frontendActivity.dsaTopic || frontendActivity.category,
