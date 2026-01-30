@@ -57,7 +57,7 @@ const ProgressStats: React.FC<ProgressStatsProps> = ({ activities }) => {
 
     const successRate = totalProblems > 0 ? (problemsSolved / totalProblems) * 100 : 0;
 
-    const recentActivities = activities
+    const recentActivities = [...activities]
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 5);
 
