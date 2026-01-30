@@ -63,9 +63,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ activities }) => {
   useEffect(() => {
     const totalProblems = activities.filter(a => a.problemSolved).length;
     const totalTopics = new Set(activities.map(a => a.category)).size;
-    
+
     // Calculate streak
-    const uniqueDates = [...new Set(activities.map(a => a.date.split('T')[0]))].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    const uniqueDates = [...new Set(activities.filter(a => a.date && typeof a.date === 'string').map(a => a.date.split('T')[0]))].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
     let streak = 0;
     const today = new Date().toISOString().split('T')[0];
     if (uniqueDates.includes(today)) {
@@ -83,9 +83,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ activities }) => {
     let level = LEVEL_CRITERIA[0];
     for (let i = LEVEL_CRITERIA.length - 1; i >= 0; i--) {
       const criteria = LEVEL_CRITERIA[i];
-      if (totalProblems >= criteria.minProblems && 
-          totalTopics >= criteria.minTopics && 
-          streak >= criteria.minStreak) {
+      if (totalProblems >= criteria.minProblems &&
+        totalTopics >= criteria.minTopics &&
+        streak >= criteria.minStreak) {
         level = criteria;
         break;
       }
@@ -112,7 +112,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ activities }) => {
 
   const totalProblems = activities.filter(a => a.problemSolved).length;
   const totalTopics = new Set(activities.map(a => a.category)).size;
-  const uniqueDates = [...new Set(activities.map(a => a.date.split('T')[0]))].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  const uniqueDates = [...new Set(activities.filter(a => a.date && typeof a.date === 'string').map(a => a.date.split('T')[0]))].sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
   let currentStreak = 0;
   const today = new Date().toISOString().split('T')[0];
   if (uniqueDates.includes(today)) {
@@ -169,7 +169,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ activities }) => {
           </div>
 
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-4">
-            <div 
+            <div
               className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-1000 ease-out"
               style={{ width: `${progress}%` }}
             ></div>
@@ -182,7 +182,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ activities }) => {
               </div>
               <div className="text-gray-500 dark:text-gray-400">Problems</div>
               <div className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 mt-1`}>
-                <div 
+                <div
                   className="bg-green-500 h-1 rounded-full transition-all duration-500"
                   style={{ width: `${Math.min((totalProblems / nextLevel.minProblems) * 100, 100)}%` }}
                 ></div>
@@ -194,7 +194,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ activities }) => {
               </div>
               <div className="text-gray-500 dark:text-gray-400">Topics</div>
               <div className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 mt-1`}>
-                <div 
+                <div
                   className="bg-blue-500 h-1 rounded-full transition-all duration-500"
                   style={{ width: `${Math.min((totalTopics / nextLevel.minTopics) * 100, 100)}%` }}
                 ></div>
@@ -206,7 +206,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ activities }) => {
               </div>
               <div className="text-gray-500 dark:text-gray-400">Streak</div>
               <div className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 mt-1`}>
-                <div 
+                <div
                   className="bg-orange-500 h-1 rounded-full transition-all duration-500"
                   style={{ width: `${Math.min((currentStreak / nextLevel.minStreak) * 100, 100)}%` }}
                 ></div>
@@ -224,13 +224,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ activities }) => {
         </h3>
         <div className="space-y-3">
           {LEVEL_CRITERIA.map((level) => (
-            <div 
+            <div
               key={level.level}
-              className={`flex items-center gap-4 p-3 rounded-xl transition-all duration-200 ${
-                level.level === currentLevel.level 
-                  ? `bg-gradient-to-r ${level.bgColor} border-2 border-current` 
-                  : 'bg-gray-50 dark:bg-gray-700/50'
-              }`}
+              className={`flex items-center gap-4 p-3 rounded-xl transition-all duration-200 ${level.level === currentLevel.level
+                ? `bg-gradient-to-r ${level.bgColor} border-2 border-current`
+                : 'bg-gray-50 dark:bg-gray-700/50'
+                }`}
             >
               <div className="text-2xl">{level.icon}</div>
               <div className="flex-1">
