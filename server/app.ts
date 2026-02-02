@@ -10,18 +10,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
-});
+const api = express.Router();
 
 app.use(cors());
 // Convert JSON bodies
 app.use(express.json());
 
+// Health check endpoint
+api.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
 // Auth routes
-app.post('/api/login', async (req, res) => {
+api.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await storage.getUserByEmail(email);
@@ -39,7 +40,7 @@ app.post('/api/login', async (req, res) => {
 });
 
 // User routes
-app.get('/api/users/:id', async (req, res) => {
+api.get('/users/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const user = await storage.getUser(id);
@@ -53,7 +54,7 @@ app.get('/api/users/:id', async (req, res) => {
     }
 });
 
-app.get('/api/users/by-username/:username', async (req, res) => {
+api.get('/users/by-username/:username', async (req, res) => {
     try {
         const username = req.params.username;
         const user = await storage.getUserByUsername(username);
@@ -67,7 +68,7 @@ app.get('/api/users/by-username/:username', async (req, res) => {
     }
 });
 
-app.post('/api/register', async (req, res) => {
+api.post('/register', async (req, res) => {
     try {
         const userData: InsertUser = req.body;
 
@@ -90,23 +91,7 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-app.post('/api/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await storage.getUserByEmail(email);
-
-        if (!user || user.password !== password) {
-            return res.status(401).json({ error: 'Invalid email or password' });
-        }
-
-        res.json(user);
-    } catch (error) {
-        console.error('Error logging in:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-app.post('/api/auth/google', async (req, res) => {
+api.post('/auth/google', async (req, res) => {
     try {
         const { token } = req.body;
 
@@ -160,7 +145,7 @@ app.post('/api/auth/google', async (req, res) => {
 });
 
 // Deprecated or internal use only
-app.post('/api/users', async (req, res) => {
+api.post('/users', async (req, res) => {
     try {
         const userData: InsertUser = req.body;
         const user = await storage.createUser(userData);
@@ -172,7 +157,7 @@ app.post('/api/users', async (req, res) => {
 });
 
 // Activity routes
-app.get('/api/users/:userId/activities', async (req, res) => {
+api.get('/users/:userId/activities', async (req, res) => {
     try {
         const userId = req.params.userId;
         const activities = await storage.getUserActivities(userId);
@@ -183,7 +168,7 @@ app.get('/api/users/:userId/activities', async (req, res) => {
     }
 });
 
-app.post('/api/activities', async (req, res) => {
+api.post('/activities', async (req, res) => {
     try {
         const activityData: InsertActivity = req.body;
         const activity = await storage.createActivity(activityData);
@@ -194,7 +179,7 @@ app.post('/api/activities', async (req, res) => {
     }
 });
 
-app.put('/api/activities/:id', async (req, res) => {
+api.put('/activities/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const activityData = req.body;
@@ -209,7 +194,7 @@ app.put('/api/activities/:id', async (req, res) => {
     }
 });
 
-app.delete('/api/activities/:id', async (req, res) => {
+api.delete('/activities/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const deleted = await storage.deleteActivity(id);
@@ -222,6 +207,13 @@ app.delete('/api/activities/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+// Register the API router
+// Mount at /api for standard requests
+app.use('/api', api);
+// Mount at / for requests where /api has been stripped by Vercel rewrites
+app.use('/', api);
+
 
 // Serve static files in production (BUT SKIP if running in Vercel)
 if (process.env.NODE_ENV === 'production' && process.env.VERCEL !== '1') {
