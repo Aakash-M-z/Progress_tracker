@@ -101,6 +101,59 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+app.post('/api/auth/google', async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    // Fetch user info from Google
+    const googleUserRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!googleUserRes.ok) {
+      return res.status(401).json({ error: 'Failed to authenticate with Google' });
+    }
+
+    const googleUser = await googleUserRes.json();
+    const { email, name } = googleUser;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Google account has no email' });
+    }
+
+    // Check if user exists
+    let user = await storage.getUserByEmail(email);
+
+    if (!user) {
+      // Create new user
+      // Generate a unique username based on email
+      const baseUsername = email.split('@')[0];
+      let username = baseUsername;
+      let counter = 1;
+
+      // Check for uniqueness
+      while (await storage.getUserByUsername(username)) {
+        username = `${baseUsername}${counter}`;
+        counter++;
+      }
+
+      const newUser: InsertUser = {
+        username,
+        email,
+        password: Math.random().toString(36).slice(-10), // Dummy password
+        role: 'user'
+      };
+
+      user = await storage.createUser(newUser);
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Google auth error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Deprecated or internal use only
 app.post('/api/users', async (req, res) => {
   try {
