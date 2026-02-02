@@ -53,6 +53,11 @@ export class MongoStorage implements IStorage {
         return !!result;
     }
 
+    async updateUser(id: string | number, user: Partial<User>): Promise<User | undefined> {
+        const updated = await UserModel.findByIdAndUpdate(id, user, { new: true });
+        return updated ? this.mapUser(updated) : undefined;
+    }
+
     private mapUser(mongoUser: any): User {
         return {
             id: mongoUser._id.toString(),
