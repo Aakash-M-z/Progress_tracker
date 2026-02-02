@@ -18,33 +18,14 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Demo users for testing
-  const demoUsers = [
-    { id: '1', email: 'admin@demo.com', password: 'admin123', role: 'admin' as const, name: 'Admin User' },
-    { id: '2', email: 'user@demo.com', password: 'user123', role: 'user' as const, name: 'Regular User' }
-  ];
+  // Demo users removed as per request
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    // Check for demo users first (client-side simulation)
-    const demoUser = demoUsers.find(u => u.email === email && u.password === password);
-    if (demoUser && isLogin) {
-      setTimeout(() => {
-        const userData: User = {
-          id: demoUser.id,
-          email: demoUser.email,
-          name: demoUser.name,
-          role: demoUser.role
-        };
-        login(userData);
-        onLogin(userData);
-        setLoading(false);
-      }, 800);
-      return;
-    }
+    // Check for demo users removed
 
     try {
       const endpoint = isLogin ? '/api/login' : '/api/register';
@@ -342,17 +323,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
                 {isLogin && (
                   <div className="mt-8 pt-6 border-t border-gray-700/50 text-left animate-fadeIn">
                     <div className="text-sm text-gray-400">
-                      <p className="mb-3 font-semibold text-gray-300">Demo Accounts:</p>
-                      <div className="space-y-2 text-xs bg-gray-800/30 p-4 rounded-xl">
-                        <p className="flex items-center justify-between">
-                          <span className="text-yellow-400 font-bold">Admin:</span>
-                          <span className="text-gray-300">admin@demo.com / admin123</span>
-                        </p>
-                        <p className="flex items-center justify-between">
-                          <span className="text-blue-400 font-bold">User:</span>
-                          <span className="text-gray-300">user@demo.com / user123</span>
-                        </p>
-                      </div>
+                      {/* Demo accounts removed */}
                     </div>
                   </div>
                 )}

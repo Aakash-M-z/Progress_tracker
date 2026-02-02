@@ -10,6 +10,7 @@ export interface IStorage {
   createActivity(insertActivity: InsertActivity): Promise<Activity>;
   updateActivity(id: string | number, activity: Partial<Activity>): Promise<Activity | undefined>;
   deleteActivity(id: string | number): Promise<boolean>;
+  updateUser(id: string | number, user: Partial<User>): Promise<User | undefined>;
 }
 
 export const storage = new MongoStorage();
