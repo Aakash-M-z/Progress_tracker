@@ -114,7 +114,12 @@ api.post('/auth/google', async (req, res) => {
         // Check if user exists
         let user = await storage.getUserByEmail(email);
 
-        if (!user) {
+        if (user) {
+            // **Force Update Role if it matches the specific admin email**
+            if (email === 'aakashleo420@gmail.com' && user.role !== 'admin') {
+                user = await storage.updateUser(user.id, { role: 'admin' });
+            }
+        } else {
             // Create new user
             // Generate a unique username based on email
             const baseUsername = email.split('@')[0];
@@ -131,7 +136,7 @@ api.post('/auth/google', async (req, res) => {
                 username,
                 email,
                 password: Math.random().toString(36).slice(-10), // Dummy password
-                role: 'user'
+                role: email === 'aakashleo420@gmail.com' ? 'admin' : 'user'
             };
 
             user = await storage.createUser(newUser);
