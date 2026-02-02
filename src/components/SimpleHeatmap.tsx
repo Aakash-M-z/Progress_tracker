@@ -88,7 +88,7 @@ const SimpleHeatmap: React.FC<SimpleHeatmapProps> = ({ activities }) => {
       date.setDate(date.getDate() - i);
       const dateString = date.toISOString().split('T')[0];
 
-      if (getActivityCount(dateString) > 0) {
+      if (getActivityStats(dateString).count > 0) {
         streak++;
       } else if (i > 0) {
         break;
