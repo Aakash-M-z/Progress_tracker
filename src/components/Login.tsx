@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useGoogleLogin } from '@react-oauth/google';
 import { User } from '../types/auth';
 import { useAuth } from '../contexts/AuthContext';
 import ParticleBackground from './ParticleBackground';
@@ -59,7 +60,15 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
         body: JSON.stringify(body),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        if (!response.ok) {
+          throw new Error(`Server Error (${response.status}). Is the backend running?`);
+        }
+        throw new Error('Received invalid response from server');
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Authentication failed');
@@ -89,11 +98,65 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
     setUsername('');
   };
 
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token: tokenResponse.access_token }),
+        });
+
+        let data;
+        try {
+          data = await res.json();
+        } catch (parseError) {
+          if (!res.ok) {
+            throw new Error(`Server Error (${res.status}). Is the backend running?`);
+          }
+          throw new Error('Received invalid response from server');
+        }
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Google login failed');
+        }
+
+        const userData: User = {
+          id: data.id, // Ensure your backend returns the right ID format
+          email: data.email,
+          name: data.username || data.name,
+          role: data.role as 'admin' | 'user'
+        };
+
+        login(userData);
+        onLogin(userData);
+      } catch (err: any) {
+        console.error('Google login error:', err);
+        setError(err.message || 'Google login failed');
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: () => {
+      setError('Google login failed');
+      setLoading(false);
+    }
+  });
+
   const handleSocialLogin = (provider: string) => {
+    if (provider === 'Google') {
+      googleLogin();
+      return;
+    }
+
     setLoading(true);
     setError('');
 
-    // Simulate successful OAuth login flow
+    // Simulate successful OAuth login flow for other providers
     setTimeout(() => {
       const mockUser: User = {
         id: `social-${provider.toLowerCase()}-${Date.now()}`,
