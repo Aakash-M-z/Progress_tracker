@@ -194,7 +194,7 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 animate-fadeIn">
+    <div className="min-h-screen bg-gray-50 dark:bg-rich-black text-gray-900 dark:text-gold-50 animate-fadeIn selection:bg-blue-500/30 dark:selection:bg-gold-500/30 selection:text-blue-600 dark:selection:text-gold-200">
       <Header />
       <DailyProblemNotification />
       {showDailyProblem && (
@@ -208,7 +208,7 @@ const AppContent: React.FC = () => {
         <Hero />
         {/* Tab Navigation */}
         <div className="mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-2">
+          <div className="glass-dark rounded-xl p-2 border border-gold-500/10">
             <nav className="flex space-x-2 overflow-x-auto">
               {tabs.map((tab) => (
                 <button
@@ -219,8 +219,8 @@ const AppContent: React.FC = () => {
                     handleTabChange(tab.id);
                   }}
                   className={`py-3 px-4 font-medium text-sm flex items-center space-x-2 rounded-lg transition-all duration-200 whitespace-nowrap touch-manipulation ${activeTab === tab.id
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md transform scale-105'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700'
+                    ? 'bg-gradient-to-r from-gold-500 to-gold-400 text-rich-black-900 shadow-lg shadow-gold-500/20 transform scale-105 font-bold'
+                    : 'text-gold-200/60 hover:text-gold-100 hover:bg-gold-500/10'
                     }`}
                 >
                   <span className="text-lg">{tab.icon}</span>
