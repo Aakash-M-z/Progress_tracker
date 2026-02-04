@@ -1577,32 +1577,39 @@ textarea,
 }
 
 /* Enhanced water drop button effect - Gold Theme */
+@keyframes continuous-ripple {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.6;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  }
+
+  100% {
+    width: 400px;
+    height: 400px;
+    opacity: 0;
+    box-shadow: 0 0 60px rgba(255, 215, 0, 0);
+  }
+}
+
 .water-drop-button {
   position: relative;
   overflow: hidden;
 }
 
-.water-drop-button::before {
+/* Use ::after to avoid conflict with gold-theme-button ::before */
+.water-drop-button::after {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 0;
-  height: 0;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.5) 0%, rgba(218, 165, 32, 0.3) 50%, rgba(255, 223, 0, 0.1) 70%, transparent 80%);
-  border-radius: 50%;
   transform: translate(-50%, -50%);
-  transition: all 0.6s ease;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(218, 165, 32, 0.1) 50%, transparent 70%);
+  border-radius: 50%;
   pointer-events: none;
-  box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
-}
-
-.water-drop-button:active::before {
-  width: 350px;
-  height: 350px;
-  opacity: 0;
-  transition: all 0.8s ease;
-  box-shadow: 0 0 60px rgba(255, 215, 0, 0.2);
+  z-index: 1;
+  animation: continuous-ripple 2.5s infinite ease-out;
 }
 
 /* Hide particle effects */
@@ -2198,4 +2205,15 @@ nav button:active {
 .touch-manipulation {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Fix browser autofill background color */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #1f2937 inset !important;
+  -webkit-text-fill-color: white !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: white;
 }
