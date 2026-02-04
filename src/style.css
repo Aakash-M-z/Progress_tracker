@@ -16,37 +16,59 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
+  background-color: #f9fafb;
+  /* Light mode bg */
+  color: #111827;
+  /* Light mode text */
+  width: 100%;
+}
+
+.dark body {
+  background-color: #050505;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  color: #F5EED9;
+}
+
+html {
+  height: 100%;
+  width: 100%;
+  background-color: #050505;
 }
 
 /* Custom scrollbar for better UX */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #0f0f0f;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: #A37517;
+  /* Gold-500 */
   border-radius: 4px;
+  border: 1px solid #050505;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: #CF9E42;
+  /* Gold-400 */
 }
 
 /* Dark mode scrollbar */
 .dark ::-webkit-scrollbar-track {
-  background: #374151;
+  background: #0f0f0f;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #6b7280;
+  background: linear-gradient(180deg, #A37517 0%, #69480D 100%);
+  border: 1px solid #050505;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: linear-gradient(180deg, #CF9E42 0%, #8A6012 100%);
 }
 
 /* Custom animations */
@@ -209,11 +231,11 @@ body {
 
 /* Glass morphism effect */
 .glass {
-  @apply backdrop-blur-lg bg-white/10 border border-white/20;
+  @apply backdrop-blur-lg bg-white/5 border border-white/10;
 }
 
 .glass-dark {
-  @apply backdrop-blur-lg bg-gray-900/10 border border-gray-700/20;
+  @apply backdrop-blur-xl bg-black/60 border border-gold-500/30 shadow-lg shadow-black/40;
 }
 
 /* Elegant gradient backgrounds */
