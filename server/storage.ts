@@ -1,5 +1,5 @@
 import { User, InsertUser, Activity, InsertActivity } from "../shared/schema.js";
-import { MongoStorage } from "./mongo-storage.js";
+import { FileStorage } from "./file-storage.js";
 
 export interface IStorage {
   getUser(id: string | number): Promise<User | undefined>;
@@ -13,4 +13,4 @@ export interface IStorage {
   updateUser(id: string | number, user: Partial<User>): Promise<User | undefined>;
 }
 
-export const storage = new MongoStorage();
+export const storage = new FileStorage();
