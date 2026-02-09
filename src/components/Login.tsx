@@ -96,8 +96,9 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
         try {
           data = await res.json();
         } catch (parseError) {
+          console.error('Failed to parse response:', parseError);
           if (!res.ok) {
-            throw new Error(`Server Error (${res.status}). Is the backend running?`);
+            throw new Error(`Server Error (${res.status}). Check backend status.`);
           }
           throw new Error('Received invalid response from server');
         }
@@ -107,7 +108,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
         }
 
         const userData: User = {
-          id: data.id, // Ensure your backend returns the right ID format
+          id: data.id,
           email: data.email,
           name: data.username || data.name,
           role: data.role as 'admin' | 'user'
@@ -116,8 +117,8 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
         login(userData);
         onLogin(userData);
       } catch (err: any) {
-        console.error('Google login error:', err);
-        setError(err.message || 'Google login failed');
+        console.error('Google login error detail:', err);
+        setError(err.message || 'Google login failed. Please try again.');
       } finally {
         setLoading(false);
       }
