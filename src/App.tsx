@@ -24,7 +24,6 @@ import SolutionResources from './components/SolutionResources';
 import QuickAddProblem from './components/QuickAddProblem';
 import DailyMotivation from './components/DailyMotivation';
 import UserProfile from './components/UserProfile';
-import Hero from './components/Hero';
 import ErrorBoundary from './components/ErrorBoundary';
 
 const AppContent: React.FC = () => {
@@ -205,7 +204,6 @@ const AppContent: React.FC = () => {
       )}
       <NotificationSettings onTriggerDailyProblem={() => setShowDailyProblem(true)} />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Hero />
         {/* Tab Navigation */}
         <div className="mb-8">
           <div className="glass-dark rounded-xl p-2 border border-gold-500/10">
@@ -238,8 +236,7 @@ const AppContent: React.FC = () => {
               <div className="animate-fadeIn space-y-8">
                 {/* Daily Motivation at the top with enhanced glow effect */}
                 <div className="relative mb-8">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-3xl blur-2xl opacity-40 animate-pulse"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-400 rounded-3xl blur-xl opacity-20 animate-ping"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-3xl blur-2xl opacity-30 animate-pulse"></div>
                   <div className="relative transform hover:scale-105 transition-all duration-300">
                     <DailyMotivation />
                   </div>
