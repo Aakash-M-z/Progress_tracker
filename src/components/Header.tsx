@@ -84,8 +84,8 @@ const Header: React.FC = () => {
               />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
-                DSA <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-400">Tracker</span>
+              <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight leading-tight" style={{ fontFamily: '"Orbitron", "Exo 2", "Rajdhani", sans-serif' }}>
+                Progress <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-400">Tracker</span>
               </h1>
               <p className="text-gray-500 dark:text-gray-400 mt-0.5 text-[10px] sm:text-xs font-medium uppercase tracking-[0.2em]">Mastering Algorithms</p>
             </div>
