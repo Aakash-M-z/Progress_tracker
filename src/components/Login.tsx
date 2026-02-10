@@ -184,13 +184,12 @@ const Login: React.FC<LoginProps> = ({ onLogin, onBack }) => {
           />
 
           <div className="max-w-md w-full relative z-10">
-            <div className="bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-gray-700/50 transform transition-all duration-500">
-              <div className="text-center mb-10">
-                <div className="text-7xl mb-6 animate-bounce inline-block">🚀</div>
-                <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">
+            <div className="bg-gray-900/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-gray-700/50 transform transition-all duration-500">
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">
                   {isLogin ? 'Welcome Back' : 'Create Account'}
                 </h1>
-                <p className="text-gray-400 text-lg">
+                <p className="text-gray-400 text-base">
                   {isLogin ? 'Sign in to continue your DSA journey' : 'Start your DSA journey today'}
                 </p>
               </div>
