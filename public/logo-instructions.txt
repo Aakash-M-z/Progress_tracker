@@ -1,0 +1,12 @@
+LOGO SETUP INSTRUCTIONS
+========================
+
+Please save your Progress Tracker logo image as:
+Progress_tracker/public/logo.png
+
+The logo should be:
+- PNG format with transparent background
+- Recommended size: 512x512 pixels or larger
+- The image will be automatically resized to fit the header
+
+Once you save the logo.png file in the public folder, the header will automatically display it.
