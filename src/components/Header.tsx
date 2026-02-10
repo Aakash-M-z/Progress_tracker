@@ -71,8 +71,17 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-4 group">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300 border border-white/10">
-              🚀
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+              <img
+                src="/logo.png"
+                alt="Progress Tracker Logo"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  // Fallback to rocket emoji if logo image not found
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement!.innerHTML = '<div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-blue-500/20 border border-white/10">🚀</div>';
+                }}
+              />
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight leading-tight">
