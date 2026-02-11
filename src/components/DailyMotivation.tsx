@@ -85,12 +85,13 @@ const DailyMotivation: React.FC = () => {
 
   return (
     <div className="relative mb-6 overflow-hidden">
-      <div className={`bg-gradient-to-r ${currentQuote.color} rounded-2xl p-6 text-white shadow-2xl transform transition-all duration-500 ${isAnimating ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}`}>
-        {/* Animated background elements */}
+      <div className={`bg-gradient-to-r ${currentQuote.color} rounded-2xl p-6 text-white shadow-2xl transform transition-all duration-500 ${isAnimating ? 'scale-95 opacity-80' : 'scale-100 opacity-100'} border border-yellow-500/20`}>
+        {/* Animated background elements with golden theme */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full animate-float"></div>
-          <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-white/5 rounded-full animate-pulse"></div>
-          <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/10 rounded-full animate-bounce"></div>
+          <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 rounded-full animate-float blur-xl"></div>
+          <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-yellow-400/15 to-amber-500/10 rounded-full animate-pulse blur-2xl"></div>
+          <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-yellow-500/20 rounded-full animate-float blur-lg" style={{ animationDelay: '1s', animationDuration: '4s' }}></div>
+          <div className="absolute top-1/4 left-1/3 w-20 h-20 bg-amber-400/10 rounded-full animate-pulse blur-xl" style={{ animationDelay: '0.5s' }}></div>
         </div>
 
         <div className="relative z-10">
