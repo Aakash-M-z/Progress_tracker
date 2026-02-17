@@ -1,11 +1,11 @@
 # Progress Tracker
 
 <p align="center">
-  <img src="./public/demo.gif" alt="Progress Tracker - Demo" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);" />
+  <img src="./public/demo.gif" alt="Progress Tracker Demo" width="100%" />
 </p>
 
 <p align="center">
-  <strong>A modern, elegant dashboard to track your Data Structures & Algorithms learning journey</strong>
+  <strong>A clean and practical dashboard to track your Data Structures and Algorithms learning journey</strong>
 </p>
 
 <p align="center">
@@ -17,68 +17,75 @@
 
 ---
 
-## ✨ Features
+## About the Project
 
-### 📊 **Activity Tracking**
-- Log solved problems with difficulty, platform, time spent, and notes
-- Topic-wise and problem-type categorization
-- Multi-platform support (LeetCode, CodeForces, HackerRank, etc.)
+Progress Tracker is a full-stack web application built to help developers stay consistent with their Data Structures and Algorithms practice.
 
-### 🗺️ **Learning Roadmap**
-- Structured DSA roadmap from fundamentals to advanced topics
-- Visual progress indicators for completed and in-progress topics
-- Smart filters for difficulty and topic categories
+Instead of solving problems randomly across platforms, this tool helps you log your activity, visualize your improvement, and maintain discipline throughout your preparation journey.
 
-### 📈 **Analytics & Visualization**
-- Daily activity heatmap for consistency tracking
-- Difficulty-wise and topic-wise performance statistics
-- Insights into learning patterns and progress trends
-
-### 🎯 **Motivation & Productivity**
-- Daily streak tracking with visual indicators
-- Milestone-based progress monitoring
-- Daily motivational quotes to keep you inspired
-
-### 🎨 **User Experience**
-- Fully responsive layout for desktop and mobile
-- Beautiful dark theme with golden accents
-- Clean, intuitive user interface
-- Smooth animations and transitions
+It is designed for students preparing for coding interviews, competitive programming, and placement exams.
 
 ---
 
-## 🚀 Technology Stack
+## Core Features
 
-- **Frontend**: React 18 with TypeScript
-- **Styling**: Tailwind CSS with custom animations
-- **Build Tool**: Vite for lightning-fast development
-- **State Management**: React Context API
-- **Visualization**: Custom charts and heatmaps
-- **Backend**: Express.js with file-based storage
-- **Authentication**: Google OAuth integration
+### Activity Tracking
+- Log solved problems with difficulty, platform, time spent, and notes  
+- Categorize problems by topic and problem type  
+- Track progress across platforms such as LeetCode, CodeForces, and HackerRank  
+
+### Structured Learning Roadmap
+- Follow a topic-by-topic DSA roadmap  
+- Mark topics as completed or in progress  
+- Filter topics by difficulty and category  
+
+### Analytics and Visualization
+- Daily activity heatmap to monitor consistency  
+- Topic-wise and difficulty-wise performance insights  
+- Visual trends showing long-term progress  
+
+### Motivation and Productivity
+- Daily streak tracking  
+- Milestone-based progress monitoring  
+- Built-in motivational quotes  
+
+### User Experience
+- Fully responsive design  
+- Clean dark theme with minimal distractions  
+- Smooth animations and intuitive layout  
 
 ---
 
-## 📦 Getting Started
+## Technology Stack
+
+Frontend  
+- React 18 with TypeScript  
+- Tailwind CSS for styling  
+- Vite for fast development  
+
+Backend  
+- Express.js  
+- File-based data storage  
+- Google OAuth authentication  
+
+State Management  
+- React Context API  
+
+---
+
+## Getting Started
 
 ### Prerequisites
-- Node.js v16 or higher
-- npm or yarn
+
+- Node.js v16 or higher  
+- npm or yarn  
 
 ### Installation
 
 ```bash
-# Clone the repository
 git clone https://github.com/Aakash-M-z/Progress_tracker.git
-
-# Navigate to project directory
 cd Progress_tracker
-
-# Install dependencies
 npm install
-# or
-yarn install
-```
 
 ### Running the Application
 
@@ -96,8 +103,7 @@ The application will be available at `http://localhost:5000`
 
 ---
 
-## 🎯 Usage
-
+##  Usage
 1. **Sign In**: Use Google OAuth or create an account
 2. **Log Activities**: Add solved problems using the Activity Form
 3. **Track Progress**: Monitor your progress via the DSA Roadmap
@@ -106,8 +112,7 @@ The application will be available at `http://localhost:5000`
 
 ---
 
-## 🏗️ Build for Production
-
+## Build for Production
 ```bash
 npm run build
 # or
@@ -118,7 +123,7 @@ Deploy the generated `dist` directory to any static hosting provider.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 src/
@@ -152,7 +157,7 @@ server/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please follow these steps:
 
@@ -164,16 +169,5 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📄 License
+<p align="center"><strong><span style="font-size:18px;">Give your 💖</span></strong></p>
 
-This project is licensed under the MIT License.
-
----
-
-## 📧 Contact
-
-For questions, issues, or feedback, please use the [GitHub repository issue tracker](https://github.com/Aakash-M-z/Progress_tracker/issues).
-
----
-
-<p align="center">Made with ❤️ by developers, for developers</p>
