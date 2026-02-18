@@ -13,6 +13,9 @@
   <img src="https://img.shields.io/badge/TypeScript-5.8.3-blue?style=flat-square&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Tailwind-3.3.5-blue?style=flat-square&logo=tailwindcss" alt="Tailwind CSS" />
   <img src="https://img.shields.io/badge/Vite-7.0.4-purple?style=flat-square&logo=vite" alt="Vite" />
+  <img src="https://img.shields.io/badge/Node.js-20.x-green?style=flat-square&logo=node.js" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Express-4.x-black?style=flat-square&logo=express" alt="Express" />
+  <img src="https://img.shields.io/badge/MongoDB-6.x-green?style=flat-square&logo=mongodb" alt="MongoDB" />
 </p>
 
 ---
