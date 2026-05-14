@@ -25,16 +25,21 @@ function getTransporter(): Transporter {
         if (process.env.EMAIL_USER) {
             _transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
-                port: 465,
-                secure: true, // use TLS
+                port: 587,
+                secure: false, // use STARTTLS for better cloud compatibility
                 auth: {
-                    user: (process.env.EMAIL_USER || '').replace(/['"]/g, ''),
-                    pass: (process.env.EMAIL_PASS || '').replace(/['"]/g, ''), // App Password
+                    user: (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim(),
+                    pass: (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim(), // App Password
                 },
+                connectionTimeout: 10000, // 10s
+                greetingTimeout: 10000,
+                socketTimeout: 20000,
                 tls: {
-                    rejectUnauthorized: false // Helps with some network environments
+                    rejectUnauthorized: false, // Helps with some network environments
+                    ciphers: 'SSLv3'
                 }
             });
+
         } else {
             _transporter = nodemailer.createTransport({
                 host: process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com',
