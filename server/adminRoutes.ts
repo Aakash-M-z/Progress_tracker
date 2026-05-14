@@ -6,8 +6,13 @@ import {
     UserModel, ActivityModel, AdminLogModel, TaskModel,
     FeatureFlagModel, NotificationModel, InterviewSessionModel
 } from './models.js';
-import { sendWelcomeEmail } from './email.js';
-import { sendAccountDeactivatedEmail, sendAccountActivatedEmail } from './email.service.js';
+import { 
+    sendWelcomeEmail, 
+    sendAccountDeactivatedEmail, 
+    sendAccountActivatedEmail,
+    isEmailEnabled 
+} from './email.service.js';
+
 
 const router = Router();
 
@@ -502,7 +507,8 @@ router.get('/health-details', async (req, res) => {
             dbLatencyMs: latency,
             memory: process.memoryUsage(),
             env: process.env.NODE_ENV,
-            isFallback: !(req as any).dbConnected
+            isFallback: !(req as any).dbConnected,
+            emailEnabled: isEmailEnabled()
         });
     } catch (err: any) {
         res.status(500).json({ error: err.message });
