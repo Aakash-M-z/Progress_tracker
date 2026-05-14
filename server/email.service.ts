@@ -31,14 +31,15 @@ function getTransporter(): Transporter {
                     user: (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim(),
                     pass: (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim(), // App Password
                 },
-                connectionTimeout: 10000, // 10s
-                greetingTimeout: 10000,
-                socketTimeout: 20000,
+                connectionTimeout: 15000, // 15s
+                greetingTimeout: 15000,
+                socketTimeout: 30000,
                 tls: {
                     rejectUnauthorized: false, // Helps with some network environments
-                    ciphers: 'SSLv3'
+                    requireTLS: true,          // Ensure STARTTLS is used
                 }
             });
+
 
         } else {
             _transporter = nodemailer.createTransport({

@@ -667,4 +667,31 @@ router.get('/interview-analytics', async (req, res) => {
     }
 });
 
+// ── 8. SMTP Diagnostic Endpoint ───────────────────────────
+router.get('/test-email', async (req, res) => {
+    try {
+        const testEmail = req.query.email as string || (req as any).adminUser?.email || 'aakashext@gmail.com';
+        console.log(`[admin:test-email] Triggering manual test to: ${testEmail}`);
+        
+        await sendWelcomeEmail(testEmail, 'Test Admin User');
+        
+        res.json({ 
+            success: true, 
+            message: `Test email sent to ${testEmail}. Check your inbox/spam.`,
+            config: {
+                user: process.env.EMAIL_USER ? 'Present' : 'Missing',
+                pass: process.env.EMAIL_PASS ? 'Present' : 'Missing',
+                from: process.env.EMAIL_FROM || 'Default'
+            }
+        });
+    } catch (err: any) {
+        console.error('[admin:test-email] Manual test failed:', err);
+        res.status(500).json({ 
+            success: false, 
+            error: err.message,
+            stack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+        });
+    }
+});
+
 export default router;
