@@ -56,6 +56,45 @@ router.use((req, res, next) => {
 // USER MANAGEMENT
 // ═════════════════════════════════════════════════════════════════════════════
 
+// ── GET /admin/test-email — Diagnostic tool ──────────────────────────────────
+router.get('/test-email', async (req: Request, res: Response) => {
+    try {
+        const { email } = req.query;
+        const target = (email as string) || (req as any).user?.email;
+
+        if (!target) {
+            return res.status(400).json({ error: 'No target email provided' });
+        }
+
+        console.log(`[admin:test] 📨 Triggering test email to: ${target}`);
+        
+        // We use a dummy username for the test
+        const success = await sendWelcomeEmail(target, 'Test Admin');
+        
+        if (success) {
+            res.json({ 
+                success: true, 
+                message: `Test email sent to ${target}. Check your inbox/spam.`,
+                provider: process.env.EMAIL_USER ? 'Gmail' : 'Brevo'
+            });
+        } else {
+            res.status(500).json({ 
+                success: false, 
+                error: 'Email service returned failure. Check server logs.',
+                hint: 'Check if EMAIL_USER and EMAIL_PASS are set in Vercel environment variables.'
+            });
+        }
+
+    } catch (err: any) {
+        console.error('[admin:test] ❌ Test email failed:', err?.message);
+        res.status(500).json({ 
+            success: false, 
+            error: err.message,
+            hint: 'Check EMAIL_USER/PASS and ensure Port 465 is not blocked.'
+        });
+    }
+});
+
 // ── GET /admin/users — list all users ────────────────────────────────────────
 router.get('/users', async (req: Request, res: Response) => {
     if (!(req as any).dbConnected) {
@@ -150,21 +189,26 @@ router.patch('/users/:id/status', async (req: Request, res: Response) => {
 
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        const action = isActive ? 'ACTIVATE_USER' : 'DEACTIVATE_USER';
-        await logAction(req, action, String(req.params.id), (user as any).email,
-            `${isActive ? 'Activated' : 'Deactivated'} user "${(user as any).username}"`);
+        const targetEmail = (user as any).email;
+        const targetUsername = (user as any).username;
 
+        const action = isActive ? 'ACTIVATE_USER' : 'DEACTIVATE_USER';
+        await logAction(req, action, String(req.params.id), targetEmail,
+            `${isActive ? 'Activated' : 'Deactivated'} user "${targetUsername}"`);
+
+        // Trigger emails based on status — await to ensure delivery on serverless
         if (!isActive) {
-            console.log(`[admin:status] Triggering deactivation email for: ${(user as any).email}`);
-            await sendAccountDeactivatedEmail((user as any).email, (user as any).username).catch(err =>
-                console.error('[admin/status] Deactivation email failed:', err?.message)
+            console.log(`[admin:status] 📨 Triggering deactivation email for: ${targetEmail}`);
+            await sendAccountDeactivatedEmail(targetEmail, targetUsername).catch(err =>
+                console.error('[admin:status] ❌ Deactivation email failed:', err?.message)
             );
         } else {
-            console.log(`[admin:status] Triggering activation email for: ${(user as any).email}`);
-            await sendAccountActivatedEmail((user as any).email, (user as any).username).catch(err =>
-                console.error('[admin/status] Activation email failed:', err?.message)
+            console.log(`[admin:status] 📨 Triggering activation email for: ${targetEmail}`);
+            await sendAccountActivatedEmail(targetEmail, targetUsername).catch(err =>
+                console.error('[admin:status] ❌ Activation email failed:', err?.message)
             );
         }
+
 
         res.json({ id: req.params.id, isActive });
     } catch (err: any) {
@@ -221,15 +265,18 @@ router.delete('/users/:id', async (req: Request, res: Response) => {
 
         console.log(`[admin/delete] result:`, user ? `found ${(user as any).username}` : 'NOT FOUND');
 
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        const targetEmail = (user as any).email;
+        const targetUsername = (user as any).username;
 
-        await logAction(req, 'DEACTIVATE_USER', String(req.params.id), (user as any).email,
-            `Deactivated user "${(user as any).username}" — access revoked immediately`);
+        await logAction(req, 'DEACTIVATE_USER', String(req.params.id), targetEmail,
+            `Deactivated user "${targetUsername}" — access revoked immediately`);
 
         // Notify the user their account was deactivated — await for serverless reliability
-        await sendAccountDeactivatedEmail((user as any).email, (user as any).username).catch(err =>
-            console.error('[admin/deactivate] Notification email failed:', err?.message)
+        console.log(`[admin:delete] 📨 Triggering deactivation email for: ${targetEmail}`);
+        await sendAccountDeactivatedEmail(targetEmail, targetUsername).catch(err =>
+            console.error('[admin:delete] ❌ Notification email failed:', err?.message)
         );
+
 
         res.status(204).send();
     } catch (err: any) {
