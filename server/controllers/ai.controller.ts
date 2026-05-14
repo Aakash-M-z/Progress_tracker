@@ -107,14 +107,14 @@ export class AIController {
     static async getJobStatus(req: Request, res: Response) {
         try {
             const { jobId } = req.params;
-            const result = await storage.getJobResult(jobId);
+            const result = await storage.getJobResult(jobId as string);
             
             if (result) {
                 return res.json({ status: 'completed', result });
             }
 
             // Check if job exists in queue
-            const job = await aiQueue.getJob(jobId) || await complexityQueue.getJob(jobId);
+            const job = (aiQueue && await aiQueue.getJob(jobId as string)) || (complexityQueue && await complexityQueue.getJob(jobId as string));
             if (!job) return res.status(404).json({ error: 'Job not found' });
 
             const state = await job.getState();
