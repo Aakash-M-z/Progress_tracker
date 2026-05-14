@@ -54,6 +54,18 @@ const SystemHealth = () => {
                 <div className="text-gray-400 text-sm mb-2">Environment</div>
                 <div className="text-white text-xl font-bold capitalize">{health.env}</div>
             </div>
+
+            <div className="card-dark p-5">
+                <div className="text-gray-400 text-sm mb-2">Email Service</div>
+                <div className={`text-xl font-bold flex items-center gap-2 ${health.emailEnabled ? 'text-green-500' : 'text-red-500'}`}>
+                    <span className="relative flex h-3 w-3">
+                        {health.emailEnabled && <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-green-400"></span>}
+                        <span className={`relative inline-flex rounded-full h-3 w-3 ${health.emailEnabled ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                    </span>
+                    {health.emailEnabled ? 'Active' : 'Disabled'}
+                </div>
+            </div>
+
         </motion.div>
     );
 };

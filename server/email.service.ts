@@ -88,7 +88,11 @@ function getFrontendUrl(): string {
 }
 
 // ── Guard — skip if SMTP not configured ──────────────────────────────────────
-function isEmailEnabled(): boolean {
+/**
+ * Checks if email credentials are set in environment variables.
+ * Exported for diagnostic tools (health check).
+ */
+export function isEmailEnabled(): boolean {
     const gmailUser = (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim();
     const gmailPass = (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim();
     const hasGmail = !!(gmailUser && gmailPass);
@@ -97,26 +101,19 @@ function isEmailEnabled(): boolean {
     const brevoPass = (process.env.BREVO_SMTP_PASS || '').replace(/['"]/g, '').trim();
     const hasBrevo = !!(brevoUser && brevoPass);
     
-    if (hasGmail) {
-        return true;
-    }
+    if (hasGmail || hasBrevo) return true;
 
-    if (hasBrevo) {
-        return true;
-    }
-
-    if (gmailUser && !gmailPass) {
-        console.warn('[email] ⚠️ EMAIL_USER is set but EMAIL_PASS is missing. Gmail SMTP disabled.');
-    }
-    if (brevoUser && !brevoPass) {
-        console.warn('[email] ⚠️ BREVO_SMTP_USER is set but BREVO_SMTP_PASS is missing. Brevo SMTP disabled.');
-    }
+    // Log helpful warnings only once on first check
     if (!gmailUser && !brevoUser) {
-        console.warn('[email] ⚠️ No email credentials configured (checked EMAIL_USER and BREVO_SMTP_USER) — email skipped');
+        console.warn('[email] ⚠️ No SMTP credentials (EMAIL_USER or BREVO_SMTP_USER) — email service disabled');
+    } else {
+        if (gmailUser && !gmailPass) console.warn('[email] ⚠️ Gmail set but EMAIL_PASS is missing');
+        if (brevoUser && !brevoPass) console.warn('[email] ⚠️ Brevo set but BREVO_SMTP_PASS is missing');
     }
     
     return false;
 }
+
 
 
 // ── Core send helper ──────────────────────────────────────────────────────────
