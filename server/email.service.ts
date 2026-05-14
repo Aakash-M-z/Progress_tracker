@@ -25,20 +25,20 @@ function getTransporter(): Transporter {
         if (process.env.EMAIL_USER) {
             _transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
-                port: 587,
-                secure: false, // use STARTTLS for better cloud compatibility
+                port: 465,
+                secure: true, // true for port 465, false for other ports
                 auth: {
                     user: (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim(),
                     pass: (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim(), // App Password
                 },
-                connectionTimeout: 15000, // 15s
-                greetingTimeout: 15000,
+                connectionTimeout: 20000, // 20s
+                greetingTimeout: 20000,
                 socketTimeout: 30000,
                 tls: {
                     rejectUnauthorized: false, // Helps with some network environments
-                    requireTLS: true,          // Ensure STARTTLS is used
                 }
             } as any);
+
 
 
 
@@ -89,23 +89,37 @@ function getFrontendUrl(): string {
 
 // ── Guard — skip if SMTP not configured ──────────────────────────────────────
 function isEmailEnabled(): boolean {
-    const user = (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim();
-    const pass = (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim();
-    const hasGmail = !!(user && pass);
+    const gmailUser = (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim();
+    const gmailPass = (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim();
+    const hasGmail = !!(gmailUser && gmailPass);
     
-    const bUser = (process.env.BREVO_SMTP_USER || '').replace(/['"]/g, '').trim();
-    const bPass = (process.env.BREVO_SMTP_PASS || '').replace(/['"]/g, '').trim();
-    const hasBrevo = !!(bUser && bPass);
+    const brevoUser = (process.env.BREVO_SMTP_USER || '').replace(/['"]/g, '').trim();
+    const brevoPass = (process.env.BREVO_SMTP_PASS || '').replace(/['"]/g, '').trim();
+    const hasBrevo = !!(brevoUser && brevoPass);
     
-    if (hasGmail || hasBrevo) {
+    if (hasGmail) {
         return true;
     }
 
-    console.warn('[email] ΓÜá∩╕Å No email credentials configured (checked EMAIL_USER/PASS and BREVO_SMTP_USER/PASS) ΓÇö email skipped');
+    if (hasBrevo) {
+        return true;
+    }
+
+    if (gmailUser && !gmailPass) {
+        console.warn('[email] ⚠️ EMAIL_USER is set but EMAIL_PASS is missing. Gmail SMTP disabled.');
+    }
+    if (brevoUser && !brevoPass) {
+        console.warn('[email] ⚠️ BREVO_SMTP_USER is set but BREVO_SMTP_PASS is missing. Brevo SMTP disabled.');
+    }
+    if (!gmailUser && !brevoUser) {
+        console.warn('[email] ⚠️ No email credentials configured (checked EMAIL_USER and BREVO_SMTP_USER) — email skipped');
+    }
+    
     return false;
 }
 
-// ΓöÇΓöÇ Core send helper ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+
+// ── Core send helper ──────────────────────────────────────────────────────────
 interface SendOptions {
     to: string;
     subject: string;
@@ -114,44 +128,51 @@ interface SendOptions {
 }
 
 async function send(opts: SendOptions): Promise<boolean> {
-    if (!isEmailEnabled()) return false;
+    if (!isEmailEnabled()) {
+        console.warn(`[email:${opts.tag}] Email skipped: SMTP not configured.`);
+        return false;
+    }
 
     const from = getFromAddress();
-
-    console.log(`[email:${opts.tag}] Attempting to send ΓåÆ ${opts.to} | Subject: ${opts.subject}`);
+    console.log(`[email:${opts.tag}] Attempting to send → ${opts.to} | Subject: ${opts.subject}`);
 
     try {
-        const info = await getTransporter().sendMail({
+        const transporter = getTransporter();
+        const info = await transporter.sendMail({
             from,
             to: opts.to,
             subject: opts.subject,
             html: opts.html,
         });
 
-        console.log(`[email:${opts.tag}] Γ£à Sent successfully ΓåÆ ${opts.to} | messageId: ${info.messageId}`);
-
+        console.log(`[email:${opts.tag}] ✅ Sent successfully → ${opts.to} | messageId: ${info.messageId}`);
         return true;
     } catch (err: any) {
         console.error(`[email:${opts.tag}] ❌ Failed → ${opts.to}`);
         console.error(`[email:${opts.tag}]    Error: ${err?.message ?? err}`);
+        if (err?.code === 'EAUTH') {
+            console.error(`[email:${opts.tag}]    Authentication failed. Check EMAIL_USER/PASS or BREVO credentials.`);
+        }
         // Reset transporter so next call gets a fresh connection
         _transporter = null;
         return false;
     }
 }
 
+
 // ─────────────────────────────────────────────────────────────────────────────
 // PUBLIC API — identical signatures to the old Resend service
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function sendWelcomeEmail(email: string, username: string): Promise<void> {
-    await send({
+export async function sendWelcomeEmail(email: string, username: string): Promise<boolean> {
+    return await send({
         to: email,
         subject: `Welcome to AlgoAscent, ${username}! 🚀`,
         html: welcomeTemplate(username),
         tag: 'welcome',
     });
 }
+
 
 export async function sendPasswordResetEmail(email: string, username: string): Promise<boolean> {
     const rawToken = crypto.randomBytes(32).toString('hex');
@@ -202,8 +223,8 @@ export async function sendVerificationEmail(email: string, username: string): Pr
  * Send account deactivation notification.
  * Called after admin deactivates a user.
  */
-export async function sendAccountDeactivatedEmail(email: string, username: string): Promise<void> {
-    await send({
+export async function sendAccountDeactivatedEmail(email: string, username: string): Promise<boolean> {
+    return await send({
         to: email,
         subject: 'Your AlgoAscent account has been deactivated',
         html: accountDeactivatedTemplate(username),
@@ -211,15 +232,17 @@ export async function sendAccountDeactivatedEmail(email: string, username: strin
     });
 }
 
+
 /**
  * Send account activation notification.
  * Called after admin reactivates a user.
  */
-export async function sendAccountActivatedEmail(email: string, username: string): Promise<void> {
-    await send({
+export async function sendAccountActivatedEmail(email: string, username: string): Promise<boolean> {
+    return await send({
         to: email,
         subject: 'Your AlgoAscent account has been reactivated',
         html: accountActivatedTemplate(username),
         tag: 'account-activated',
     });
 }
+
