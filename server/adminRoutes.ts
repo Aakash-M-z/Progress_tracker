@@ -197,9 +197,15 @@ router.patch('/users/:id/status', async (req: Request, res: Response) => {
         const targetEmail = (user as any).email;
         const targetUsername = (user as any).username;
 
+        if (!targetEmail) {
+            console.error(`[admin:status] ❌ Cannot send email: User ${req.params.id} has no email address.`);
+            return res.json({ id: req.params.id, isActive, emailSent: false, error: 'User missing email' });
+        }
+
         const action = isActive ? 'ACTIVATE_USER' : 'DEACTIVATE_USER';
         await logAction(req, action, String(req.params.id), targetEmail,
             `${isActive ? 'Activated' : 'Deactivated'} user "${targetUsername}"`);
+
 
         // Trigger emails based on status — await to ensure delivery on serverless
         if (!isActive) {
@@ -280,8 +286,14 @@ router.delete('/users/:id', async (req: Request, res: Response) => {
         const targetEmail = (user as any).email;
         const targetUsername = (user as any).username;
 
+        if (!targetEmail) {
+            console.error(`[admin:delete] ❌ Cannot send email: User ${req.params.id} has no email address.`);
+            return res.status(204).send();
+        }
+
         await logAction(req, 'DEACTIVATE_USER', String(req.params.id), targetEmail,
             `Deactivated user "${targetUsername}" — access revoked immediately`);
+
 
         // Notify the user their account was deactivated — await for serverless reliability
         console.log(`[admin:delete] 📨 Triggering deactivation email for: ${targetEmail}`);
