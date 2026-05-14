@@ -130,3 +130,25 @@ const problemSchema = new Schema({
     createdAt: { type: Date, default: Date.now },
 });
 export const ProblemModel = mongoose.model('Problem', problemSchema);
+
+const problemReviewSchema = new Schema({
+    userId: { type: String, required: true, index: true },
+    problemTitle: { type: String, required: true },
+    category: { type: String, required: true },
+    difficulty: { type: String, required: true },
+    platform: { type: String, required: true },
+    rating: { type: Number, required: true },
+    nextReviewDate: { type: Date, required: true, index: true },
+    interval: { type: Number, required: true },
+    easeFactor: { type: Number, required: true },
+    lastReviewed: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: Date.now },
+});
+export const ProblemReviewModel = mongoose.model('ProblemReview', problemReviewSchema);
+
+const jobResultSchema = new Schema({
+    jobId: { type: String, required: true, unique: true, index: true },
+    result: { type: Schema.Types.Mixed, required: true },
+    createdAt: { type: Date, default: Date.now, index: { expireAfterSeconds: 86400 } }, // 24-hour TTL
+});
+export const JobResultModel = mongoose.model('JobResult', jobResultSchema);

@@ -2,8 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Activity } from '../types';
 import { useAuth } from '../contexts/AuthContext';
-
-interface Props { activities?: Activity[]; }
+import { useActivities } from '../hooks/useActivities';
 
 const LEVELS = [
     { key: 'beginner', label: 'Beginner', icon: '🌱', minProblems: 0, minTopics: 0, minStreak: 0, color: '#22c55e' },
@@ -24,8 +23,9 @@ function calcStreak(activities: Activity[]): number {
     return s;
 }
 
-const UserProfile: React.FC<Props> = ({ activities = [] }) => {
+const UserProfile: React.FC = () => {
     const { user, isLoading: authLoading } = useAuth();
+    const { data: activities = [] } = useActivities();
 
     console.log('[UserProfile] Rendering for user:', user?.id);
 

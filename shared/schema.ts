@@ -107,3 +107,20 @@ export interface InterviewSession {
 }
 
 export type InsertInterviewSession = Omit<InterviewSession, 'id' | 'createdAt'>;
+
+export interface ProblemReview {
+  id: string;
+  userId: string;
+  problemTitle: string;
+  category: string;
+  difficulty: string;
+  platform: string;
+  rating: number;          // 1 to 4 (from Understanding Level)
+  nextReviewDate: Date;
+  interval: number;        // in days
+  easeFactor: number;      // multiplier
+  lastReviewed: Date;
+  createdAt: Date;
+}
+
+export type InsertProblemReview = Omit<ProblemReview, 'id' | 'createdAt' | 'lastReviewed'>;

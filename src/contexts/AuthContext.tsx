@@ -73,32 +73,63 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const stored = SessionManager.getUser();
-    const token = SessionManager.getToken();
+    const initAuth = async () => {
+      const stored = SessionManager.getUser();
+      let token = SessionManager.getToken();
 
-    if (!stored || !token) {
-      // No local session at all
-      setIsLoading(false);
-      return;
-    }
-
-    // Optimistically set user from localStorage so UI doesn't flash
-    setUser(stored);
-
-    // Then verify with backend — catches deactivated accounts
-    verifySession(token).then(verified => {
-      if (verified) {
-        // Update with fresh data from server
-        setUser(verified);
-        SessionManager.saveSession(verified, token);
-      } else {
-        // Account gone or deactivated — clear everything
-        setUser(null);
-        SessionManager.clearSession();
+      if (!stored) {
+        setIsLoading(false);
+        return;
       }
-    }).finally(() => {
-      setIsLoading(false);
-    });
+
+      // If we have a user but no token (e.g. page reload), try to refresh
+      if (!token) {
+        try {
+          const res = await fetch(`${API_BASE}/api/auth/refresh`, {
+            method: 'POST',
+            credentials: 'include'
+          });
+          if (res.ok) {
+            const data = await res.json();
+            token = data.token;
+            SessionManager.setToken(token!);
+          } else {
+            // Refresh failed, token expired
+            SessionManager.clearSession();
+            setUser(null);
+            setIsLoading(false);
+            return;
+          }
+        } catch {
+          // Network error during refresh, assume offline but keep UI
+          setUser(stored);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Optimistically set user from localStorage so UI doesn't flash
+      setUser(stored);
+
+      // Then verify with backend — catches deactivated accounts
+      if (token) {
+        verifySession(token).then(verified => {
+          if (verified) {
+            setUser(verified);
+            SessionManager.saveSession(verified, token!);
+          } else {
+            setUser(null);
+            SessionManager.clearSession();
+          }
+        }).finally(() => {
+          setIsLoading(false);
+        });
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
   }, []);
 
   const login = useCallback((response: AuthResponse | User, token?: string) => {
@@ -118,8 +149,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const logout = useCallback(() => {
+    // Optimistically clear local state
     setUser(null);
     SessionManager.clearSession();
+    // Hit backend to clear HttpOnly cookie
+    fetch(`${API_BASE}/api/auth/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
   }, []);
 
   const updateUser = useCallback((partial: Partial<User>) => {

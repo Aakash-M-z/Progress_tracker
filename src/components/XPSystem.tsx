@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Activity } from '../types';
+import { useActivities } from '../hooks/useActivities';
 import { SUBJECTS, loadProgress } from './CoreSubjects';
 
 /* ── XP Config ─────────────────────────────────────────────── */
@@ -83,7 +84,8 @@ export function getLevelInfo(xp: number) {
 }
 
 /* ── XP Badge (compact, for dashboard) ────────────────────── */
-export const XPBadge: React.FC<{ activities: Activity[]; onClick?: () => void }> = ({ activities, onClick }) => {
+export const XPBadge: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
+  const { data: activities = [] } = useActivities();
   const { total, breakdown } = useMemo(() => calcXP(activities), [activities]);
   const { current, next, progressPct, xpToNext } = useMemo(() => getLevelInfo(total), [total]);
 
@@ -145,7 +147,8 @@ export const XPBadge: React.FC<{ activities: Activity[]; onClick?: () => void }>
 };
 
 /* ── Full XP Panel ─────────────────────────────────────────── */
-const XPSystem: React.FC<{ activities: Activity[] }> = ({ activities }) => {
+const XPSystem: React.FC = () => {
+  const { data: activities = [] } = useActivities();
   const { total, breakdown } = useMemo(() => calcXP(activities), [activities]);
   const { current, next, progressPct, xpToNext } = useMemo(() => getLevelInfo(total), [total]);
 

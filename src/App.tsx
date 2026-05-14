@@ -1,18 +1,18 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Header from './components/Header';
 import Login from './components/Login';
 import HomePage from './components/HomePage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Activity } from './types';
-import { databaseAPI } from './api/database';
 import { SessionManager } from './utils/sessionManager';
-import { dbToFrontendActivity, frontendToDbActivity } from './utils/activityTransform';
 import ToastProvider, { useToast } from './components/Toast';
 import Onboarding, { shouldShowOnboarding } from './components/Onboarding';
 import MobileNav from './components/MobileNav';
-import { SkeletonStatRow, SkeletonCard, SkeletonChart, SkeletonTaskList } from './components/SkeletonLoader';
+import { SkeletonStatRow, SkeletonChart, SkeletonTaskList } from './components/SkeletonLoader';
+import { useActivities, useAddActivity, useDeleteActivity } from './hooks/useActivities';
 
 import SimpleHeatmap from './components/SimpleHeatmap';
 import ProgressStats from './components/ProgressStats';
@@ -163,12 +163,28 @@ const Sidebar: React.FC<{
 };
 
 /* ── Overview Tab ─────────────────────────────────────────────── */
-const OverviewTab: React.FC<{
-    activities: Activity[];
-    loading: boolean;
-    onAddActivity: (a: Activity) => Promise<boolean>;
-    onDeleteActivity: (id: string) => void;
-}> = ({ activities, loading, onAddActivity, onDeleteActivity }) => {
+const OverviewTab: React.FC = () => {
+    const { data: activities = [], isLoading: loading } = useActivities();
+    const { mutateAsync: addActivity } = useAddActivity();
+    const { mutate: deleteActivity } = useDeleteActivity();
+    const { toast } = useToast();
+
+    const onAddActivity = async (partial: Partial<Activity>): Promise<boolean> => {
+        try {
+            await addActivity(partial);
+            return true;
+        } catch {
+            toast('Failed to save activity', 'error');
+            return false;
+        }
+    };
+
+    const onDeleteActivity = (id: string) => {
+        deleteActivity(id, {
+            onError: () => toast('Failed to delete activity', 'error'),
+            onSuccess: () => toast('Activity removed', 'info')
+        });
+    };
     const isNewUser = activities.length === 0;
     const displayActivities = isNewUser ? DEMO_ACTIVITIES : activities;
 
@@ -420,21 +436,14 @@ const OverviewTab: React.FC<{
             )}
 
             {/* Activity form */}
-            <ActivityForm onAddActivity={async (partial) => {
-                const activity: Activity = {
-                    ...partial,
-                    id: Date.now().toString(),
-                    date: new Date().toISOString().split('T')[0],
-                };
-                return onAddActivity(activity);
-            }} />
+            <ActivityForm onAddActivity={onAddActivity} />
             <DailyProblemNotification />
         </div>
     );
 }
 
 /* ── AI Tab (chat + analysis + recommendations sub-tabs) ─────── */
-const AITab: React.FC<{ activities: Activity[] }> = ({ activities }) => {
+const AITab: React.FC = () => {
     const [sub, setSub] = useState<'chat' | 'analysis' | 'recommendations'>('chat');
     return (
         <div className="section-gap">
@@ -449,9 +458,9 @@ const AITab: React.FC<{ activities: Activity[] }> = ({ activities }) => {
                     </button>
                 ))}
             </div>
-            {sub === 'chat' && <AIAssistant activities={activities} />}
-            {sub === 'analysis' && <AIAnalysis activities={activities} />}
-            {sub === 'recommendations' && <RecommendationEngine activities={activities} />}
+            {sub === 'chat' && <AIAssistant />}
+            {sub === 'analysis' && <AIAnalysis />}
+            {sub === 'recommendations' && <RecommendationEngine />}
         </div>
     );
 };
@@ -464,8 +473,6 @@ const AppContent: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-    const [activities, setActivities] = useState<Activity[]>([]);
-    const [dataLoading, setDataLoading] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
     const [showHomePage, setShowHomePage] = useState(false);
     // Only show intro if user is NOT already logged in (no stored session)
@@ -496,44 +503,14 @@ const AppContent: React.FC = () => {
         }
     }, [location.state]);
 
-    // Load activities when authenticated — dep on user.id only, not the whole object
-    // Using user object as dep causes re-fetch on every render since AuthContext
-    // creates a new object reference each time
+    // Fast transition from Landing Page
     useEffect(() => {
-        if (!isAuthenticated || !user?.id) return;
-        setDataLoading(true);
-        databaseAPI.getUserActivities(user.id)
-            .then(raw => setActivities(raw.map(dbToFrontendActivity)))
-            .catch(() => toast('Failed to load activities', 'error'))
-            .finally(() => setDataLoading(false));
-    }, [isAuthenticated, user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const handleAddActivity = useCallback(async (activity: Activity): Promise<boolean> => {
-        try {
-            const saved = await databaseAPI.createActivity(frontendToDbActivity(activity, user!.id));
-            if (saved) {
-                setActivities(prev => [dbToFrontendActivity(saved), ...prev]);
-                return true;
-            }
-            toast('Failed to save activity', 'error');
-            return false;
-        } catch {
-            toast('Failed to save activity', 'error');
-            return false;
+        if (location.state?.fromGetStarted) {
+            setShowIntro(false);
+            // Replace history to clear the flag
+            window.history.replaceState({}, document.title);
         }
-    }, [toast, user]);
-
-    const handleDeleteActivity = useCallback(async (id: string) => {
-        const prev = activities.find(a => a.id === id);
-        setActivities(a => a.filter(x => x.id !== id));
-        try {
-            await databaseAPI.deleteActivity(id);
-            toast('Activity removed', 'info');
-        } catch {
-            if (prev) setActivities(a => [prev, ...a]);
-            toast('Failed to delete activity', 'error');
-        }
-    }, [activities, toast]);
+    }, [location.state]);
 
     const navItems = useMemo(() => {
         const items = [...NAV_ITEMS] as { id: string; label: string; icon: string; section: string; path: string }[];
@@ -664,10 +641,8 @@ const AppContent: React.FC = () => {
                         >
                             <ErrorBoundary>
                                 <AppRoutes
-                                    activities={activities}
-                                    handleAddActivity={handleAddActivity}
-                                    overviewTabNode={<OverviewTab activities={activities} loading={dataLoading} onAddActivity={handleAddActivity} onDeleteActivity={handleDeleteActivity} />}
-                                    aiTabNode={<AITab activities={activities} />}
+                                    overviewTabNode={<OverviewTab />}
+                                    aiTabNode={<AITab />}
                                 />
                             </ErrorBoundary>
                         </motion.main>
@@ -685,10 +660,8 @@ const AppContent: React.FC = () => {
     return (
         <ErrorBoundary>
             <AppRoutes
-                activities={activities}
-                handleAddActivity={handleAddActivity}
-                overviewTabNode={<OverviewTab activities={activities} loading={dataLoading} onAddActivity={handleAddActivity} onDeleteActivity={handleDeleteActivity} />}
-                aiTabNode={<AITab activities={activities} />}
+                overviewTabNode={<OverviewTab />}
+                aiTabNode={<AITab />}
             />
         </ErrorBoundary>
     );
@@ -696,16 +669,19 @@ const AppContent: React.FC = () => {
 
 /* ── Root App ─────────────────────────────────────────────────── */
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const queryClient = new QueryClient();
 
 const App: React.FC = () => (
     <ErrorBoundary>
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-            <AuthProvider>
-                <ToastProvider>
-                    <AppContent />
-                </ToastProvider>
-            </AuthProvider>
-        </GoogleOAuthProvider>
+        <QueryClientProvider client={queryClient}>
+            <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+                <AuthProvider>
+                    <ToastProvider>
+                        <AppContent />
+                    </ToastProvider>
+                </AuthProvider>
+            </GoogleOAuthProvider>
+        </QueryClientProvider>
     </ErrorBoundary>
 );
 

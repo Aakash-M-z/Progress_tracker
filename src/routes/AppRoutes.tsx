@@ -39,8 +39,6 @@ const CoreSubjects = React.lazy(() => import('../components/CoreSubjects'));
 export interface AppRoutesProps {
   overviewTabNode: React.ReactNode;
   aiTabNode: React.ReactNode;
-  activities: any[];
-  handleAddActivity: (a: any) => Promise<boolean>;
 }
 
 const PageTransition = ({ children }: { children: React.ReactNode }) => {
@@ -90,7 +88,7 @@ const PageLoader = () => (
   </div>
 );
 
-const AppRoutes: React.FC<AppRoutesProps> = ({ overviewTabNode, aiTabNode, activities, handleAddActivity }) => {
+const AppRoutes: React.FC<AppRoutesProps> = ({ overviewTabNode, aiTabNode }) => {
   const location = useLocation();
 
   return (
@@ -121,7 +119,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ overviewTabNode, aiTabNode, activ
         <Route path="/dashboard/analytics" element={
           <Suspense fallback={<PageLoader />}>
             <AnalyticsPage>
-              <PageTransition><AnalyticsDashboard activities={activities} /></PageTransition>
+              <PageTransition><AnalyticsDashboard /></PageTransition>
             </AnalyticsPage>
           </Suspense>
         } />
@@ -152,7 +150,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ overviewTabNode, aiTabNode, activ
         <Route path="/dashboard/roadmap" element={
           <Suspense fallback={<PageLoader />}>
             <RoadmapPage>
-              <PageTransition><DSARoadmap activities={activities} onAddActivity={handleAddActivity} /></PageTransition>
+              <PageTransition><DSARoadmap /></PageTransition>
             </RoadmapPage>
           </Suspense>
         } />
@@ -166,21 +164,21 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ overviewTabNode, aiTabNode, activ
         <Route path="/dashboard/statistics" element={
           <Suspense fallback={<PageLoader />}>
             <StatisticsPage>
-              <PageTransition><ProgressStats activities={activities} /></PageTransition>
+              <PageTransition><ProgressStats /></PageTransition>
             </StatisticsPage>
           </Suspense>
         } />
         <Route path="/dashboard/badges" element={
           <Suspense fallback={<PageLoader />}>
             <BadgesPage>
-              <PageTransition><BadgeSystem activities={activities} /></PageTransition>
+              <PageTransition><BadgeSystem /></PageTransition>
             </BadgesPage>
           </Suspense>
         } />
         <Route path="/dashboard/xp" element={
           <Suspense fallback={<PageLoader />}>
             <XPPage>
-              <PageTransition><XPSystem activities={activities} /></PageTransition>
+              <PageTransition><XPSystem /></PageTransition>
             </XPPage>
           </Suspense>
         } />
@@ -196,7 +194,7 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ overviewTabNode, aiTabNode, activ
         <Route path="/dashboard/profile" element={
           <Suspense fallback={<PageLoader />}>
             <ProfilePage>
-              <PageTransition><UserProfile activities={activities} /></PageTransition>
+              <PageTransition><UserProfile /></PageTransition>
             </ProfilePage>
           </Suspense>
         } />

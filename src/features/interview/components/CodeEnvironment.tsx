@@ -3,6 +3,7 @@ import Editor from '@monaco-editor/react';
 import { Play, Loader2, CheckCircle2, XCircle, Info, ChevronDown } from 'lucide-react';
 
 import { mockInterviewApi } from '../../../api/mockInterviewApi';
+import { API_BASE } from '../../../api/config';
 
 interface TestCase {
     input: any[];
@@ -25,10 +26,10 @@ const LANGUAGES = [
     { id: 54, name: 'C++', monaco: 'cpp' },
 ];
 
-const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({ 
-    onCodeChange, 
-    testCases = [], 
-    initialCodes = {}, 
+const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
+    onCodeChange,
+    testCases = [],
+    initialCodes = {},
     question,
     functionName
 }) => {
@@ -58,37 +59,39 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
 
     const runCode = async () => {
         setIsRunning(true);
-        setActiveTab('console'); // Switch to console to show output immediately
+        setActiveTab('console');
         setOutput(null);
-        
-        try {
-            // Using the centralized API function which points to the Render backend
-            const data = await mockInterviewApi.runCode({ 
-                code, 
-                language, 
-                input 
-            });
-            
-            // Set output for display in the console tab
-            setOutput(data); 
 
-            // If we have test cases, we could potentially run them all
-            // But for a "LeetCode-like" live execution, usually we run against custom input first.
-            // If the user is in the 'testcases' tab, maybe they expect a different behavior.
-            
-            if (testCases.length > 0 && activeTab === 'testcases') {
-                // If the backend doesn't support batch test cases, we just show the output for the provided input
-                // and mark it as a generic run result.
-                setTestResults([{
-                    input: [input],
-                    expectedOutput: 'Manual Run',
-                    actualOutput: data.stdout || data.stderr || data.error,
-                    passed: !data.stderr && !data.error,
-                    status: (data.stderr || data.error) ? 'Failed' : 'Success'
-                }]);
+        try {
+            // Use backend /api/interview/run — runs code server-side, works in both local and production
+            const token = localStorage.getItem('pt_token');
+            const res = await fetch(`${API_BASE}/api/interview/run`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({
+                    code,
+                    language,
+                    testCases: testCases.length > 0 ? testCases : [],
+                    functionName: functionName || undefined,
+                }),
+            });
+            const data = await res.json();
+            setOutput(data);
+
+            if (testCases.length > 0 && data.results) {
+                setTestResults(data.results.map((r: any) => ({
+                    input: r.input,
+                    expectedOutput: r.expected,
+                    actualOutput: r.output ?? r.error,
+                    passed: r.status === 'Passed',
+                    status: r.status,
+                })));
             }
         } catch (error) {
-            setOutput({ stderr: "⚠️ Execution failed. Check your connection to the code execution server." });
+            setOutput({ stderr: "⚠️ Execution failed. Check your connection to the server." });
         } finally {
             setIsRunning(false);
         }
@@ -115,7 +118,7 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
             <div className="flex justify-between items-center px-4 py-3 bg-[#111] border-b border-white/10 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="relative group">
-                        <select 
+                        <select
                             value={LANGUAGES.find(l => l.monaco === language)?.name || 'JavaScript'}
                             onChange={(e) => handleLanguageChange(e.target.value)}
                             className="appearance-none bg-[#1a1a1a] text-gray-300 text-xs font-bold px-4 h-10 pr-10 rounded-lg border border-white/10 focus:outline-none focus:border-[#D4AF37] transition-all cursor-pointer hover:border-white/20"
@@ -127,9 +130,9 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none group-focus-within:text-[#D4AF37]" />
                     </div>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
-                    <button 
+                    <button
                         onClick={getAiFeedback}
                         disabled={isThinking}
                         className="flex items-center gap-2 text-[#D4AF37] hover:text-[#FFD700] text-xs font-bold px-4 h-10 rounded-lg border border-[#D4AF37]/30 bg-[#D4AF37]/5 transition-all disabled:opacity-50 hover:bg-[#D4AF37]/10 active:scale-95 whitespace-nowrap"
@@ -137,8 +140,8 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
                         {isThinking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Info className="w-3.5 h-3.5" />}
                         <span>AI Review</span>
                     </button>
-                    
-                    <button 
+
+                    <button
                         onClick={runCode}
                         disabled={isRunning}
                         className="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#FFD700] text-black font-bold px-4 h-10 rounded-lg transition-all disabled:opacity-50 shadow-[0_4px_15px_rgba(212,175,55,0.2)] hover:shadow-[0_6px_20px_rgba(212,175,55,0.3)] active:scale-95 whitespace-nowrap"
@@ -188,25 +191,25 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
                 {/* Test Result Panel */}
                 <div className="mt-3 w-full bg-[#0A0A0A] flex flex-col shrink-0">
                     <div className="flex gap-6 px-6 border-b border-white/5 font-mono">
-                        <button 
+                        <button
                             onClick={() => setActiveTab('testcases')}
                             className={`py-3 text-[10px] font-bold uppercase tracking-widest transition-all border-b-2 ${activeTab === 'testcases' ? 'text-white border-[#D4AF37]' : 'text-gray-600 border-transparent hover:text-gray-400'}`}
                         >
                             Test Results
                         </button>
-                        <button 
+                        <button
                             onClick={() => setActiveTab('input')}
                             className={`py-3 text-[10px] font-bold uppercase tracking-widest transition-all border-b-2 ${activeTab === 'input' ? 'text-white border-[#D4AF37]' : 'text-gray-600 border-transparent hover:text-gray-400'}`}
                         >
                             Custom Input
                         </button>
-                        <button 
+                        <button
                             onClick={() => setActiveTab('console')}
                             className={`py-3 text-[10px] font-bold uppercase tracking-widest transition-all border-b-2 ${activeTab === 'console' ? 'text-white border-[#D4AF37]' : 'text-gray-600 border-transparent hover:text-gray-400'}`}
                         >
                             Standard Output
                         </button>
-                        <button 
+                        <button
                             onClick={() => setActiveTab('ai')}
                             className={`py-3 text-[10px] font-bold uppercase tracking-widest transition-all border-b-2 ${activeTab === 'ai' ? 'text-white border-[#D4AF37]' : 'text-gray-600 border-transparent hover:text-gray-400'}`}
                         >
@@ -263,7 +266,7 @@ const CodeEnvironment: React.FC<CodeEnvironmentProps> = ({
                                 )}
                             </div>
                         ) : activeTab === 'console' ? (
-                             <div className="font-mono text-sm">
+                            <div className="font-mono text-sm">
                                 {output ? (
                                     <div className="space-y-4">
                                         {(output.stdout || '').replace(/---CASE_START---[\s\S]*?---CASE_END---/g, '') && (
