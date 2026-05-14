@@ -46,7 +46,10 @@ async function verifySession(token: string): Promise<User | null> {
       return null;
     }
 
-    if (!res.ok) return null; // server error — keep session, retry later
+    if (!res.ok) {
+      // Server error (500, 502, etc.) — keep local session, don't force logout
+      return SessionManager.getUser();
+    }
 
     const raw = await res.json();
     // Normalize — same as toUser() — ensures name is always populated
@@ -67,6 +70,7 @@ async function verifySession(token: string): Promise<User | null> {
     return SessionManager.getUser();
   }
 }
+
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
