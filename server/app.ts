@@ -1178,7 +1178,6 @@ api.get('/users/:userId/ai-usage', requireAuth, async (req, res) => {
 });
 
 // ── SMTP Diagnostic Endpoint (Temporary) ──────────────────────────
-import { sendWelcomeEmail } from './email.js';
 api.get('/test-email', async (req, res) => {
     try {
         const testEmail = req.query.email as string || 'aakashext@gmail.com';
