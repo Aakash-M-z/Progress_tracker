@@ -28,8 +28,8 @@ function getTransporter(): Transporter {
                 port: 465,
                 secure: true, // use TLS
                 auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS, // App Password
+                    user: (process.env.EMAIL_USER || '').replace(/['"]/g, ''),
+                    pass: (process.env.EMAIL_PASS || '').replace(/['"]/g, ''), // App Password
                 },
                 tls: {
                     rejectUnauthorized: false // Helps with some network environments
@@ -68,8 +68,12 @@ setImmediate(() => {
 
 // ── Read at call time — never at module load ──────────────────────────────────
 function getFromAddress(): string {
-    return process.env.EMAIL_FROM
-        || (process.env.EMAIL_USER ? `AlgoAscent <${process.env.EMAIL_USER}>` : 'AlgoAscent <a88762001@smtp-brevo.com>');
+    const from = process.env.EMAIL_FROM?.replace(/['"]/g, '') 
+        || (process.env.EMAIL_USER 
+            ? `AlgoAscent <${process.env.EMAIL_USER.replace(/['"]/g, '')}>` 
+            : 'AlgoAscent <a88762001@smtp-brevo.com>');
+    
+    return from;
 }
 
 function getFrontendUrl(): string {
@@ -78,19 +82,23 @@ function getFrontendUrl(): string {
 
 // ── Guard — skip if SMTP not configured ──────────────────────────────────────
 function isEmailEnabled(): boolean {
-    // Gmail takes priority
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) return true;
-    // Brevo fallback
-    const user = process.env.BREVO_SMTP_USER;
-    const pass = process.env.BREVO_SMTP_PASS;
-    if (!user || !pass || user.trim() === '' || pass.trim() === '') {
-        console.warn('[email] ⚠️  No email credentials configured — email skipped');
-        return false;
+    const user = (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim();
+    const pass = (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim();
+    const hasGmail = !!(user && pass);
+    
+    const bUser = (process.env.BREVO_SMTP_USER || '').replace(/['"]/g, '').trim();
+    const bPass = (process.env.BREVO_SMTP_PASS || '').replace(/['"]/g, '').trim();
+    const hasBrevo = !!(bUser && bPass);
+    
+    if (hasGmail || hasBrevo) {
+        return true;
     }
-    return true;
+
+    console.warn('[email] ΓÜá∩╕Å No email credentials configured (checked EMAIL_USER/PASS and BREVO_SMTP_USER/PASS) ΓÇö email skipped');
+    return false;
 }
 
-// ── Core send helper ──────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Core send helper ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 interface SendOptions {
     to: string;
     subject: string;
@@ -103,7 +111,7 @@ async function send(opts: SendOptions): Promise<boolean> {
 
     const from = getFromAddress();
 
-    console.log(`[email:${opts.tag}] Sending → ${opts.to} | Subject: ${opts.subject}`);
+    console.log(`[email:${opts.tag}] Attempting to send ΓåÆ ${opts.to} | Subject: ${opts.subject}`);
 
     try {
         const info = await getTransporter().sendMail({
@@ -113,7 +121,8 @@ async function send(opts: SendOptions): Promise<boolean> {
             html: opts.html,
         });
 
-        console.log(`[email:${opts.tag}] ✅ Sent → ${opts.to} | messageId: ${info.messageId}`);
+        console.log(`[email:${opts.tag}] Γ£à Sent successfully ΓåÆ ${opts.to} | messageId: ${info.messageId}`);
+
         return true;
     } catch (err: any) {
         console.error(`[email:${opts.tag}] ❌ Failed → ${opts.to}`);
