@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { SessionManager } from '../../../utils/sessionManager';
+import { API_BASE } from '../../../api/config';
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' });
+const api = axios.create({ baseURL: `${API_BASE}/api` });
 api.interceptors.request.use(config => {
     const token = SessionManager.getToken();
     if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -93,7 +94,7 @@ const InsightCard: React.FC<{ type: 'danger' | 'success' | 'info'; text: string;
     const cfgs = {
         danger: { icon: '🔥', color: 'text-red-400', border: 'border-red-500/20', bg: 'bg-red-500/5' },
         success: { icon: '✅', color: 'text-emerald-400', border: 'border-emerald-500/20', bg: 'bg-emerald-500/5' },
-        info:    { icon: '💡', color: 'text-blue-400', border: 'border-blue-500/20', bg: 'bg-blue-500/5' }
+        info: { icon: '💡', color: 'text-blue-400', border: 'border-blue-500/20', bg: 'bg-blue-500/5' }
     };
     const c = cfgs[type];
 
@@ -119,7 +120,7 @@ const AIMentorWidget: React.FC = () => {
     useEffect(() => {
         api.get('/mentor/insights')
             .then(res => setData(res.data))
-            .catch(() => {/* silently fail */})
+            .catch(() => {/* silently fail */ })
             .finally(() => setLoading(false));
     }, []);
 
@@ -139,12 +140,12 @@ const AIMentorWidget: React.FC = () => {
 
     if (!data) return null;
 
-    const { weakTopics, strongTopics, readinessScore, readinessTrend, dailyPlan, insights, isFallback } = data;
+    const { weakTopics = [], strongTopics = [], readinessScore = 0, readinessTrend = 0, dailyPlan, insights = [], isFallback } = data;
 
     const DIFF_COLORS: Record<string, string> = {
-        Easy:   'text-emerald-400 bg-emerald-500/10',
+        Easy: 'text-emerald-400 bg-emerald-500/10',
         Medium: 'text-yellow-400 bg-yellow-500/10',
-        Hard:   'text-red-400 bg-red-500/10'
+        Hard: 'text-red-400 bg-red-500/10'
     };
 
     return (
@@ -176,11 +177,10 @@ const AIMentorWidget: React.FC = () => {
                         <button
                             key={t}
                             onClick={() => setTab(t)}
-                            className={`px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${
-                                tab === t
-                                    ? 'bg-white/10 text-white shadow'
-                                    : 'text-white/30 hover:text-white/60'
-                            }`}
+                            className={`px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest transition-all ${tab === t
+                                ? 'bg-white/10 text-white shadow'
+                                : 'text-white/30 hover:text-white/60'
+                                }`}
                         >
                             {t === 'overview' ? '📊 Overview' : t === 'plan' ? '📅 Daily Plan' : '📚 Topics'}
                         </button>
@@ -216,7 +216,7 @@ const AIMentorWidget: React.FC = () => {
                     )}
 
                     {/* ── Daily Plan Tab ───────────────────────────── */}
-                    {tab === 'plan' && (
+                    {tab === 'plan' && dailyPlan && (
                         <motion.div
                             key="plan"
                             initial={{ opacity: 0, y: 10 }}
@@ -237,7 +237,7 @@ const AIMentorWidget: React.FC = () => {
                             </div>
 
                             <div className="space-y-3">
-                                {dailyPlan.problems.map((p, i) => (
+                                {(dailyPlan?.problems ?? []).map((p, i) => (
                                     <motion.a
                                         key={i}
                                         href={p.url}

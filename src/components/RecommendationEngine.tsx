@@ -1,11 +1,11 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, TrendingUp, BookOpen, RefreshCw, ExternalLink, ChevronRight, Zap, Target, AlertCircle } from 'lucide-react';
-import { Activity } from '../types';
+import { useAuth } from '../contexts/AuthContext';
+import { useActivities } from '../hooks/useActivities';
 import { databaseAPI } from '../api/database';
 
 interface Props {
-    activities: Activity[];
     /** If provided, auto-fetches on mount */
     autoFetch?: boolean;
 }
@@ -136,7 +136,9 @@ const ProblemCard: React.FC<{ p: RecommendedProblem; index: number }> = ({ p, in
 };
 
 /* ── Main component ──────────────────────────────────────────── */
-const RecommendationEngine: React.FC<Props> = ({ activities, autoFetch = false }) => {
+const RecommendationEngine: React.FC<Props> = ({ autoFetch = false }) => {
+    const { user } = useAuth();
+    const { data: activities = [] } = useActivities();
     const [data, setData] = useState<RecommendationData | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

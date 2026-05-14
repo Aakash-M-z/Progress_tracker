@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import app from './app.js';
 import { storageReady } from './storage.js';
+import './workers/ai.worker.js';
 
 
 const PORT = Number(process.env.PORT) || 3001;

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { UserModel, ActivityModel, AdminLogModel, TaskModel } from './models.js';
+import { UserModel, ActivityModel, AdminLogModel, TaskModel, ProblemReviewModel, JobResultModel } from './models.js';
 import { IStorage } from './storage.js';
-import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask } from '../shared/schema.js';
+import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask, ProblemReview, InsertProblemReview } from '../shared/schema.js';
 
 export let mongoConnected = false;
 
@@ -159,6 +159,40 @@ export class MongoStorage implements IStorage {
         return updated ? this.mapUser(updated) : undefined;
     }
 
+    async getDueReviews(userId: string): Promise<ProblemReview[]> {
+        const reviews = await ProblemReviewModel.find({
+            userId,
+            nextReviewDate: { $lte: new Date() }
+        }).sort({ nextReviewDate: 1 });
+        return reviews.map(r => this.mapProblemReview(r));
+    }
+
+    async getProblemReview(userId: string, problemTitle: string): Promise<ProblemReview | undefined> {
+        const review = await ProblemReviewModel.findOne({ userId, problemTitle });
+        return review ? this.mapProblemReview(review) : undefined;
+    }
+
+    async upsertProblemReview(review: InsertProblemReview): Promise<ProblemReview> {
+        const updated = await ProblemReviewModel.findOneAndUpdate(
+            { userId: review.userId, problemTitle: review.problemTitle },
+            { 
+                ...review,
+                lastReviewed: new Date()
+            },
+            { new: true, upsert: true }
+        );
+        return this.mapProblemReview(updated);
+    }
+
+    async saveJobResult(jobId: string, result: any): Promise<void> {
+        await JobResultModel.findOneAndUpdate({ jobId }, { result }, { upsert: true });
+    }
+
+    async getJobResult(jobId: string): Promise<any | undefined> {
+        const doc = await JobResultModel.findOne({ jobId });
+        return doc ? doc.result : undefined;
+    }
+
     private mapUser(doc: any): User {
         return {
             id: doc._id.toString(),
@@ -223,4 +257,22 @@ export class MongoStorage implements IStorage {
             createdAt: doc.createdAt,
         };
     }
+
+    private mapProblemReview(doc: any): ProblemReview {
+        return {
+            id: doc._id.toString(),
+            userId: doc.userId,
+            problemTitle: doc.problemTitle,
+            category: doc.category,
+            difficulty: doc.difficulty,
+            platform: doc.platform,
+            rating: doc.rating,
+            nextReviewDate: doc.nextReviewDate,
+            interval: doc.interval,
+            easeFactor: doc.easeFactor,
+            lastReviewed: doc.lastReviewed,
+            createdAt: doc.createdAt,
+        };
+    }
 }
+

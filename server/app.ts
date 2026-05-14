@@ -5,13 +5,16 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import axios, { AxiosError } from 'axios';
+import cookieParser from 'cookie-parser';
 import { storage } from './storage.js';
 import { InsertUser, InsertActivity, InsertTask } from '../shared/schema.js';
-import { signToken, verifyToken, extractBearer, JwtPayload } from './jwt.js';
+import { signToken, signRefreshToken, verifyToken, verifyRefreshToken, extractBearer, JwtPayload } from './jwt.js';
 import { sendWelcomeEmail } from './email.js';
+import { calculateNextReview } from './utils/spacedRepetition.js';
 import adminRoutes from './adminRoutes.js';
 import userRoutes from './userRoutes.js';
 import interviewRoutes from './interviewRoutes.js';
+import { AIController } from './controllers/ai.controller.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -24,6 +27,7 @@ const app = express();
 app.use(helmet({
     crossOriginEmbedderPolicy: false,   // needed for Google OAuth
     contentSecurityPolicy: false,        // managed by Vercel/CDN
+    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
 }));
 
 // ── Request logging ───────────────────────────────────────────────
@@ -63,6 +67,7 @@ app.use(cors({
     credentials: true,
 }));
 app.use(express.json({ limit: '2mb' }));  // prevent oversized payloads
+app.use(cookieParser());
 
 // COOP headers — required for Google OAuth popup (window.closed) to work
 app.use((_req, res, next) => {
@@ -134,7 +139,17 @@ api.post('/login', authLimiter, async (req, res) => {
         }
 
         const { password: _, ...safeUser } = user;
-        const token = signToken({ id: user.id, email: user.email, role: user.role, plan: (user as any).plan ?? 'free' });
+        const payload = { id: user.id, email: user.email, role: user.role, plan: (user as any).plan ?? 'free' };
+        const token = signToken(payload);
+        const refreshToken = signRefreshToken(payload);
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
+
         res.json({ user: safeUser, token });
     } catch (error) {
         console.error('Login error:', error);
@@ -166,7 +181,16 @@ api.post('/register', authLimiter, async (req, res) => {
         userData.password = await bcrypt.hash(userData.password, 12);
         const user = await storage.createUser(userData);
         const { password: _, ...safeUser } = user;
-        const jwtToken = signToken({ id: user.id, email: user.email, role: user.role, plan: (user as any).plan ?? 'free' });
+        const payload = { id: user.id, email: user.email, role: user.role, plan: (user as any).plan ?? 'free' };
+        const jwtToken = signToken(payload);
+        const refreshToken = signRefreshToken(payload);
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
 
         // Background email — don't await to avoid registration lag
         sendWelcomeEmail(user.email, user.username).catch(err =>
@@ -216,7 +240,16 @@ api.post('/auth/google', async (req, res) => {
             });
         }
         const { password: _, ...safeUser } = user;
-        const jwtToken = signToken({ id: user.id, email: user.email, role: user.role, plan: (user as any).plan ?? 'free' });
+        const payload = { id: user.id, email: user.email, role: user.role, plan: (user as any).plan ?? 'free' };
+        const jwtToken = signToken(payload);
+        const refreshToken = signRefreshToken(payload);
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
 
         // Background email for new users — don't await
         if (user.createdAt && (Date.now() - new Date(user.createdAt).getTime()) < 10000) {
@@ -230,6 +263,43 @@ api.post('/auth/google', async (req, res) => {
         console.error('Google auth error:', error);
         res.status(500).json({ error: 'Server error. Please try again.' });
     }
+});
+
+// Refresh token
+api.post('/auth/refresh', async (req, res) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) {
+            res.status(401).json({ error: 'Refresh token not found' });
+            return;
+        }
+
+        const payload = verifyRefreshToken(refreshToken);
+        if (!payload) {
+            res.clearCookie('refreshToken');
+            res.status(401).json({ error: 'Invalid or expired refresh token' });
+            return;
+        }
+
+        // Issue new access token
+        const newPayload = { id: payload.id, email: payload.email, role: payload.role, plan: payload.plan };
+        const newAccessToken = signToken(newPayload);
+
+        res.json({ token: newAccessToken });
+    } catch (error) {
+        console.error('Refresh token error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Logout
+api.post('/auth/logout', (req, res) => {
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
 });
 
 // Profile routes
@@ -255,8 +325,8 @@ api.get('/users/:id/activities', async (req, res) => {
         const id = req.params.id;
         console.log(`[GET] /users/${id}/activities - Incoming request`);
 
-        // 1. Validate: Check if user ID is valid (MongoDB ObjectId format)
-        if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+        // 1. Validate: Check if user ID is valid (MongoDB ObjectId OR numeric for file storage)
+        if (!id || (!/^[0-9a-fA-F]{24}$/.test(id) && !/^\d+$/.test(id))) {
             console.warn(`[Validation Error] Invalid user ID format received: ${id}`);
             return res.status(400).json({ error: 'Invalid user ID format' });
         }
@@ -646,6 +716,54 @@ api.post('/recommendations', (req, res) => {
     }
 });
 
+// ── Spaced Repetition Routes ─────────────────────────────────────
+
+api.get('/spaced-repetition/daily', requireAuth, async (req, res) => {
+    try {
+        const userId = (req as any).authUser.id;
+        const dueReviews = await storage.getDueReviews(userId);
+        res.json({ success: true, data: dueReviews });
+    } catch (err: any) {
+        console.error('Failed to get due reviews:', err);
+        res.status(500).json({ error: 'Failed to get due reviews' });
+    }
+});
+
+api.post('/spaced-repetition/review', requireAuth, async (req, res) => {
+    try {
+        const userId = (req as any).authUser.id;
+        const { problemTitle, category, difficulty, platform, rating } = req.body;
+
+        if (!problemTitle || rating === undefined) {
+            res.status(400).json({ error: 'problemTitle and rating are required' });
+            return;
+        }
+
+        const existingReview = await storage.getProblemReview(userId, problemTitle);
+        const previousInterval = existingReview ? existingReview.interval : 0;
+        const previousEaseFactor = existingReview ? existingReview.easeFactor : 2.5;
+
+        const { interval, easeFactor, nextReviewDate } = calculateNextReview(rating, previousInterval, previousEaseFactor);
+
+        const newReview = await storage.upsertProblemReview({
+            userId,
+            problemTitle,
+            category: category || 'General',
+            difficulty: difficulty || 'Medium',
+            platform: platform || 'Other',
+            rating,
+            interval,
+            easeFactor,
+            nextReviewDate,
+        });
+
+        res.json({ success: true, data: newReview });
+    } catch (err: any) {
+        console.error('Failed to update problem review:', err);
+        res.status(500).json({ error: 'Failed to update problem review' });
+    }
+});
+
 // ── OpenRouter shared helper ─────────────────────────────────────
 
 /**
@@ -922,95 +1040,10 @@ api.post('/ai/explain-topic', checkPlanAccess, async (req, res) => {
     }
 });
 
-// ── General AI Chat route ────────────────────────────────────────
-
-api.post('/ai/chat', async (req, res) => {
-    try {
-        let authUser: any = null;
-
-        // Optional Auth Check - allow unauthenticated fallback
-        const token = extractBearer(req.headers.authorization);
-        if (token) {
-            const payload = verifyToken(token);
-            if (payload) {
-                // Check usage if not admin/premium
-                if (payload.role !== 'admin' && payload.plan !== 'premium') {
-                    const user = await storage.getUser(payload.id);
-                    if (user) {
-                        const today = new Date().toISOString().slice(0, 10);
-                        const resetAt = (user as any).aiUsageResetAt ?? today;
-                        const usageToday = resetAt === today ? ((user as any).aiUsageCount ?? 0) : 0;
-                        if (usageToday >= AI_FREE_DAILY_LIMIT) {
-                            res.status(403).json({
-                                error: 'AI_LIMIT_REACHED',
-                                message: `Free plan allows ${AI_FREE_DAILY_LIMIT} AI requests per day. Upgrade to Premium for unlimited access.`
-                            }); return;
-                        }
-                    }
-                }
-                authUser = payload;
-            }
-        }
-
-        const { message, history = [], userStats } = req.body;
-
-        if (!message) { res.status(400).json({ error: 'Message is required' }); return; }
-
-        const apiKey = process.env.OPENROUTER_API_KEY;
-        if (!apiKey || apiKey === 'your_openrouter_api_key_here') {
-            res.status(501).json({ error: 'API_KEY_MISSING', message: 'AI service is not configured' }); return;
-        }
-
-        const hasUserData = userStats && (userStats.solved > 0 || userStats.streak > 0 || userStats.topCat);
-
-        const systemPrompt = hasUserData
-            ? `You are an expert AI mentor and interviewer for Software Engineering and DSA.
-You have access to the user's progress data:
-- Problems solved: ${userStats.solved || 0}
-- Current streak: ${userStats.streak || 0} days
-- Strongest/Most active topic: ${userStats.topCat || 'N/A'}
-
-Act as a mentor + interviewer. Use this data to personalize your responses.
-Encourage them on their streak. If they ask for advice, guide them based on their recent topics.
-Detect the user's intent. If they want to chat, converse naturally.
-Never reject a valid query. Keep your tone friendly, helpful, and clear.`
-            : `You are a helpful AI assistant for coding interviews and DSA.
-Provide clean code solutions, explain the approach, and state time/space complexity.
-Act as a mentor. Handle general conversation naturally.
-Never reject a valid query. Keep your tone friendly, helpful, and clear.`;
-
-        const messages = [
-            { role: 'system', content: systemPrompt },
-            ...history,
-            { role: 'user', content: message }
-        ];
-
-        let reply: string;
-        try {
-            reply = await callOpenRouter(apiKey, {
-                messages,
-                temperature: 0.6,
-                max_tokens: 1500,
-                timeoutMs: 25000,
-                retries: 1,
-                tag: '[chat]',
-            });
-        } catch (err: any) {
-            const code: string = err?.code ?? 'AI_UNAVAILABLE';
-            console.error(`[chat] Failed. code=${code}`, err?.message);
-            res.status(502).json({ error: code, message: 'AI failed to respond at this time' }); return;
-        }
-
-        if (authUser && authUser.role !== 'admin' && authUser.plan !== 'premium') {
-            await storage.incrementAiUsage(authUser.id).catch(() => { });
-        }
-
-        res.json({ reply });
-    } catch (error: any) {
-        console.error('[chat] Unexpected error:', error?.message ?? error);
-        res.status(500).json({ error: 'SERVER_ERROR', message: 'Internal server error' });
-    }
-});
+// ── AI Routes ────────────────────────────────────────────────────
+api.post('/ai/chat', AIController.chat);
+api.post('/ai/analyze-complexity', AIController.analyzeComplexity);
+api.get('/ai/job-status/:jobId', AIController.getJobStatus);
 
 // ── Context-aware AI chat (subject follow-up questions) ───────────────────────
 api.post('/ai/chat-context', checkPlanAccess, async (req, res) => {

@@ -5,17 +5,14 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Copy, Check, Terminal, User as UserIcon, Bot } from 'lucide-react';
 import { Activity } from '../types';
 import { API_BASE } from '../api/config';
+import { useAuth } from '../contexts/AuthContext';
+import { useActivities } from '../hooks/useActivities';
 
 interface Message {
     id: string;
     role: 'user' | 'ai';
     text: string;
     ts: Date;
-}
-
-interface Props {
-    activities: Activity[];
-    username?: string;
 }
 
 /* ── Local AI engine ─────────────────────────────────────────── */
@@ -214,10 +211,12 @@ const QUICK_PROMPTS = [
     "What's my score?",
 ];
 
-const AIAssistant: React.FC<Props> = ({ activities, username }) => {
+const AIAssistant: React.FC = () => {
+    const { user } = useAuth();
+    const { data: activities = [] } = useActivities();
     const [messages, setMessages] = useState<Message[]>([{
         id: '0', role: 'ai', ts: new Date(),
-        text: `Hey ${username?.split(' ')[0] || 'there'}! 👋 I'm your AI productivity assistant. Ask me anything about your progress, or tap a quick prompt below.`,
+        text: `Hey ${user?.name?.split(' ')[0] || 'there'}! 👋 I'm your AI productivity assistant. Ask me anything about your progress, or tap a quick prompt below.`,
     }]);
     const [input, setInput] = useState('');
     const [typing, setTyping] = useState(false);
@@ -247,7 +246,7 @@ const AIAssistant: React.FC<Props> = ({ activities, username }) => {
 
             // Provide current context limits to AI
             const s = analyzeActivities(activities);
-            const userStats = { username, score: s.score, solved: s.solved, streak: s.streak, topCat: s.topCat };
+            const userStats = { username: user?.name, score: s.score, solved: s.solved, streak: s.streak, topCat: s.topCat };
 
             const response = await fetch(`${API_BASE}/api/ai/chat`, {
                 method: 'POST',
@@ -278,7 +277,7 @@ const AIAssistant: React.FC<Props> = ({ activities, username }) => {
         } catch (err: any) {
             console.error('AI Chat Error:', err?.message || err);
             // Fallback to old basic matching if backend fails
-            const reply = generateResponse(text, activities, username);
+            const reply = generateResponse(text, activities, user?.name);
             const userFriendlyMsg = `⚠️ **Offline Mode** (API unavailable)\n\n${reply}`;
             setMessages(m => [...m, { id: Date.now().toString(), role: 'ai', text: userFriendlyMsg, ts: new Date() }]);
         } finally {
@@ -289,7 +288,7 @@ const AIAssistant: React.FC<Props> = ({ activities, username }) => {
     const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); send(input); };
 
     return (
-        <div className="animate-fadeIn" style={{ display: 'flex', flexDirection: 'column', height: '70vh', minHeight: '500px' }}>
+        <div className="card-dark" style={{ flex: 1, padding: '20px 24px', display: 'flex', flexDirection: 'column' }}>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
