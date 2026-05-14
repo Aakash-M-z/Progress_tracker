@@ -1177,6 +1177,27 @@ api.get('/users/:userId/ai-usage', requireAuth, async (req, res) => {
     }
 });
 
+// ── SMTP Diagnostic Endpoint (Temporary) ──────────────────────────
+import { sendWelcomeEmail } from './email.js';
+api.get('/test-email', async (req, res) => {
+    try {
+        const testEmail = req.query.email as string || 'aakashext@gmail.com';
+        console.log(`[api:test-email] Triggering manual test to: ${testEmail}`);
+        await sendWelcomeEmail(testEmail, 'Test Admin User');
+        res.json({ 
+            success: true, 
+            message: `Test email sent to ${testEmail}.`,
+            diagnostics: {
+                EMAIL_USER: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.slice(0, 3)}...` : 'MISSING',
+                EMAIL_PASS: process.env.EMAIL_PASS ? 'SET (Masked)' : 'MISSING',
+                NODE_ENV: process.env.NODE_ENV
+            }
+        });
+    } catch (err: any) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 // Advanced Enterprise Admin routes module
 api.use('/admin', requireAdmin, adminRoutes);
 
