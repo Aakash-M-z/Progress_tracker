@@ -2,9 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Activity } from '../types';
 
-interface ProgressStatsProps {
-  activities: Activity[];
-}
+import { useActivities } from '../hooks/useActivities';
 
 const BAR_COLORS = ['#D4AF37', '#818cf8', '#22c55e', '#38bdf8', '#f59e0b', '#ef4444'];
 
@@ -13,7 +11,8 @@ const diffColor = (d: string) =>
     : d === 'Medium' ? { color: '#f59e0b', bg: 'rgba(245,158,11,0.1)', border: 'rgba(245,158,11,0.2)' }
       : { color: '#ef4444', bg: 'rgba(239,68,68,0.1)', border: 'rgba(239,68,68,0.2)' };
 
-const ProgressStats: React.FC<ProgressStatsProps> = ({ activities }) => {
+const ProgressStats: React.FC = () => {
+  const { data: activities = [] } = useActivities();
   const stats = useMemo(() => {
     const total = activities.length;
     const totalTime = activities.reduce((s, a) => s + a.duration, 0);

@@ -9,8 +9,9 @@ import {
 } from 'recharts';
 import { TrendingUp, Zap, Clock, BookOpen, Brain, ChevronRight, Award } from 'lucide-react';
 import { Activity } from '../types';
+import DailyRecommendations from '../features/recommendations/components/DailyRecommendations';
 
-interface Props { activities: Activity[]; }
+import { useActivities } from '../hooks/useActivities';
 
 /* ── Palette ─────────────────────────────────────────────────── */
 const GOLD = '#D4AF37';
@@ -283,7 +284,8 @@ const PiePercentLabel = (props: any) => {
 };
 
 /* ── Main component ──────────────────────────────────────────── */
-const AnalyticsDashboard: React.FC<Props> = ({ activities }) => {
+const AnalyticsDashboard: React.FC = () => {
+    const { data: activities = [] } = useActivities();
     const [activePieIndex, setActivePieIndex] = useState(0);
     const [lineRange, setLineRange] = useState<'30' | '60' | '90'>('30');
 
@@ -390,11 +392,14 @@ const AnalyticsDashboard: React.FC<Props> = ({ activities }) => {
             {/* AI Insight Banner */}
             <InsightBanner activities={data} isDemo={isDemo} />
 
-            {/* KPI row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
-                {kpis.map((k, i) => (
-                    <KpiCard key={k.label} {...k} index={i} />
-                ))}
+            {/* KPI row + Daily Recommendations */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', marginBottom: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
+                    {kpis.map((k, i) => (
+                        <KpiCard key={k.label} {...k} index={i} />
+                    ))}
+                </div>
+                <DailyRecommendations />
             </div>
 
             {/* ── LINE / AREA CHART ── */}

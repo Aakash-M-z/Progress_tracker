@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Activity } from '../types';
 import { useToast } from './Toast';
+import { useAddActivity } from '../hooks/useActivities';
+import { ComplexityAnalyzer } from './ComplexityAnalyzer';
 
 interface Problem {
   id: string;
@@ -19,7 +21,6 @@ interface Problem {
 interface ProblemPageProps {
   category: string;
   onBack: () => void;
-  onAddActivity: (activity: Activity) => void;
 }
 
 export const PROBLEMS_BY_CATEGORY: Record<string, Problem[]> = {
@@ -247,13 +248,16 @@ const diffStyle = (d: string) => {
   return { color: '#ef4444', bg: 'rgba(239,68,68,0.1)' };
 };
 
-const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivity }) => {
+export default function ProblemPage({ category, onBack }: ProblemPageProps) {
   const { toast } = useToast();
+  const { mutateAsync: addActivity } = useAddActivity();
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
   const [showHints, setShowHints] = useState(false);
   const [solved, setSolved] = useState(false);
-  const [notes, setNotes] = useState('');
   const [duration, setDuration] = useState(30);
+  const [notes, setNotes] = useState('');
+  const [code, setCode] = useState('');
+  const [language, setLanguage] = useState('javascript');
 
   const problems = PROBLEMS_BY_CATEGORY[category] || [];
 
@@ -263,9 +267,10 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
     setSolved(false);
     setNotes('');
     setDuration(30);
-  }, [category]);
+    setCode('');
+  }, [category, problems]);
 
-  const handleLog = () => {
+  const handleLog = async () => {
     if (!selectedProblem) return;
     const activity: Activity = {
       id: Date.now().toString(),
@@ -282,11 +287,16 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
       notes: notes || undefined,
       value: solved ? 3 : 1,
     };
-    onAddActivity(activity);
-    toast(solved ? `✓ Solved: ${selectedProblem.title}` : `📚 Logged: ${selectedProblem.title}`, 'success');
-    setSolved(false);
-    setNotes('');
-    setDuration(30);
+    try {
+      await addActivity(activity);
+      toast(solved ? `✓ Solved: ${selectedProblem.title}` : `📚 Logged: ${selectedProblem.title}`, 'success');
+      setSolved(false);
+      setNotes('');
+      setDuration(30);
+      setCode('');
+    } catch (e) {
+      toast('Error logging activity', 'error');
+    }
   };
 
   const inputStyle: React.CSSProperties = {
@@ -310,7 +320,6 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
 
   return (
     <div className="section-gap animate-fadeIn">
-      {/* Header */}
       <div className="card-dark" style={{ padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
           <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#D4AF37', cursor: 'pointer', fontSize: '0.875rem', padding: 0 }}>
@@ -344,15 +353,12 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
 
       {selectedProblem && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '16px', alignItems: 'start' }}>
-          {/* Left column */}
           <div className="section-gap">
-            {/* Description */}
             <div className="card-dark" style={{ padding: '20px 24px' }}>
               <div className="card-title" style={{ marginBottom: '12px' }}>Problem Description</div>
               <p style={{ fontSize: '0.875rem', color: '#BDBDBD', lineHeight: 1.7 }}>{selectedProblem.description}</p>
             </div>
 
-            {/* Examples */}
             <div className="card-dark" style={{ padding: '20px 24px' }}>
               <div className="card-title" style={{ marginBottom: '12px' }}>Examples</div>
               {selectedProblem.examples.map((ex, i) => (
@@ -373,7 +379,6 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
               ))}
             </div>
 
-            {/* Constraints */}
             <div className="card-dark" style={{ padding: '20px 24px' }}>
               <div className="card-title" style={{ marginBottom: '12px' }}>Constraints</div>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -386,7 +391,6 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
               </ul>
             </div>
 
-            {/* Hints */}
             <div className="card-dark" style={{ padding: '20px 24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: showHints ? '12px' : 0 }}>
                 <div className="card-title">Hints</div>
@@ -407,9 +411,7 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
             </div>
           </div>
 
-          {/* Right sidebar */}
           <div className="section-gap">
-            {/* Complexity */}
             <div className="card-dark" style={{ padding: '18px 20px' }}>
               <div className="card-title" style={{ marginBottom: '12px' }}>Complexity</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -424,7 +426,6 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
               </div>
             </div>
 
-            {/* Companies */}
             <div className="card-dark" style={{ padding: '18px 20px' }}>
               <div className="card-title" style={{ marginBottom: '12px' }}>Asked By</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -434,7 +435,6 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
               </div>
             </div>
 
-            {/* Practice links */}
             <div className="card-dark" style={{ padding: '18px 20px' }}>
               <div className="card-title" style={{ marginBottom: '12px' }}>Practice Links</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -451,7 +451,8 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
               </div>
             </div>
 
-            {/* Log progress */}
+            <ComplexityAnalyzer code={code} language={language} />
+
             <div className="card-dark" style={{ padding: '18px 20px', border: '1px solid rgba(212,175,55,0.15)' }}>
               <div className="card-title" style={{ marginBottom: '14px' }}>Log Progress</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -459,6 +460,16 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
                   <input type="checkbox" checked={solved} onChange={e => setSolved(e.target.checked)} style={{ accentColor: '#D4AF37', width: '15px', height: '15px' }} />
                   <span style={{ fontSize: '0.875rem', color: '#EAEAEA' }}>Problem Solved</span>
                 </label>
+                <div>
+                  <div className="kpi-sub" style={{ marginBottom: '6px' }}>Your Solution (for analysis)</div>
+                  <select value={language} onChange={e => setLanguage(e.target.value)} style={{ ...inputStyle, marginBottom: '8px' }}>
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                    <option value="java">Java</option>
+                    <option value="cpp">C++</option>
+                  </select>
+                  <textarea value={code} onChange={e => setCode(e.target.value)} placeholder="Paste your code here for Big-O analysis..." rows={8} style={{ ...inputStyle, resize: 'vertical', fontFamily: 'monospace' }} />
+                </div>
                 <div>
                   <div className="kpi-sub" style={{ marginBottom: '6px' }}>Time spent (min)</div>
                   <input type="number" value={duration} onChange={e => setDuration(parseInt(e.target.value))} min={1} style={inputStyle} />
@@ -481,6 +492,4 @@ const ProblemPage: React.FC<ProblemPageProps> = ({ category, onBack, onAddActivi
       )}
     </div>
   );
-};
-
-export default ProblemPage;
+}

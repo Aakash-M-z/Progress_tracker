@@ -1,13 +1,14 @@
 import { User } from '../types/auth';
 
 const USER_KEY = 'pt_user';
-const TOKEN_KEY = 'pt_token';
-const SESSION_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days — matches JWT expiry
+const SESSION_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+let inMemoryToken: string | null = null;
 
 export class SessionManager {
     static saveSession(user: User, token: string): void {
         localStorage.setItem(USER_KEY, JSON.stringify({ user, ts: Date.now() }));
-        localStorage.setItem(TOKEN_KEY, token);
+        inMemoryToken = token;
     }
 
     /** @deprecated use saveSession */
@@ -35,12 +36,16 @@ export class SessionManager {
     }
 
     static getToken(): string | null {
-        return localStorage.getItem(TOKEN_KEY);
+        return inMemoryToken;
+    }
+
+    static setToken(token: string | null): void {
+        inMemoryToken = token;
     }
 
     static clearSession(): void {
         localStorage.removeItem(USER_KEY);
-        localStorage.removeItem(TOKEN_KEY);
+        inMemoryToken = null;
         Object.keys(localStorage)
             .filter(k => k.startsWith('activities_'))
             .forEach(k => localStorage.removeItem(k));

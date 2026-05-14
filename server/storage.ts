@@ -1,4 +1,4 @@
-import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask } from "../shared/schema.js";
+import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask, ProblemReview, InsertProblemReview } from "../shared/schema.js";
 import { FileStorage } from "./file-storage.js";
 import { MongoStorage, connectMongo } from "./mongo-storage.js";
 
@@ -24,6 +24,13 @@ export interface IStorage {
   deleteTask(id: string): Promise<boolean>;
   // AI usage tracking
   incrementAiUsage(userId: string | number): Promise<User | undefined>;
+  // Spaced Repetition
+  getDueReviews(userId: string): Promise<ProblemReview[]>;
+  getProblemReview(userId: string, problemTitle: string): Promise<ProblemReview | undefined>;
+  upsertProblemReview(review: InsertProblemReview): Promise<ProblemReview>;
+  // Job Results
+  saveJobResult(jobId: string, result: any): Promise<void>;
+  getJobResult(jobId: string): Promise<any | undefined>;
 }
 
 // Try MongoDB first; if it fails (no network, wrong URI, etc.) fall back to FileStorage
@@ -70,6 +77,11 @@ class StorageProxy implements IStorage {
   async updateTask(id: string, d: Partial<Task>) { return (await this.s()).updateTask(id, d); }
   async deleteTask(id: string) { return (await this.s()).deleteTask(id); }
   async incrementAiUsage(userId: string | number) { return (await this.s()).incrementAiUsage(userId); }
+  async getDueReviews(userId: string) { return (await this.s()).getDueReviews(userId); }
+  async getProblemReview(userId: string, problemTitle: string) { return (await this.s()).getProblemReview(userId, problemTitle); }
+  async upsertProblemReview(review: InsertProblemReview) { return (await this.s()).upsertProblemReview(review); }
+  async saveJobResult(jobId: string, result: any) { return (await this.s()).saveJobResult(jobId, result); }
+  async getJobResult(jobId: string) { return (await this.s()).getJobResult(jobId); }
 }
 
 export const storage: IStorage = new StorageProxy();
