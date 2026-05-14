@@ -424,6 +424,27 @@ async function localRun(
     }
 }
 
+async function remoteRun(
+    sourceCode: string,
+    lang: string,
+): Promise<{ stdout: string; stderr: string; timedOut: boolean }> {
+    const remoteUrl = process.env.VITE_CODE_EXECUTION_URL || process.env.CODE_EXECUTION_URL;
+    if (!remoteUrl) throw new Error('Remote execution URL not configured');
+
+    // The remote backend usually expects { code, language }
+    // Some might expect 'python3' as 'python' or vice versa, but we send normalized
+    const res = await axios.post(`${remoteUrl}/run`, {
+        code: sourceCode,
+        language: lang,
+    }, { timeout: 12000 });
+
+    return {
+        stdout: res.data.stdout || '',
+        stderr: res.data.stderr || '',
+        timedOut: !!res.data.timedOut,
+    };
+}
+
 
 // -- POST /api/interview/run --
 router.post('/run', async (req, res) => {
@@ -523,10 +544,15 @@ router.post('/run', async (req, res) => {
             runnerCode = code;
         }
 
-        // Execute via local child_process (Render has python3, node, g++, javac)
+        // Execute via local child_process OR remote service
         let execResult: { stdout: string; stderr: string; timedOut: boolean };
         try {
-            execResult = await localRun(runnerCode, normalizedLang);
+            const remoteUrl = process.env.VITE_CODE_EXECUTION_URL || process.env.CODE_EXECUTION_URL;
+            if (remoteUrl && remoteUrl.startsWith('http')) {
+                execResult = await remoteRun(runnerCode, normalizedLang);
+            } else {
+                execResult = await localRun(runnerCode, normalizedLang);
+            }
         } catch (execErr: any) {
             console.error('[/run] localRun threw:', execErr.message);
             res.json({
