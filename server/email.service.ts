@@ -25,20 +25,22 @@ function getTransporter(): Transporter {
         if (process.env.EMAIL_USER) {
             _transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
-                port: 465,
-                secure: true,
+                port: 587,
+                secure: false, // Port 587 usually uses STARTTLS
                 auth: {
                     user: (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim(),
                     pass: (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim(), // App Password
                 },
-                connectionTimeout: 20000,
-                greetingTimeout: 20000,
-                socketTimeout: 30000,
-                family: 4, // Force IPv4 to avoid ENETUNREACH issues on some cloud providers
+                connectionTimeout: 30000, // 30s
+                greetingTimeout: 30000,
+                socketTimeout: 45000,
+                family: 4, // Force IPv4
                 tls: {
                     rejectUnauthorized: false,
+                    requireTLS: true
                 }
             } as any);
+
 
 
 
