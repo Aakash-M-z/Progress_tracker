@@ -1181,13 +1181,14 @@ api.get('/users/:userId/ai-usage', requireAuth, async (req, res) => {
 api.get('/test-email', async (req, res) => {
     try {
         const testEmail = req.query.email as string || 'aakashext@gmail.com';
-        console.log(`[api:test-email] 📨 Triggering manual test to: ${testEmail}`);
-        const success = await sendWelcomeEmail(testEmail, 'Test Admin User');
+        console.log(`[api:test-email] 📨 Triggering manual test (Deactivation Template) to: ${testEmail}`);
+        const success = await sendAccountDeactivatedEmail(testEmail, 'Test Admin User');
         
         if (success) {
             res.json({ 
                 success: true, 
-                message: `Test email sent to ${testEmail}. Check your inbox/spam.`,
+                message: `Test email (Deactivation) sent to ${testEmail}. Check your inbox/spam.`,
+
                 diagnostics: {
                     EMAIL_USER: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.slice(0, 3)}...` : 'MISSING',
                     EMAIL_PASS: process.env.EMAIL_PASS ? 'SET (Masked)' : 'MISSING',
