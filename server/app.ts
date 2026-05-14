@@ -9,7 +9,8 @@ import cookieParser from 'cookie-parser';
 import { storage } from './storage.js';
 import { InsertUser, InsertActivity, InsertTask } from '../shared/schema.js';
 import { signToken, signRefreshToken, verifyToken, verifyRefreshToken, extractBearer, JwtPayload } from './jwt.js';
-import { sendWelcomeEmail } from './email.js';
+import { sendWelcomeEmail, sendAccountDeactivatedEmail } from './email.service.js';
+
 import { calculateNextReview } from './utils/spacedRepetition.js';
 import adminRoutes from './adminRoutes.js';
 import userRoutes from './userRoutes.js';
