@@ -26,18 +26,20 @@ function getTransporter(): Transporter {
             _transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
                 port: 465,
-                secure: true, // true for port 465, false for other ports
+                secure: true,
                 auth: {
                     user: (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim(),
                     pass: (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim(), // App Password
                 },
-                connectionTimeout: 20000, // 20s
+                connectionTimeout: 20000,
                 greetingTimeout: 20000,
                 socketTimeout: 30000,
+                family: 4, // Force IPv4 to avoid ENETUNREACH issues on some cloud providers
                 tls: {
-                    rejectUnauthorized: false, // Helps with some network environments
+                    rejectUnauthorized: false,
                 }
             } as any);
+
 
 
 
