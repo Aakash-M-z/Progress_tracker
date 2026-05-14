@@ -1181,21 +1181,35 @@ api.get('/users/:userId/ai-usage', requireAuth, async (req, res) => {
 api.get('/test-email', async (req, res) => {
     try {
         const testEmail = req.query.email as string || 'aakashext@gmail.com';
-        console.log(`[api:test-email] Triggering manual test to: ${testEmail}`);
-        await sendWelcomeEmail(testEmail, 'Test Admin User');
-        res.json({ 
-            success: true, 
-            message: `Test email sent to ${testEmail}.`,
-            diagnostics: {
-                EMAIL_USER: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.slice(0, 3)}...` : 'MISSING',
-                EMAIL_PASS: process.env.EMAIL_PASS ? 'SET (Masked)' : 'MISSING',
-                NODE_ENV: process.env.NODE_ENV
-            }
-        });
+        console.log(`[api:test-email] 📨 Triggering manual test to: ${testEmail}`);
+        const success = await sendWelcomeEmail(testEmail, 'Test Admin User');
+        
+        if (success) {
+            res.json({ 
+                success: true, 
+                message: `Test email sent to ${testEmail}. Check your inbox/spam.`,
+                diagnostics: {
+                    EMAIL_USER: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.slice(0, 3)}...` : 'MISSING',
+                    EMAIL_PASS: process.env.EMAIL_PASS ? 'SET (Masked)' : 'MISSING',
+                    NODE_ENV: process.env.NODE_ENV
+                }
+            });
+        } else {
+            res.status(500).json({ 
+                success: false, 
+                error: 'Email service returned failure status. Check server logs.',
+                diagnostics: {
+                    EMAIL_USER: process.env.EMAIL_USER ? 'PRESENT' : 'MISSING',
+                    EMAIL_PASS: process.env.EMAIL_PASS ? 'PRESENT' : 'MISSING'
+                }
+            });
+        }
     } catch (err: any) {
+        console.error('[api:test-email] ❌ Diagnostic test crashed:', err?.message);
         res.status(500).json({ success: false, error: err.message });
     }
 });
+
 
 // Advanced Enterprise Admin routes module
 api.use('/admin', requireAdmin, adminRoutes);

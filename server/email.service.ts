@@ -142,8 +142,16 @@ async function send(opts: SendOptions): Promise<boolean> {
             html: opts.html,
         });
 
-        console.log(`[email:${opts.tag}] ✅ Sent successfully → ${opts.to} | messageId: ${info.messageId}`);
+        console.log(`[email:${opts.tag}] ✅ SMTP Server Accepted → ${opts.to}`);
+        console.log(`[email:${opts.tag}]    MessageID: ${info.messageId}`);
+        console.log(`[email:${opts.tag}]    Response: ${info.response}`);
+        
+        if (info.rejected && info.rejected.length > 0) {
+            console.warn(`[email:${opts.tag}] ⚠️ Rejected recipients: ${info.rejected.join(', ')}`);
+        }
+        
         return true;
+
     } catch (err: any) {
         console.error(`[email:${opts.tag}] ❌ Failed → ${opts.to}`);
         console.error(`[email:${opts.tag}]    Error: ${err?.message ?? err}`);
