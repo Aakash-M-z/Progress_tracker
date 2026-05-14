@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Activity } from '../types';
+import { useActivities } from '../hooks/useActivities';
 
 interface Props { activities?: Activity[]; }
 
@@ -45,7 +46,8 @@ const BADGES: Badge[] = [
   { id: 'legend', name: 'Legendary Coder', desc: '30-day streak + 500 problems', icon: '👑', rarity: 'legendary', points: 1000, condition: a => calcStreak(a) >= 30 && a.filter(x => x.problemSolved).length >= 500 },
 ];
 
-const BadgeSystem: React.FC<Props> = ({ activities = [] }) => {
+const BadgeSystem: React.FC = () => {
+  const { data: activities = [] } = useActivities();
   const earned = useMemo(() => new Set(BADGES.filter(b => b.condition(activities)).map(b => b.id)), [activities]);
   const totalPoints = useMemo(() => BADGES.filter(b => earned.has(b.id)).reduce((s, b) => s + b.points, 0), [earned]);
 

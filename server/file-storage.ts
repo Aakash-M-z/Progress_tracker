@@ -1,5 +1,5 @@
 import { IStorage } from "./storage.js";
-import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask } from "../shared/schema.js";
+import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask, ProblemReview, InsertProblemReview } from "../shared/schema.js";
 import fs from 'fs';
 import path from 'path';
 
@@ -8,10 +8,13 @@ export class FileStorage implements IStorage {
     private activities: Map<string, Activity>;
     private adminLogs: Map<string, AdminLog>;
     private tasks: Map<string, Task>;
+    private problemReviews: Map<string, ProblemReview>;
+    private jobResults: Map<string, any>;
     private currentUserId: number;
     private currentActivityId: number;
     private currentLogId: number;
     private currentTaskId: number;
+    private currentReviewId: number;
     private filePath: string;
 
     constructor() {
@@ -19,10 +22,13 @@ export class FileStorage implements IStorage {
         this.activities = new Map();
         this.adminLogs = new Map();
         this.tasks = new Map();
+        this.problemReviews = new Map();
+        this.jobResults = new Map();
         this.currentUserId = 1;
         this.currentActivityId = 1;
         this.currentLogId = 1;
         this.currentTaskId = 1;
+        this.currentReviewId = 1;
         this.filePath = path.join(process.cwd(), 'local-data.json');
         this.loadData();
     }
@@ -51,6 +57,19 @@ export class FileStorage implements IStorage {
                     const ids = data.tasks.map((t: Task) => parseInt(t.id)).filter((n: number) => !isNaN(n));
                     this.currentTaskId = ids.length > 0 ? Math.max(...ids) + 1 : 1;
                 }
+                if (data.problemReviews) {
+                    data.problemReviews.forEach((r: ProblemReview) => this.problemReviews.set(r.id.toString(), {
+                        ...r,
+                        nextReviewDate: new Date(r.nextReviewDate),
+                        lastReviewed: new Date(r.lastReviewed),
+                        createdAt: new Date(r.createdAt)
+                    }));
+                    const ids = data.problemReviews.map((r: ProblemReview) => parseInt(r.id)).filter((n: number) => !isNaN(n));
+                    this.currentReviewId = ids.length > 0 ? Math.max(...ids) + 1 : 1;
+                }
+                if (data.jobResults) {
+                    data.jobResults.forEach(([id, res]: [string, any]) => this.jobResults.set(id, res));
+                }
             } catch (e) {
                 console.error("Failed to load local data:", e);
             }
@@ -64,6 +83,8 @@ export class FileStorage implements IStorage {
                 activities: Array.from(this.activities.values()),
                 adminLogs: Array.from(this.adminLogs.values()),
                 tasks: Array.from(this.tasks.values()),
+                problemReviews: Array.from(this.problemReviews.values()),
+                jobResults: Array.from(this.jobResults.entries()),
             };
             fs.writeFileSync(this.filePath, JSON.stringify(data, null, 2));
         } catch (e) {
@@ -205,5 +226,55 @@ export class FileStorage implements IStorage {
         this.users.set(strId, updated);
         this.saveData();
         return updated;
+    }
+
+    async getDueReviews(userId: string): Promise<ProblemReview[]> {
+        const now = new Date();
+        return Array.from(this.problemReviews.values())
+            .filter(r => r.userId === userId && new Date(r.nextReviewDate) <= now)
+            .sort((a, b) => new Date(a.nextReviewDate).getTime() - new Date(b.nextReviewDate).getTime());
+    }
+
+    async getProblemReview(userId: string, problemTitle: string): Promise<ProblemReview | undefined> {
+        return Array.from(this.problemReviews.values()).find(
+            r => r.userId === userId && r.problemTitle === problemTitle
+        );
+    }
+
+    async upsertProblemReview(review: InsertProblemReview): Promise<ProblemReview> {
+        const existing = Array.from(this.problemReviews.values()).find(
+            r => r.userId === review.userId && r.problemTitle === review.problemTitle
+        );
+
+        if (existing) {
+            const updated: ProblemReview = {
+                ...existing,
+                ...review,
+                lastReviewed: new Date(),
+            };
+            this.problemReviews.set(existing.id, updated);
+            this.saveData();
+            return updated;
+        } else {
+            const id = this.currentReviewId++;
+            const newReview: ProblemReview = {
+                ...review,
+                id: id.toString(),
+                lastReviewed: new Date(),
+                createdAt: new Date(),
+            };
+            this.problemReviews.set(id.toString(), newReview);
+            this.saveData();
+            return newReview;
+        }
+    }
+
+    async saveJobResult(jobId: string, result: any): Promise<void> {
+        this.jobResults.set(jobId, result);
+        this.saveData();
+    }
+
+    async getJobResult(jobId: string): Promise<any | undefined> {
+        return this.jobResults.get(jobId);
     }
 }

@@ -86,12 +86,32 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onAddActivity }) => {
       spaceComplexity: spaceComplexity || undefined,
       notes: notes || undefined,
     });
-    setSaving(false);
+    
     if (ok) {
+      // Trigger spaced repetition logic
+      const token = localStorage.getItem('token');
+      if (token && (dsaTopic || description)) {
+        fetch('/api/spaced-repetition/review', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            problemTitle: dsaTopic || description.slice(0, 50),
+            category: finalCategory,
+            difficulty: difficulty || 'Medium',
+            platform: platform || 'Other',
+            rating: value
+          })
+        }).catch(err => console.error('Failed to log spaced repetition review:', err));
+      }
+
       toast(problemSolved ? '🎉 Problem solved! Great work!' : '📝 Activity logged', 'success');
       reset();
       setOpen(false);
     }
+    setSaving(false);
   };
 
   return (

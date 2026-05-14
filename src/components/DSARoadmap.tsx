@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { DSATopic, Activity } from '../types';
 import ProblemPage from './ProblemPage';
+import { BookOpen, Map, Zap, Brain, CheckCircle, ArrowRight, Activity as ActivityIcon } from 'lucide-react';
+import { useActivities } from '../hooks/useActivities';
 
 interface Props {
   activities?: Activity[];
-  onAddActivity?: (activity: Activity) => void;
 }
 
 const DSA_ROADMAP: DSATopic[] = [
@@ -28,11 +30,41 @@ const DSA_ROADMAP: DSATopic[] = [
   { name: 'Math', category: 'Algorithms', difficulty: 'Intermediate', status: 'Not Started', problemsSolved: 0, totalProblems: 12 },
 ];
 
-// Topics that have problems in ProblemPage
 const TOPICS_WITH_PROBLEMS = new Set([
   'Arrays & Strings', 'Linked Lists', 'Stacks & Queues', 'Trees & Binary Trees',
   'Dynamic Programming', 'Graphs', 'Binary Search', 'Two Pointers',
 ]);
+
+const ROADMAP_STAGES = [
+  {
+    title: 'Foundation',
+    description: 'The fundamental building blocks. Master these to build a strong algorithmic intuition.',
+    icon: <BookOpen size={20} color="#D4AF37" />,
+    color: '#D4AF37',
+    topics: ['Arrays & Strings', 'Linked Lists', 'Stacks & Queues', 'Sorting', 'Binary Search']
+  },
+  {
+    title: 'Core Patterns',
+    description: 'Essential problem-solving techniques used in 80% of technical interviews.',
+    icon: <Zap size={20} color="#38bdf8" />,
+    color: '#38bdf8',
+    topics: ['Two Pointers', 'Sliding Window', 'Math']
+  },
+  {
+    title: 'Trees & Graphs',
+    description: 'Non-linear data structures for hierarchical and relational data representation.',
+    icon: <Map size={20} color="#f59e0b" />,
+    color: '#f59e0b',
+    topics: ['Trees & Binary Trees', 'Graphs', 'Heap/Priority Queue', 'Trie', 'Union Find']
+  },
+  {
+    title: 'Advanced Topics',
+    description: 'Complex algorithms for optimization and deep computer science concepts.',
+    icon: <Brain size={20} color="#ef4444" />,
+    color: '#ef4444',
+    topics: ['Dynamic Programming', 'Backtracking', 'Greedy Algorithms', 'Recursion', 'Bit Manipulation']
+  }
+];
 
 const DIFF_STYLE: Record<string, { color: string; bg: string }> = {
   Beginner: { color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
@@ -47,38 +79,43 @@ const STATUS_STYLE: Record<string, { color: string; bg: string }> = {
   'Mastered': { color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
 };
 
-const DSARoadmap: React.FC<Props> = ({ activities = [], onAddActivity }) => {
-  const [catFilter, setCatFilter] = useState<'All' | 'Data Structures' | 'Algorithms'>('All');
-  const [diffFilter, setDiffFilter] = useState<'All' | 'Beginner' | 'Intermediate' | 'Advanced'>('All');
+const DSARoadmap: React.FC = () => {
+  const { data: activities = [] } = useActivities();
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
-  const roadmap = useMemo(() => DSA_ROADMAP.map(topic => {
-    const related = activities.filter(a =>
-      a.category === topic.name || a.dsaTopic?.includes(topic.name)
-    );
-    const solved = related.filter(a => a.problemSolved).length;
-    let status: DSATopic['status'] = 'Not Started';
-    if (solved > 0) {
-      if (solved >= topic.totalProblems * 0.8) status = 'Mastered';
-      else if (solved >= topic.totalProblems * 0.5) status = 'Completed';
-      else status = 'In Progress';
-    }
-    return { ...topic, problemsSolved: solved, status };
-  }), [activities]);
+  const roadmapData = useMemo(() => {
+    const data: Record<string, DSATopic> = {};
+    DSA_ROADMAP.forEach(topic => {
+      const related = activities.filter(a =>
+        a.category === topic.name || a.dsaTopic?.includes(topic.name)
+      );
+      const solved = related.filter(a => a.problemSolved).length;
+      let status: DSATopic['status'] = 'Not Started';
+      if (solved > 0) {
+        if (solved >= topic.totalProblems * 0.8) status = 'Mastered';
+        else if (solved >= topic.totalProblems * 0.5) status = 'Completed';
+        else status = 'In Progress';
+      }
+      data[topic.name] = { ...topic, problemsSolved: solved, status };
+    });
+    return data;
+  }, [activities]);
 
-  const filtered = roadmap.filter(t =>
-    (catFilter === 'All' || t.category === catFilter) &&
-    (diffFilter === 'All' || t.difficulty === diffFilter)
-  );
-
-  const overall = roadmap.reduce((a, t) => ({ s: a.s + t.problemsSolved, t: a.t + t.totalProblems }), { s: 0, t: 0 });
+  const overall = Object.values(roadmapData).reduce((a, t) => ({ s: a.s + t.problemsSolved, t: a.t + t.totalProblems }), { s: 0, t: 0 });
   const pct = overall.t > 0 ? Math.round(overall.s / overall.t * 100) : 0;
 
-  const selectStyle: React.CSSProperties = {
-    padding: '8px 14px', background: '#1A1A1A',
-    border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px',
-    color: '#EAEAEA', fontSize: '0.875rem', outline: 'none', cursor: 'pointer',
-  };
+  // Find the next recommended topic
+  let nextRecommendedTopic: string | null = null;
+  for (const stage of ROADMAP_STAGES) {
+    for (const tName of stage.topics) {
+      const t = roadmapData[tName];
+      if (t && (t.status === 'Not Started' || t.status === 'In Progress')) {
+        nextRecommendedTopic = tName;
+        break;
+      }
+    }
+    if (nextRecommendedTopic) break;
+  }
 
   // Show ProblemPage when a topic is selected
   if (selectedTopic) {
@@ -86,111 +123,194 @@ const DSARoadmap: React.FC<Props> = ({ activities = [], onAddActivity }) => {
       <ProblemPage
         category={selectedTopic}
         onBack={() => setSelectedTopic(null)}
-        onAddActivity={(activity) => {
-          onAddActivity?.(activity);
-          setSelectedTopic(null);
-        }}
       />
     );
   }
 
   return (
-    <div className="section-gap animate-fadeIn">
-      <div>
-        <h2 className="page-heading">DSA Roadmap</h2>
-        <p className="page-subheading">Track your progress through the complete DSA curriculum</p>
+    <div className="section-gap animate-fadeIn" style={{ maxWidth: '1000px', margin: '0 auto' }}>
+      <div style={{ marginBottom: '30px', textAlign: 'center' }}>
+        <h2 className="page-heading" style={{ fontSize: '2.5rem', marginBottom: '8px' }}>Learning Journey</h2>
+        <p className="page-subheading" style={{ fontSize: '1.1rem' }}>Master Data Structures and Algorithms step-by-step</p>
       </div>
 
-      {/* Overall progress */}
-      <div className="card-dark" style={{ padding: '20px 24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-          <span style={{ fontSize: '0.875rem', color: '#EAEAEA', fontWeight: 500 }}>Overall Progress</span>
-          <span className="kpi-number" style={{ fontSize: '1.4rem' }}>{pct}%</span>
+      {/* Overall Progress Banner */}
+      <motion.div 
+        className="card-dark" 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{ padding: '24px 30px', marginBottom: '40px', background: 'linear-gradient(135deg, rgba(20,20,20,0.8), rgba(30,30,30,0.9))', position: 'relative', overflow: 'hidden' }}
+      >
+        <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(212,175,55,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#FFF', fontWeight: 600 }}>Overall Progress</h3>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: '#888', marginTop: '4px' }}>{overall.s} of {overall.t} problems completed</p>
+          </div>
+          <div style={{ fontSize: '2.2rem', fontWeight: 800, color: '#D4AF37', textShadow: '0 0 20px rgba(212,175,55,0.3)' }}>
+            {pct}%
+          </div>
         </div>
-        <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '999px', overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg, #D4AF37, #FFD700)', borderRadius: '999px', transition: 'width 0.8s ease', boxShadow: '0 0 8px rgba(212,175,55,0.4)' }} />
+        <div style={{ height: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '999px', overflow: 'hidden', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)' }}>
+          <motion.div 
+            initial={{ width: 0 }}
+            animate={{ width: `${pct}%` }}
+            transition={{ duration: 1, ease: 'easeOut' }}
+            style={{ height: '100%', background: 'linear-gradient(90deg, #D4AF37, #FFD700)', borderRadius: '999px', boxShadow: '0 0 12px rgba(212,175,55,0.5)' }} 
+          />
         </div>
-        <div className="kpi-sub" style={{ marginTop: '8px' }}>{overall.s} of {overall.t} problems completed</div>
-      </div>
+      </motion.div>
 
-      {/* Filters */}
-      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-        <select value={catFilter} onChange={e => setCatFilter(e.target.value as any)} style={selectStyle}>
-          <option value="All">All Categories</option>
-          <option value="Data Structures">Data Structures</option>
-          <option value="Algorithms">Algorithms</option>
-        </select>
-        <select value={diffFilter} onChange={e => setDiffFilter(e.target.value as any)} style={selectStyle}>
-          <option value="All">All Difficulties</option>
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-        </select>
-      </div>
+      {/* Journey Timeline */}
+      <div style={{ position: 'relative', paddingLeft: '20px' }}>
+        {/* Main Vertical Connecting Line */}
+        <div style={{ position: 'absolute', left: '38px', top: '40px', bottom: '40px', width: '2px', background: 'linear-gradient(to bottom, rgba(212,175,55,0.3), rgba(255,255,255,0.05))', borderRadius: '2px' }} />
 
-      {/* Grid */}
-      {filtered.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <div style={{ fontSize: '2.5rem', opacity: 0.2, marginBottom: '12px' }}>◎</div>
-          <p style={{ color: '#555', fontSize: '0.9rem' }}>No topics match your filters.</p>
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '14px' }}>
-          {filtered.map((topic, i) => {
-            const diff = DIFF_STYLE[topic.difficulty] ?? DIFF_STYLE.Beginner;
-            const stat = STATUS_STYLE[topic.status] ?? STATUS_STYLE['Not Started'];
-            const topicPct = Math.round(topic.problemsSolved / topic.totalProblems * 100);
-            const hasProblems = TOPICS_WITH_PROBLEMS.has(topic.name);
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '50px' }}>
+          {ROADMAP_STAGES.map((stage, sIdx) => {
+            const stageTopics = stage.topics.map(t => roadmapData[t]).filter(Boolean);
+            const stageSolved = stageTopics.reduce((sum, t) => sum + t.problemsSolved, 0);
+            const stageTotal = stageTopics.reduce((sum, t) => sum + t.totalProblems, 0);
+            const stagePct = stageTotal > 0 ? Math.round(stageSolved / stageTotal * 100) : 0;
+            const isCompleted = stagePct === 100;
+
             return (
-              <div
-                key={i}
-                className="card-dark"
-                onClick={() => hasProblems && setSelectedTopic(topic.name)}
-                style={{
-                  padding: '18px 20px',
-                  cursor: hasProblems ? 'pointer' : 'default',
-                  transition: 'all 0.2s',
-                  border: hasProblems ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(255,255,255,0.03)',
-                }}
-                onMouseEnter={e => {
-                  if (hasProblems) {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(212,175,55,0.3)';
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(212,175,55,0.04)';
-                  }
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.borderColor = hasProblems ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)';
-                  (e.currentTarget as HTMLElement).style.background = '';
-                }}
+              <motion.div 
+                key={stage.title}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.5, delay: sIdx * 0.1 }}
+                style={{ position: 'relative' }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#EAEAEA', lineHeight: 1.3, flex: 1, marginRight: '8px' }}>
-                    {topic.category === 'Data Structures' ? '🏗' : '⚡'} {topic.name}
+                {/* Stage Header */}
+                <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', marginBottom: '24px' }}>
+                  <div style={{ 
+                    width: '40px', height: '40px', borderRadius: '12px', 
+                    background: isCompleted ? 'rgba(34,197,94,0.15)' : `rgba(${parseInt(stage.color.slice(1,3),16)},${parseInt(stage.color.slice(3,5),16)},${parseInt(stage.color.slice(5,7),16)},0.15)`, 
+                    border: `1px solid ${isCompleted ? '#22c55e' : stage.color}`, 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2,
+                    boxShadow: isCompleted ? '0 0 15px rgba(34,197,94,0.3)' : `0 0 15px ${stage.color}40`
+                  }}>
+                    {isCompleted ? <CheckCircle size={20} color="#22c55e" /> : stage.icon}
                   </div>
-                  <span style={{ fontSize: '0.65rem', padding: '3px 8px', borderRadius: '999px', fontWeight: 600, background: stat.bg, color: stat.color, whiteSpace: 'nowrap', flexShrink: 0 }}>
-                    {topic.status}
-                  </span>
+                  <div style={{ flex: 1, paddingTop: '4px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 700, color: '#FFF' }}>{stage.title}</h3>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ fontSize: '0.85rem', color: '#888' }}>{stageSolved} / {stageTotal}</span>
+                        <div style={{ width: '60px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '999px', overflow: 'hidden' }}>
+                          <div style={{ width: `${stagePct}%`, height: '100%', background: isCompleted ? '#22c55e' : stage.color, borderRadius: '999px' }} />
+                        </div>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: isCompleted ? '#22c55e' : '#EAEAEA', width: '35px', textAlign: 'right' }}>{stagePct}%</span>
+                      </div>
+                    </div>
+                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#888', marginTop: '6px', lineHeight: 1.5 }}>{stage.description}</p>
+                  </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <span style={{ fontSize: '0.7rem', padding: '2px 8px', borderRadius: '999px', background: diff.bg, color: diff.color, fontWeight: 600 }}>
-                    {topic.difficulty}
-                  </span>
-                  <span className="kpi-sub">{topic.problemsSolved}/{topic.totalProblems}</span>
-                </div>
+                {/* Topics Grid */}
+                <div style={{ paddingLeft: '60px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
+                  {stage.topics.map(topicName => {
+                    const topic = roadmapData[topicName];
+                    if (!topic) return null;
 
-                <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '999px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${topicPct}%`, background: 'linear-gradient(90deg, #D4AF37, #FFD700)', borderRadius: '999px', transition: 'width 0.6s ease' }} />
+                    const diff = DIFF_STYLE[topic.difficulty] ?? DIFF_STYLE.Beginner;
+                    const stat = STATUS_STYLE[topic.status] ?? STATUS_STYLE['Not Started'];
+                    const topicPct = Math.round(topic.problemsSolved / topic.totalProblems * 100);
+                    const hasProblems = TOPICS_WITH_PROBLEMS.has(topic.name);
+                    const isNext = topic.name === nextRecommendedTopic;
+
+                    return (
+                      <motion.div
+                        key={topic.name}
+                        whileHover={{ y: -4, boxShadow: isNext ? '0 12px 30px rgba(212,175,55,0.15)' : '0 12px 30px rgba(0,0,0,0.6)' }}
+                        style={{
+                          background: 'rgba(20,20,20,0.95)',
+                          borderRadius: '16px',
+                          border: isNext ? '1px solid rgba(212,175,55,0.5)' : '1px solid rgba(255,255,255,0.06)',
+                          boxShadow: isNext ? '0 0 20px rgba(212,175,55,0.08)' : '0 4px 20px rgba(0,0,0,0.4)',
+                          padding: '20px',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          display: 'flex',
+                          flexDirection: 'column'
+                        }}
+                      >
+                        {isNext && (
+                          <div style={{ position: 'absolute', top: 0, right: 0, background: 'rgba(212,175,55,0.15)', color: '#D4AF37', fontSize: '0.7rem', fontWeight: 700, padding: '4px 12px', borderBottomLeftRadius: '12px', borderLeft: '1px solid rgba(212,175,55,0.3)', borderBottom: '1px solid rgba(212,175,55,0.3)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <ActivityIcon size={12} /> UP NEXT
+                          </div>
+                        )}
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                          <div>
+                            <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600, color: isNext ? '#D4AF37' : '#EAEAEA', marginBottom: '6px' }}>{topic.name}</h4>
+                            <span style={{ fontSize: '0.7rem', padding: '3px 8px', borderRadius: '6px', background: diff.bg, color: diff.color, fontWeight: 600 }}>
+                              {topic.difficulty}
+                            </span>
+                          </div>
+                          <span style={{ fontSize: '0.7rem', padding: '4px 10px', borderRadius: '999px', fontWeight: 600, background: stat.bg, color: stat.color, border: `1px solid ${stat.color}40`, marginTop: isNext ? '18px' : '0' }}>
+                            {topic.status}
+                          </span>
+                        </div>
+
+                        <div style={{ flex: 1 }} />
+
+                        <div style={{ marginBottom: '16px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                            <span style={{ fontSize: '0.8rem', color: '#888' }}>Progress</span>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#EAEAEA' }}>{topic.problemsSolved} / {topic.totalProblems}</span>
+                          </div>
+                          <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden' }}>
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              whileInView={{ width: `${topicPct}%` }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 0.8, delay: 0.2 }}
+                              style={{ height: '100%', background: isNext ? 'linear-gradient(90deg, #D4AF37, #FFD700)' : stat.color, borderRadius: '999px' }} 
+                            />
+                          </div>
+                        </div>
+
+                        {hasProblems ? (
+                          <button
+                            onClick={() => setSelectedTopic(topic.name)}
+                            style={{
+                              width: '100%', padding: '10px', borderRadius: '8px', border: 'none',
+                              background: isNext ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.05)',
+                              color: isNext ? '#D4AF37' : '#CCC',
+                              fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                              transition: 'all 0.2s',
+                              borderTop: '1px solid rgba(255,255,255,0.02)'
+                            }}
+                            onMouseEnter={e => {
+                              (e.currentTarget as HTMLButtonElement).style.background = isNext ? 'rgba(212,175,55,0.25)' : 'rgba(255,255,255,0.1)';
+                              (e.currentTarget as HTMLButtonElement).style.color = isNext ? '#FFD700' : '#FFF';
+                            }}
+                            onMouseLeave={e => {
+                              (e.currentTarget as HTMLButtonElement).style.background = isNext ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.05)';
+                              (e.currentTarget as HTMLButtonElement).style.color = isNext ? '#D4AF37' : '#CCC';
+                            }}
+                          >
+                            Solve Problems <ArrowRight size={14} />
+                          </button>
+                        ) : (
+                          <div style={{ width: '100%', padding: '10px', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', color: '#555', fontSize: '0.8rem', textAlign: 'center', border: '1px solid rgba(255,255,255,0.02)' }}>
+                            Coming Soon
+                          </div>
+                        )}
+                      </motion.div>
+                    );
+                  })}
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-                  <div className="kpi-sub">{topicPct}%</div>
-                  {hasProblems && <div style={{ fontSize: '0.65rem', color: '#D4AF37', fontWeight: 500 }}>Solve Problems →</div>}
-                </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
-      )}
+      </div>
     </div>
   );
 };

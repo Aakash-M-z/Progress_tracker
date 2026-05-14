@@ -12,6 +12,7 @@
  */
 
 import { SessionManager } from '../utils/sessionManager';
+import { API_BASE } from './config';
 
 const DEACTIVATED_KEY = 'account_deactivated_msg';
 
@@ -23,7 +24,7 @@ export async function fetchWithAuth(
     input: RequestInfo | URL,
     init?: RequestInit,
 ): Promise<Response> {
-    const res = await fetch(input, init);
+    let res = await fetch(input, init);
 
     if (res.status === 401) {
         // Clone before reading body — response body can only be consumed once
@@ -36,7 +37,37 @@ export async function fetchWithAuth(
                 return res;
             }
         } catch {
-            // Body wasn't JSON — not a deactivation response, pass through
+            // Body wasn't JSON — pass through
+        }
+
+        // If not deactivated, try refreshing the token
+        try {
+            const refreshRes = await fetch(`${API_BASE}/api/auth/refresh`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            if (refreshRes.ok) {
+                const { token } = await refreshRes.json();
+                SessionManager.setToken(token);
+
+                // Update headers with new token
+                const newInit = { ...init };
+                const headers = new Headers(newInit.headers || {});
+                headers.set('Authorization', `Bearer ${token}`);
+                newInit.headers = headers;
+
+                // Retry original request
+                res = await fetch(input, newInit);
+            } else {
+                // Refresh failed — clear session and redirect to login
+                SessionManager.clearSession();
+                window.location.replace('/');
+            }
+        } catch {
+            // Network error during refresh
+            SessionManager.clearSession();
+            window.location.replace('/');
         }
     }
 

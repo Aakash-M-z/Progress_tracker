@@ -4,6 +4,7 @@ import { Sparkles, Brain, TrendingUp, AlertTriangle, Lightbulb, Target, RefreshC
 import { Activity } from '../types';
 import { databaseAPI } from '../api/database';
 import { useAuth } from '../contexts/AuthContext';
+import { useActivities } from '../hooks/useActivities';
 import PremiumGate from './PremiumGate';
 import { usePlan } from '../hooks/usePlan';
 import { AnalysisSkeleton } from './AISkeleton';
@@ -12,8 +13,6 @@ import {
     trackRequest, trackCacheHit, trackSuccess, trackFailure,
     getAnalytics, buildAnalysisCacheKey,
 } from '../utils/aiCache';
-
-interface AIAnalysisProps { activities: Activity[]; }
 
 interface AnalysisResult {
     strengths: string[];
@@ -98,8 +97,9 @@ const AnalyticsBadge: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 };
 
 /* ── Main component ──────────────────────────────────────────── */
-const AIAnalysis: React.FC<AIAnalysisProps> = ({ activities }) => {
+const AIAnalysis: React.FC = () => {
     const { user } = useAuth();
+    const { data: activities = [] } = useActivities();
     const { canUseAI } = usePlan();
     const [result, setResult] = useState<AnalysisResult | null>(null);
     const [loading, setLoading] = useState(false);

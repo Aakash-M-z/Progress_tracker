@@ -321,15 +321,27 @@ router.post('/evaluate-approach', async (req, res) => {
 Question: "${question}"
 Candidate's Approach: "${approach}"
 
-Evaluate the approach critically. Analyze:
-1. Is the core logic sound?
-2. Are the data structures appropriate and optimal?
-3. What time and space complexity would this achieve?
-4. Are there obvious edge cases being missed?
-5. Is this brute-force, suboptimal, or near-optimal?
+CRITICAL RULES:
+- Do NOT reveal the correct solution, algorithm, or code
+- Do NOT say what the optimal approach is or name it
+- Do NOT give hints that directly lead to the answer
+- If the approach is empty, vague, or just a single character, respond: "Please describe your approach in more detail before I can evaluate it."
 
-Respond in 3 paragraphs max. Be direct and professional. End with:
-"Complexity: Time O(...), Space O(...) | Approach Rating: [Brute Force / Suboptimal / Optimal]"`;
+Evaluate ONLY what the candidate has written. Analyze:
+1. Is the stated logic sound or flawed?
+2. What complexity would this approach achieve IF implemented?
+3. Are there obvious gaps or missing edge cases in what they described?
+
+Keep response to 2-3 sentences. Be direct. Do NOT complete their thinking for them.
+End with: "Complexity: Time O(...), Space O(...) | Rating: [Needs Work / Reasonable / Strong]"
+
+If the approach is too vague to evaluate, say so and ask for more detail.`;
+
+        // Reject trivially short approaches before calling AI
+        if (!approach || approach.trim().length < 10) {
+            res.json({ evaluation: 'Please describe your approach in more detail. A single character or word is not enough to evaluate.' });
+            return;
+        }
 
         const apiRes = await axios.post(AI_BASE_URL, {
             model: process.env.AI_MODEL || 'openai/gpt-4o-mini',
@@ -346,10 +358,10 @@ Respond in 3 paragraphs max. Be direct and professional. End with:
 // -- Local execution engine (child_process) --
 // Runs on Render (persistent server) where python3, node, g++, javac are available.
 import { exec } from 'child_process';
-import util    from 'util';
-import fs      from 'fs/promises';
-import path    from 'path';
-import os      from 'os';
+import util from 'util';
+import fs from 'fs/promises';
+import path from 'path';
+import os from 'os';
 
 const execAsync = util.promisify(exec);
 
@@ -360,7 +372,7 @@ async function localRun(
     sourceCode: string,
     lang: string,
 ): Promise<{ stdout: string; stderr: string; timedOut: boolean }> {
-    const ext     = lang === 'javascript' ? 'js' : lang === 'python3' ? 'py' : lang === 'cpp' ? 'cpp' : 'java';
+    const ext = lang === 'javascript' ? 'js' : lang === 'python3' ? 'py' : lang === 'cpp' ? 'cpp' : 'java';
     const tmpBase = path.join(os.tmpdir(), `run_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`);
     const srcFile = `${tmpBase}.${ext}`;
 
@@ -379,7 +391,7 @@ async function localRun(
         command = `g++ -o "${outFile}" "${srcFile}" && "${outFile}"`;
     } else if (lang === 'java') {
         // Java requires class name = file name; we use Main
-        const javaDir  = tmpBase + '_java';
+        const javaDir = tmpBase + '_java';
         const javaFile = path.join(javaDir, 'Main.java');
         await fs.mkdir(javaDir, { recursive: true });
         await fs.writeFile(javaFile, sourceCode, 'utf8');
@@ -407,7 +419,7 @@ async function localRun(
     } finally {
         // Best-effort cleanup
         for (const f of cleanup) {
-            fs.rm(f, { recursive: true, force: true }).catch(() => {});
+            fs.rm(f, { recursive: true, force: true }).catch(() => { });
         }
     }
 }
@@ -455,10 +467,10 @@ router.post('/run', async (req, res) => {
             res.json({ results: [], summary: { passed: 0, total: 0 } }); return;
         }
 
-        const isJs   = normalizedLang === 'javascript';
-        const isPy   = normalizedLang === 'python3';
+        const isJs = normalizedLang === 'javascript';
+        const isPy = normalizedLang === 'python3';
         const fnName = String(functionName);
-        const tcB64  = Buffer.from(JSON.stringify(testCases)).toString('base64');
+        const tcB64 = Buffer.from(JSON.stringify(testCases)).toString('base64');
 
         // Build runner source — JS and Python get a full test harness injected.
         // Java and C++ are sent as-is; raw stdout is shown.
