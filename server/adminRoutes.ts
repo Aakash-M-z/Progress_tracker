@@ -107,10 +107,10 @@ router.post('/users', async (req: Request, res: Response) => {
             aiUsageResetAt: new Date().toISOString().slice(0, 10),
         });
 
-        // Fire-and-forget welcome email
+        // Await welcome email — necessary for serverless (Vercel) consistency
         if (sendWelcome) {
             console.log(`[admin:createUser] Triggering welcome email for: ${email}`);
-            sendWelcomeEmail(email, username).catch(err =>
+            await sendWelcomeEmail(email, username).catch(err =>
                 console.error('[admin/createUser] Welcome email failed:', err?.message)
             );
         }
@@ -156,12 +156,12 @@ router.patch('/users/:id/status', async (req: Request, res: Response) => {
 
         if (!isActive) {
             console.log(`[admin:status] Triggering deactivation email for: ${(user as any).email}`);
-            sendAccountDeactivatedEmail((user as any).email, (user as any).username).catch(err =>
+            await sendAccountDeactivatedEmail((user as any).email, (user as any).username).catch(err =>
                 console.error('[admin/status] Deactivation email failed:', err?.message)
             );
         } else {
             console.log(`[admin:status] Triggering activation email for: ${(user as any).email}`);
-            sendAccountActivatedEmail((user as any).email, (user as any).username).catch(err =>
+            await sendAccountActivatedEmail((user as any).email, (user as any).username).catch(err =>
                 console.error('[admin/status] Activation email failed:', err?.message)
             );
         }
@@ -226,8 +226,8 @@ router.delete('/users/:id', async (req: Request, res: Response) => {
         await logAction(req, 'DEACTIVATE_USER', String(req.params.id), (user as any).email,
             `Deactivated user "${(user as any).username}" — access revoked immediately`);
 
-        // Notify the user their account was deactivated — fire-and-forget
-        sendAccountDeactivatedEmail((user as any).email, (user as any).username).catch(err =>
+        // Notify the user their account was deactivated — await for serverless reliability
+        await sendAccountDeactivatedEmail((user as any).email, (user as any).username).catch(err =>
             console.error('[admin/deactivate] Notification email failed:', err?.message)
         );
 
@@ -664,6 +664,33 @@ router.get('/interview-analytics', async (req, res) => {
         });
     } catch (err: any) {
         res.status(500).json({ error: err.message });
+    }
+});
+
+// ── 8. SMTP Diagnostic Endpoint ───────────────────────────
+router.get('/test-email', async (req, res) => {
+    try {
+        const testEmail = req.query.email as string || (req as any).adminUser?.email || 'aakashext@gmail.com';
+        console.log(`[admin:test-email] Triggering manual test to: ${testEmail}`);
+        
+        await sendWelcomeEmail(testEmail, 'Test Admin User');
+        
+        res.json({ 
+            success: true, 
+            message: `Test email sent to ${testEmail}. Check your inbox/spam.`,
+            config: {
+                user: process.env.EMAIL_USER ? 'Present' : 'Missing',
+                pass: process.env.EMAIL_PASS ? 'Present' : 'Missing',
+                from: process.env.EMAIL_FROM || 'Default'
+            }
+        });
+    } catch (err: any) {
+        console.error('[admin:test-email] Manual test failed:', err);
+        res.status(500).json({ 
+            success: false, 
+            error: err.message,
+            stack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+        });
     }
 });
 

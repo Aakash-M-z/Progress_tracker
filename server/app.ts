@@ -192,8 +192,8 @@ api.post('/register', authLimiter, async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
 
-        // Background email — don't await to avoid registration lag
-        sendWelcomeEmail(user.email, user.username).catch(err =>
+        // Await welcome email — necessary for serverless (Vercel)
+        await sendWelcomeEmail(user.email, user.username).catch(err =>
             console.error('[register] Welcome email failed:', err?.message ?? err)
         );
 
@@ -251,9 +251,9 @@ api.post('/auth/google', async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         });
 
-        // Background email for new users — don't await
+        // Await welcome email for new users — necessary for serverless (Vercel)
         if (user.createdAt && (Date.now() - new Date(user.createdAt).getTime()) < 10000) {
-            sendWelcomeEmail(user.email, user.username).catch(err =>
+            await sendWelcomeEmail(user.email, user.username).catch(err =>
                 console.error('[google-auth] Welcome email failed:', err?.message ?? err)
             );
         }
