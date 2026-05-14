@@ -204,15 +204,22 @@ router.patch('/users/:id/status', async (req: Request, res: Response) => {
         // Trigger emails based on status — await to ensure delivery on serverless
         if (!isActive) {
             console.log(`[admin:status] 📨 Triggering deactivation email for: ${targetEmail}`);
-            await sendAccountDeactivatedEmail(targetEmail, targetUsername).catch(err =>
-                console.error('[admin:status] ❌ Deactivation email failed:', err?.message)
-            );
+            const success = await sendAccountDeactivatedEmail(targetEmail, targetUsername).catch(err => {
+                console.error('[admin:status] ❌ Deactivation email crashed:', err?.message);
+                return false;
+            });
+            if (success) console.log(`[admin:status] ✅ Deactivation email sent to ${targetEmail}`);
+            else console.error(`[admin:status] ❌ Deactivation email failed for ${targetEmail}`);
         } else {
             console.log(`[admin:status] 📨 Triggering activation email for: ${targetEmail}`);
-            await sendAccountActivatedEmail(targetEmail, targetUsername).catch(err =>
-                console.error('[admin:status] ❌ Activation email failed:', err?.message)
-            );
+            const success = await sendAccountActivatedEmail(targetEmail, targetUsername).catch(err => {
+                console.error('[admin:status] ❌ Activation email crashed:', err?.message);
+                return false;
+            });
+            if (success) console.log(`[admin:status] ✅ Activation email sent to ${targetEmail}`);
+            else console.error(`[admin:status] ❌ Activation email failed for ${targetEmail}`);
         }
+
 
 
         res.json({ id: req.params.id, isActive });
@@ -278,9 +285,13 @@ router.delete('/users/:id', async (req: Request, res: Response) => {
 
         // Notify the user their account was deactivated — await for serverless reliability
         console.log(`[admin:delete] 📨 Triggering deactivation email for: ${targetEmail}`);
-        await sendAccountDeactivatedEmail(targetEmail, targetUsername).catch(err =>
-            console.error('[admin:delete] ❌ Notification email failed:', err?.message)
-        );
+        const success = await sendAccountDeactivatedEmail(targetEmail, targetUsername).catch(err => {
+            console.error('[admin:delete] ❌ Notification email crashed:', err?.message);
+            return false;
+        });
+        if (success) console.log(`[admin:delete] ✅ Deactivation email sent to ${targetEmail}`);
+        else console.error(`[admin:delete] ❌ Deactivation email failed for ${targetEmail}`);
+
 
 
         res.status(204).send();
