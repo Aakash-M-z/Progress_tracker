@@ -109,6 +109,7 @@ router.post('/users', async (req: Request, res: Response) => {
 
         // Fire-and-forget welcome email
         if (sendWelcome) {
+            console.log(`[admin:createUser] Triggering welcome email for: ${email}`);
             sendWelcomeEmail(email, username).catch(err =>
                 console.error('[admin/createUser] Welcome email failed:', err?.message)
             );
@@ -154,10 +155,12 @@ router.patch('/users/:id/status', async (req: Request, res: Response) => {
             `${isActive ? 'Activated' : 'Deactivated'} user "${(user as any).username}"`);
 
         if (!isActive) {
+            console.log(`[admin:status] Triggering deactivation email for: ${(user as any).email}`);
             sendAccountDeactivatedEmail((user as any).email, (user as any).username).catch(err =>
                 console.error('[admin/status] Deactivation email failed:', err?.message)
             );
         } else {
+            console.log(`[admin:status] Triggering activation email for: ${(user as any).email}`);
             sendAccountActivatedEmail((user as any).email, (user as any).username).catch(err =>
                 console.error('[admin/status] Activation email failed:', err?.message)
             );
