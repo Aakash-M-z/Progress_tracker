@@ -38,7 +38,8 @@ function getTransporter(): Transporter {
                     rejectUnauthorized: false, // Helps with some network environments
                     requireTLS: true,          // Ensure STARTTLS is used
                 }
-            });
+            } as any);
+
 
 
         } else {
@@ -53,7 +54,7 @@ function getTransporter(): Transporter {
                 connectionTimeout: 10_000,
                 greetingTimeout: 5_000,
                 socketTimeout: 10_000,
-            });
+            } as any);
         }
         _transporterKey = key;
     }
