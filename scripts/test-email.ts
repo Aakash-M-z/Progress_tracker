@@ -31,20 +31,37 @@ console.log(`  EMAIL_FROM      : ${process.env.EMAIL_FROM ?? '⚠️  not set �
 console.log(`  Sending to      : ${to}`);
 console.log('─'.repeat(50) + '\n');
 
-if (!process.env.BREVO_SMTP_USER || !process.env.BREVO_SMTP_PASS) {
-    console.error('❌ BREVO_SMTP_USER or BREVO_SMTP_PASS missing. Check your .env file.');
-    process.exit(1);
-}
+let transporter: nodemailer.Transporter;
 
-const transporter = nodemailer.createTransport({
-    host: process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com',
-    port: Number(process.env.BREVO_SMTP_PORT) || 587,
-    secure: false,
-    auth: {
-        user: process.env.BREVO_SMTP_USER,
-        pass: process.env.BREVO_SMTP_PASS,
-    },
-});
+if (process.env.EMAIL_USER) {
+    console.log('📦 Using Gmail SMTP configuration (Port 465/SSL)');
+    transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            user: (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim(),
+            pass: (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim(),
+        },
+        connectionTimeout: 30000,
+        greetingTimeout: 30000,
+        socketTimeout: 45000,
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
+} else {
+    console.log('📦 Using Brevo SMTP configuration');
+    transporter = nodemailer.createTransport({
+        host: process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com',
+        port: Number(process.env.BREVO_SMTP_PORT) || 587,
+        secure: false,
+        auth: {
+            user: process.env.BREVO_SMTP_USER,
+            pass: process.env.BREVO_SMTP_PASS,
+        },
+    });
+}
 
 const from = process.env.EMAIL_FROM || 'AlgoAscent <noreply@algoscent.com>';
 

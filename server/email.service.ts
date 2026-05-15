@@ -10,7 +10,9 @@
  */
 
 import nodemailer, { Transporter } from 'nodemailer';
+import dns from 'dns';
 import crypto from 'crypto';
+
 import { welcomeTemplate, passwordResetTemplate, emailVerificationTemplate, accountDeactivatedTemplate, accountActivatedTemplate } from './email.templates.js';
 import { PasswordResetTokenModel } from './models.js';
 
@@ -25,8 +27,8 @@ function getTransporter(): Transporter {
         if (process.env.EMAIL_USER) {
             _transporter = nodemailer.createTransport({
                 host: 'smtp.gmail.com',
-                port: 587,
-                secure: false, // Port 587 usually uses STARTTLS
+                port: 465,
+                secure: true, // Port 465 uses SSL/TLS directly
                 auth: {
                     user: (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim(),
                     pass: (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim(), // App Password
@@ -34,18 +36,15 @@ function getTransporter(): Transporter {
                 connectionTimeout: 30000, // 30s
                 greetingTimeout: 30000,
                 socketTimeout: 45000,
-                family: 4, // Force IPv4
+                // Force IPv4 via custom DNS lookup (most reliable method for Node.js/Render)
+                lookup: (hostname: any, options: any, callback: any) => {
+                    dns.lookup(hostname, { family: 4 }, callback);
+                },
                 tls: {
                     rejectUnauthorized: false,
-                    requireTLS: true
+                    // minVersion: 'TLSv1.2' // Optional: ensure modern TLS
                 }
             } as any);
-
-
-
-
-
-
         } else {
             _transporter = nodemailer.createTransport({
                 host: process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com',
