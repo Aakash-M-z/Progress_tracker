@@ -1,125 +1,119 @@
 /**
  * email.service.ts
- * Brevo SMTP via Nodemailer — drop-in replacement for Resend.
+ * AlgoAscent Email Service — Hybrid SMTP (Brevo + Gmail Fallback)
  *
  * Design principles:
+ * - Priority: Brevo (SMTP Primary) -> Gmail (SMTP Fallback)
  * - Never throws — all errors caught and logged
- * - Never blocks the calling request — fire-and-forget at call site
- * - Reads env vars at call time to avoid dotenv race condition
- * - Transporter is lazily created and reused (singleton)
+ * - Fire-and-forget at call site (non-blocking)
+ * - Lazy initialization of transporters
+ * - Clean architecture with robust fallback logic
  */
 
 import nodemailer, { Transporter } from 'nodemailer';
 import dns from 'dns';
 import crypto from 'crypto';
 
-import { welcomeTemplate, passwordResetTemplate, emailVerificationTemplate, accountDeactivatedTemplate, accountActivatedTemplate } from './email.templates.js';
+import { 
+    welcomeTemplate, 
+    passwordResetTemplate, 
+    emailVerificationTemplate, 
+    accountDeactivatedTemplate, 
+    accountActivatedTemplate 
+} from './email.templates.js';
 import { PasswordResetTokenModel } from './models.js';
 
-// ── Transporter singleton — Gmail or Brevo, selected by env ──────────────────
-let _transporter: Transporter | null = null;
-let _transporterKey: string | undefined;
+// ── Singletons ───────────────────────────────────────────────────────────────
+let _primaryTransporter: Transporter | null = null;
+let _fallbackTransporter: Transporter | null = null;
 
-function getTransporter(): Transporter {
-    // Gmail takes priority if EMAIL_USER is set
-    const key = process.env.EMAIL_USER ?? process.env.BREVO_SMTP_USER;
-    if (!_transporter || key !== _transporterKey) {
-        if (process.env.EMAIL_USER) {
-            _transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 465,
-                secure: true, // Port 465 uses SSL/TLS directly
-                auth: {
-                    user: (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim(),
-                    pass: (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim(), // App Password
-                },
-                connectionTimeout: 30000, // 30s
-                greetingTimeout: 30000,
-                socketTimeout: 45000,
-                // Force IPv4 via custom DNS lookup (most reliable method for Node.js/Render)
-                lookup: (hostname: any, options: any, callback: any) => {
-                    dns.lookup(hostname, { family: 4 }, callback);
-                },
-                tls: {
-                    rejectUnauthorized: false,
-                    // minVersion: 'TLSv1.2' // Optional: ensure modern TLS
-                }
-            } as any);
-        } else {
-            _transporter = nodemailer.createTransport({
-                host: process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com',
-                port: Number(process.env.BREVO_SMTP_PORT) || 587,
-                secure: false,
-                auth: {
-                    user: process.env.BREVO_SMTP_USER,
-                    pass: process.env.BREVO_SMTP_PASS,
-                },
-                connectionTimeout: 10_000,
-                greetingTimeout: 5_000,
-                socketTimeout: 10_000,
-            } as any);
-        }
-        _transporterKey = key;
+// ── Transporter Getters ───────────────────────────────────────────────────────
+
+function getBrevoTransporter(): Transporter | null {
+    const user = (process.env.BREVO_SMTP_USER || '').replace(/['"]/g, '').trim();
+    const pass = (process.env.BREVO_SMTP_PASS || '').replace(/['"]/g, '').trim();
+    
+    if (!user || !pass) return null;
+
+    if (!_primaryTransporter) {
+        _primaryTransporter = nodemailer.createTransport({
+            host: process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com',
+            port: Number(process.env.BREVO_SMTP_PORT) || 587,
+            secure: false,
+            auth: { user, pass },
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 20000,
+        } as any);
     }
-    return _transporter;
+    return _primaryTransporter;
 }
 
-// ── Verify SMTP on startup (non-blocking) ─────────────────────────────────────
-setImmediate(() => {
-    const provider = process.env.EMAIL_USER ? 'Gmail' : 'Brevo';
-    const ready = process.env.EMAIL_USER
-        ? !!(process.env.EMAIL_USER && process.env.EMAIL_PASS)
-        : !!(process.env.BREVO_SMTP_USER && process.env.BREVO_SMTP_PASS);
-    if (!ready) return;
-    getTransporter().verify()
-        .then(() => console.log(`[email] ✅ SMTP connection verified (${provider})`))
-        .catch(err => console.error(`[email] ❌ SMTP verification failed (${provider}):`, err?.message));
-});
-
-// ── Read at call time — never at module load ──────────────────────────────────
-function getFromAddress(): string {
-    const from = process.env.EMAIL_FROM?.replace(/['"]/g, '') 
-        || (process.env.EMAIL_USER 
-            ? `AlgoAscent <${process.env.EMAIL_USER.replace(/['"]/g, '')}>` 
-            : 'AlgoAscent <a88762001@smtp-brevo.com>');
+function getGmailTransporter(): Transporter | null {
+    const user = (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim();
+    const pass = (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim();
     
-    return from;
+    if (!user || !pass) return null;
+
+    if (!_fallbackTransporter) {
+        _fallbackTransporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth: { user, pass },
+            connectionTimeout: 15000,
+            greetingTimeout: 15000,
+            socketTimeout: 30000,
+            lookup: (hostname: any, options: any, callback: any) => {
+                dns.lookup(hostname, { family: 4 }, callback);
+            },
+            tls: { rejectUnauthorized: false }
+        } as any);
+    }
+    return _fallbackTransporter;
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function getFromAddress(): string {
+    return (process.env.EMAIL_FROM || '').replace(/['"]/g, '').trim() 
+        || 'AlgoAscent <a88762001@smtp-brevo.com>';
 }
 
 function getFrontendUrl(): string {
     return process.env.FRONTEND_URL || 'https://progresss-tracker.vercel.app';
 }
 
-// ── Guard — skip if SMTP not configured ──────────────────────────────────────
-/**
- * Checks if email credentials are set in environment variables.
- * Exported for diagnostic tools (health check).
- */
-export function isEmailEnabled(): boolean {
-    const gmailUser = (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim();
-    const gmailPass = (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim();
-    const hasGmail = !!(gmailUser && gmailPass);
+// ── Startup Diagnostics ──────────────────────────────────────────────────────
+setImmediate(async () => {
+    console.log('\n📧 [email] Initializing SMTP Service...');
     
-    const brevoUser = (process.env.BREVO_SMTP_USER || '').replace(/['"]/g, '').trim();
-    const brevoPass = (process.env.BREVO_SMTP_PASS || '').replace(/['"]/g, '').trim();
-    const hasBrevo = !!(brevoUser && brevoPass);
-    
-    if (hasGmail || hasBrevo) return true;
+    const brevo = getBrevoTransporter();
+    const gmail = getGmailTransporter();
 
-    // Log helpful warnings only once on first check
-    if (!gmailUser && !brevoUser) {
-        console.warn('[email] ⚠️ No SMTP credentials (EMAIL_USER or BREVO_SMTP_USER) — email service disabled');
+    if (brevo) {
+        console.log('   ◈ Brevo : Primary (Ready)');
+        brevo.verify()
+            .then(() => console.log('   ✅ Brevo SMTP Verified'))
+            .catch(e => console.error('   ❌ Brevo SMTP failed:', e.message));
     } else {
-        if (gmailUser && !gmailPass) console.warn('[email] ⚠️ Gmail set but EMAIL_PASS is missing');
-        if (brevoUser && !brevoPass) console.warn('[email] ⚠️ Brevo set but BREVO_SMTP_PASS is missing');
+        console.warn('   ◈ Brevo : Not configured (Missing credentials)');
     }
-    
-    return false;
-}
 
+    if (gmail) {
+        console.log('   ◈ Gmail : Fallback (Ready)');
+    } else {
+        console.log('   ◈ Gmail : Not configured');
+    }
 
+    if (!brevo && !gmail) {
+        console.error('   ❌ CRITICAL: No SMTP providers configured!');
+    }
+    console.log('');
+});
 
-// ── Core send helper ──────────────────────────────────────────────────────────
+// ── Core Delivery Logic ──────────────────────────────────────────────────────
+
 interface SendOptions {
     to: string;
     subject: string;
@@ -128,52 +122,60 @@ interface SendOptions {
 }
 
 async function send(opts: SendOptions): Promise<boolean> {
-    if (!isEmailEnabled()) {
-        console.warn(`[email:${opts.tag}] Email skipped: SMTP not configured.`);
-        return false;
-    }
-
     const from = getFromAddress();
-    console.log(`[email:${opts.tag}] Attempting to send → ${opts.to} | Subject: ${opts.subject}`);
+    const brevo = getBrevoTransporter();
+    const gmail = getGmailTransporter();
 
-    try {
-        const transporter = getTransporter();
-        const info = await transporter.sendMail({
-            from,
-            to: opts.to,
-            subject: opts.subject,
-            html: opts.html,
-        });
+    console.log(`[email:${opts.tag}] Attempting send to: ${opts.to}`);
 
-        console.log(`[email:${opts.tag}] ✅ SMTP Server Accepted → ${opts.to}`);
-        console.log(`[email:${opts.tag}]    MessageID: ${info.messageId}`);
-        console.log(`[email:${opts.tag}]    Response: ${info.response}`);
-        
-        if (info.rejected && info.rejected.length > 0) {
-            console.warn(`[email:${opts.tag}] ⚠️ Rejected recipients: ${info.rejected.join(', ')}`);
+    // 1. TRY BREVO (Primary)
+    if (brevo) {
+        try {
+            const info = await brevo.sendMail({
+                from,
+                to: opts.to,
+                subject: opts.subject,
+                html: opts.html,
+            });
+            console.log(`[email:${opts.tag}] ✅ Sent via Brevo (MsgID: ${info.messageId})`);
+            return true;
+        } catch (err: any) {
+            console.error(`[email:${opts.tag}] ⚠️ Brevo failed: ${err.message}`);
+            // If primary fails, we fall through to Gmail
         }
-        
-        return true;
-
-    } catch (err: any) {
-        console.error(`[email:${opts.tag}] ❌ Failed → ${opts.to}`);
-        console.error(`[email:${opts.tag}]    Error: ${err?.message ?? err}`);
-        if (err?.code === 'EAUTH') {
-            console.error(`[email:${opts.tag}]    Authentication failed. Check EMAIL_USER/PASS or BREVO credentials.`);
-        }
-        // Reset transporter so next call gets a fresh connection
-        _transporter = null;
-        return false;
     }
+
+    // 2. TRY GMAIL (Fallback)
+    if (gmail) {
+        console.log(`[email:${opts.tag}] 🔄 Falling back to Gmail SMTP...`);
+        try {
+            const info = await gmail.sendMail({
+                from,
+                to: opts.to,
+                subject: opts.subject,
+                html: opts.html,
+            });
+            console.log(`[email:${opts.tag}] ✅ Sent via Gmail (MsgID: ${info.messageId})`);
+            return true;
+        } catch (err: any) {
+            console.error(`[email:${opts.tag}] ❌ Gmail fallback failed: ${err.message}`);
+        }
+    }
+
+    console.error(`[email:${opts.tag}] 💀 All delivery attempts failed.`);
+    return false;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// PUBLIC API (Fire-and-forget)
+// ─────────────────────────────────────────────────────────────────────────────
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PUBLIC API — identical signatures to the old Resend service
-// ─────────────────────────────────────────────────────────────────────────────
+export function isEmailEnabled(): boolean {
+    return !!(process.env.BREVO_SMTP_USER || process.env.EMAIL_USER);
+}
 
 export async function sendWelcomeEmail(email: string, username: string): Promise<boolean> {
-    return await send({
+    return send({
         to: email,
         subject: `Welcome to AlgoAscent, ${username}! 🚀`,
         html: welcomeTemplate(username),
@@ -181,14 +183,17 @@ export async function sendWelcomeEmail(email: string, username: string): Promise
     });
 }
 
-
 export async function sendPasswordResetEmail(email: string, username: string): Promise<boolean> {
     const rawToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
 
-    await PasswordResetTokenModel.deleteMany({ email });
-    await PasswordResetTokenModel.create({ email, token: hashedToken, expiresAt });
+    try {
+        await PasswordResetTokenModel.deleteMany({ email });
+        await PasswordResetTokenModel.create({ email, token: hashedToken, expiresAt });
+    } catch (e) {
+        console.error('[email:password-reset] Database error:', e);
+    }
 
     const resetUrl = `${getFrontendUrl()}/reset-password?token=${rawToken}&email=${encodeURIComponent(email)}`;
 
@@ -200,6 +205,37 @@ export async function sendPasswordResetEmail(email: string, username: string): P
     });
 }
 
+export async function sendVerificationEmail(email: string, username: string): Promise<void> {
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const verifyUrl = `${getFrontendUrl()}/verify-email?token=${rawToken}&email=${encodeURIComponent(email)}`;
+
+    send({
+        to: email,
+        subject: 'Verify your AlgoAscent email address',
+        html: emailVerificationTemplate(username, verifyUrl),
+        tag: 'verify-email',
+    });
+}
+
+export async function sendAccountDeactivatedEmail(email: string, username: string): Promise<boolean> {
+    return send({
+        to: email,
+        subject: 'Your AlgoAscent account has been deactivated',
+        html: accountDeactivatedTemplate(username),
+        tag: 'account-deactivated',
+    });
+}
+
+export async function sendAccountActivatedEmail(email: string, username: string): Promise<boolean> {
+    return send({
+        to: email,
+        subject: 'Your AlgoAscent account has been reactivated',
+        html: accountActivatedTemplate(username),
+        tag: 'account-activated',
+    });
+}
+
+// Token Verification Helpers
 export async function verifyPasswordResetToken(rawToken: string, email: string): Promise<string | null> {
     const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
     const record = await PasswordResetTokenModel.findOne({
@@ -214,43 +250,3 @@ export async function consumePasswordResetToken(rawToken: string, email: string)
     const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
     await PasswordResetTokenModel.deleteOne({ email, token: hashedToken });
 }
-
-export async function sendVerificationEmail(email: string, username: string): Promise<void> {
-    const rawToken = crypto.randomBytes(32).toString('hex');
-    const verifyUrl = `${getFrontendUrl()}/verify-email?token=${rawToken}&email=${encodeURIComponent(email)}`;
-
-    await send({
-        to: email,
-        subject: 'Verify your AlgoAscent email address',
-        html: emailVerificationTemplate(username, verifyUrl),
-        tag: 'verify-email',
-    });
-}
-
-/**
- * Send account deactivation notification.
- * Called after admin deactivates a user.
- */
-export async function sendAccountDeactivatedEmail(email: string, username: string): Promise<boolean> {
-    return await send({
-        to: email,
-        subject: 'Your AlgoAscent account has been deactivated',
-        html: accountDeactivatedTemplate(username),
-        tag: 'account-deactivated',
-    });
-}
-
-
-/**
- * Send account activation notification.
- * Called after admin reactivates a user.
- */
-export async function sendAccountActivatedEmail(email: string, username: string): Promise<boolean> {
-    return await send({
-        to: email,
-        subject: 'Your AlgoAscent account has been reactivated',
-        html: accountActivatedTemplate(username),
-        tag: 'account-activated',
-    });
-}
-
