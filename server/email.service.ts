@@ -1,17 +1,16 @@
 /**
  * email.service.ts
- * AlgoAscent Email Service — Hybrid SMTP (Brevo + Gmail Fallback)
+ * AlgoAscent Email Service — Brevo Transactional API (HTTPS)
  *
  * Design principles:
- * - Priority: Brevo (SMTP Primary) -> Gmail (SMTP Fallback)
+ * - Direct HTTPS API calls via official Brevo SDK (sib-api-v3-sdk)
+ * - Eliminates SMTP connection timeouts on Render
  * - Never throws — all errors caught and logged
  * - Fire-and-forget at call site (non-blocking)
- * - Lazy initialization of transporters
- * - Clean architecture with robust fallback logic
+ * - Clean architecture with singleton API client
  */
 
-import nodemailer, { Transporter } from 'nodemailer';
-import dns from 'dns';
+import * as SibApiV3Sdk from 'sib-api-v3-sdk';
 import crypto from 'crypto';
 
 import { 
@@ -23,61 +22,35 @@ import {
 } from './email.templates.js';
 import { PasswordResetTokenModel } from './models.js';
 
-// ── Singletons ───────────────────────────────────────────────────────────────
-let _primaryTransporter: Transporter | null = null;
-let _fallbackTransporter: Transporter | null = null;
+// ── API Configuration ────────────────────────────────────────────────────────
+const defaultClient = (SibApiV3Sdk as any).default.ApiClient.instance;
+const apiKey = defaultClient.authentications['api-key'];
 
-// ── Transporter Getters ───────────────────────────────────────────────────────
+let _apiInstance: any = null;
 
-function getBrevoTransporter(): Transporter | null {
-    const user = (process.env.BREVO_SMTP_USER || '').replace(/['"]/g, '').trim();
-    const pass = (process.env.BREVO_SMTP_PASS || '').replace(/['"]/g, '').trim();
-    
-    if (!user || !pass) return null;
+function getApiInstance(): any {
+    const key = (process.env.BREVO_API_KEY || '').replace(/['"]/g, '').trim();
+    if (!key) return null;
 
-    if (!_primaryTransporter) {
-        _primaryTransporter = nodemailer.createTransport({
-            host: process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com',
-            port: Number(process.env.BREVO_SMTP_PORT) || 587,
-            secure: false,
-            auth: { user, pass },
-            connectionTimeout: 10000,
-            greetingTimeout: 10000,
-            socketTimeout: 20000,
-        } as any);
+    if (!_apiInstance) {
+        apiKey.apiKey = key;
+        _apiInstance = new (SibApiV3Sdk as any).default.TransactionalEmailsApi();
     }
-    return _primaryTransporter;
-}
-
-function getGmailTransporter(): Transporter | null {
-    const user = (process.env.EMAIL_USER || '').replace(/['"]/g, '').trim();
-    const pass = (process.env.EMAIL_PASS || '').replace(/['"]/g, '').trim();
-    
-    if (!user || !pass) return null;
-
-    if (!_fallbackTransporter) {
-        _fallbackTransporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true,
-            auth: { user, pass },
-            connectionTimeout: 15000,
-            greetingTimeout: 15000,
-            socketTimeout: 30000,
-            lookup: (hostname: any, options: any, callback: any) => {
-                dns.lookup(hostname, { family: 4 }, callback);
-            },
-            tls: { rejectUnauthorized: false }
-        } as any);
-    }
-    return _fallbackTransporter;
+    return _apiInstance;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function getFromAddress(): string {
-    return (process.env.EMAIL_FROM || '').replace(/['"]/g, '').trim() 
+function getFromDetails() {
+    const fromStr = (process.env.EMAIL_FROM || '').replace(/['"]/g, '').trim() 
         || 'AlgoAscent <a88762001@smtp-brevo.com>';
+    
+    // Parse "Name <email@domain.com>"
+    const match = fromStr.match(/(.*)<(.*)>/);
+    if (match) {
+        return { name: match[1].trim(), email: match[2].trim() };
+    }
+    return { name: 'AlgoAscent', email: fromStr };
 }
 
 function getFrontendUrl(): string {
@@ -85,29 +58,13 @@ function getFrontendUrl(): string {
 }
 
 // ── Startup Diagnostics ──────────────────────────────────────────────────────
-setImmediate(async () => {
-    console.log('\n📧 [email] Initializing SMTP Service...');
-    
-    const brevo = getBrevoTransporter();
-    const gmail = getGmailTransporter();
-
-    if (brevo) {
-        console.log('   ◈ Brevo : Primary (Ready)');
-        brevo.verify()
-            .then(() => console.log('   ✅ Brevo SMTP Verified'))
-            .catch(e => console.error('   ❌ Brevo SMTP failed:', e.message));
+setImmediate(() => {
+    console.log('\n📧 [email] Initializing Brevo Transactional API Service...');
+    const api = getApiInstance();
+    if (api) {
+        console.log('   ✅ API Client Ready (HTTPS mode)');
     } else {
-        console.warn('   ◈ Brevo : Not configured (Missing credentials)');
-    }
-
-    if (gmail) {
-        console.log('   ◈ Gmail : Fallback (Ready)');
-    } else {
-        console.log('   ◈ Gmail : Not configured');
-    }
-
-    if (!brevo && !gmail) {
-        console.error('   ❌ CRITICAL: No SMTP providers configured!');
+        console.warn('   ⚠️  BREVO_API_KEY missing — Email service disabled');
     }
     console.log('');
 });
@@ -122,48 +79,30 @@ interface SendOptions {
 }
 
 async function send(opts: SendOptions): Promise<boolean> {
-    const from = getFromAddress();
-    const brevo = getBrevoTransporter();
-    const gmail = getGmailTransporter();
-
-    console.log(`[email:${opts.tag}] Attempting send to: ${opts.to}`);
-
-    // 1. TRY BREVO (Primary)
-    if (brevo) {
-        try {
-            const info = await brevo.sendMail({
-                from,
-                to: opts.to,
-                subject: opts.subject,
-                html: opts.html,
-            });
-            console.log(`[email:${opts.tag}] ✅ Sent via Brevo (MsgID: ${info.messageId})`);
-            return true;
-        } catch (err: any) {
-            console.error(`[email:${opts.tag}] ⚠️ Brevo failed: ${err.message}`);
-            // If primary fails, we fall through to Gmail
-        }
+    const api = getApiInstance();
+    if (!api) {
+        console.warn(`[email:${opts.tag}] Skip: No API Key`);
+        return false;
     }
 
-    // 2. TRY GMAIL (Fallback)
-    if (gmail) {
-        console.log(`[email:${opts.tag}] 🔄 Falling back to Gmail SMTP...`);
-        try {
-            const info = await gmail.sendMail({
-                from,
-                to: opts.to,
-                subject: opts.subject,
-                html: opts.html,
-            });
-            console.log(`[email:${opts.tag}] ✅ Sent via Gmail (MsgID: ${info.messageId})`);
-            return true;
-        } catch (err: any) {
-            console.error(`[email:${opts.tag}] ❌ Gmail fallback failed: ${err.message}`);
-        }
-    }
+    const from = getFromDetails();
+    console.log(`[email:${opts.tag}] API Request → ${opts.to} | Subject: ${opts.subject}`);
 
-    console.error(`[email:${opts.tag}] 💀 All delivery attempts failed.`);
-    return false;
+    const sendSmtpEmail = new (SibApiV3Sdk as any).default.SendSmtpEmail();
+    sendSmtpEmail.sender = from;
+    sendSmtpEmail.to = [{ email: opts.to }];
+    sendSmtpEmail.subject = opts.subject;
+    sendSmtpEmail.htmlContent = opts.html;
+
+    try {
+        const data = await api.sendTransacEmail(sendSmtpEmail);
+        console.log(`[email:${opts.tag}] ✅ Success (MessageID: ${data.messageId || 'API_ACCEPTED'})`);
+        return true;
+    } catch (err: any) {
+        console.error(`[email:${opts.tag}] ❌ API Error → ${opts.to}`);
+        console.error(`[email:${opts.tag}]    Reason: ${err?.response?.body?.message || err?.message || err}`);
+        return false;
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -171,7 +110,7 @@ async function send(opts: SendOptions): Promise<boolean> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function isEmailEnabled(): boolean {
-    return !!(process.env.BREVO_SMTP_USER || process.env.EMAIL_USER);
+    return !!(process.env.BREVO_API_KEY);
 }
 
 export async function sendWelcomeEmail(email: string, username: string): Promise<boolean> {
@@ -235,7 +174,7 @@ export async function sendAccountActivatedEmail(email: string, username: string)
     });
 }
 
-// Token Verification Helpers
+// Token Verification Helpers (Unchanged)
 export async function verifyPasswordResetToken(rawToken: string, email: string): Promise<string | null> {
     const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
     const record = await PasswordResetTokenModel.findOne({
