@@ -166,9 +166,7 @@ const AIMentorWidget: React.FC = () => {
                             <p className="text-[10px] text-white/25 font-bold">Personalized Intelligence Engine</p>
                         </div>
                     </div>
-                    {isFallback && (
-                        <span className="text-[9px] bg-white/5 px-2 py-1 rounded font-bold text-white/20 uppercase tracking-widest">Demo Mode</span>
-                    )}
+
                 </div>
 
                 {/* Sub Tabs */}
@@ -207,65 +205,83 @@ const AIMentorWidget: React.FC = () => {
                                 </div>
                                 <div className="lg:col-span-2 space-y-3">
                                     <div className="text-[10px] font-black uppercase tracking-widest text-white/25 mb-4">Intelligence Insights</div>
-                                    {insights.map((ins, i) => (
-                                        <InsightCard key={i} type={ins.type} text={ins.text} delay={i * 0.1} />
-                                    ))}
+                                    {insights.length === 0 ? (
+                                        <div className="text-center py-8 text-white/20 text-xs border border-dashed border-white/5 rounded-xl">
+                                            Log activities or complete interviews to unlock insights.
+                                        </div>
+                                    ) : (
+                                        insights.map((ins, i) => (
+                                            <InsightCard key={i} type={ins.type} text={ins.text} delay={i * 0.1} />
+                                        ))
+                                    )}
                                 </div>
                             </div>
                         </motion.div>
                     )}
 
                     {/* ── Daily Plan Tab ───────────────────────────── */}
-                    {tab === 'plan' && dailyPlan && (
-                        <motion.div
-                            key="plan"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="space-y-6"
-                        >
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <div className="text-[10px] font-black uppercase tracking-widest text-white/25 mb-1">Today's Focus</div>
-                                    <h3 className="text-xl font-black text-white">{dailyPlan.focusTopic}</h3>
-                                    <div className="flex items-center gap-4 mt-1">
-                                        <span className="text-xs text-white/30">⏱ {dailyPlan.estimatedTime}</span>
-                                        <span className="text-xs text-gold font-bold">+{dailyPlan.xpReward} XP on completion</span>
+                    {tab === 'plan' && (
+                        dailyPlan ? (
+                            <motion.div
+                                key="plan"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="space-y-6"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <div className="text-[10px] font-black uppercase tracking-widest text-white/25 mb-1">Today's Focus</div>
+                                        <h3 className="text-xl font-black text-white">{dailyPlan.focusTopic}</h3>
+                                        <div className="flex items-center gap-4 mt-1">
+                                            <span className="text-xs text-white/30">⏱ {dailyPlan.estimatedTime}</span>
+                                            <span className="text-xs text-gold font-bold">+{dailyPlan.xpReward} XP on completion</span>
+                                        </div>
                                     </div>
+                                    <div className="text-right text-[10px] text-white/20 font-bold uppercase">{dailyPlan.date}</div>
                                 </div>
-                                <div className="text-right text-[10px] text-white/20 font-bold uppercase">{dailyPlan.date}</div>
-                            </div>
 
-                            <div className="space-y-3">
-                                {(dailyPlan?.problems ?? []).map((p, i) => (
-                                    <motion.a
-                                        key={i}
-                                        href={p.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: i * 0.1 }}
-                                        className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/15 hover:bg-white/[0.04] transition-all group"
-                                    >
-                                        <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-xs font-black text-white/40">
-                                            {i + 1}
-                                        </div>
-                                        <div className="flex-1">
-                                            <div className="text-sm font-bold text-white group-hover:text-gold transition-colors">{p.title}</div>
-                                            <div className="text-xs text-white/30 mt-0.5">{p.why}</div>
-                                        </div>
-                                        <div className="flex items-center gap-2 flex-shrink-0">
-                                            <span className={`text-[10px] font-black px-2 py-1 rounded uppercase tracking-wide ${DIFF_COLORS[p.difficulty] || 'text-white/40'}`}>
-                                                {p.difficulty}
-                                            </span>
-                                            <span className="text-[10px] text-white/20 font-bold">{p.platform}</span>
-                                            <span className="text-white/20 group-hover:text-white/60 transition-colors text-xs">↗</span>
-                                        </div>
-                                    </motion.a>
-                                ))}
-                            </div>
-                        </motion.div>
+                                <div className="space-y-3">
+                                    {(dailyPlan?.problems ?? []).map((p, i) => (
+                                        <motion.a
+                                            key={i}
+                                            href={p.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            initial={{ opacity: 0, x: -10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.1 }}
+                                            className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/15 hover:bg-white/[0.04] transition-all group"
+                                        >
+                                            <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-xs font-black text-white/40">
+                                                {i + 1}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="text-sm font-bold text-white group-hover:text-gold transition-colors">{p.title}</div>
+                                                <div className="text-xs text-white/30 mt-0.5">{p.why}</div>
+                                            </div>
+                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                                <span className={`text-[10px] font-black px-2 py-1 rounded uppercase tracking-wide ${DIFF_COLORS[p.difficulty] || 'text-white/40'}`}>
+                                                    {p.difficulty}
+                                                </span>
+                                                <span className="text-[10px] text-white/20 font-bold">{p.platform}</span>
+                                                <span className="text-white/20 group-hover:text-white/60 transition-colors text-xs">↗</span>
+                                            </div>
+                                        </motion.a>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="no-plan"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="text-center py-12 text-white/20 text-sm"
+                            >
+                                No daily plan available. Log your activities or complete an interview to generate a plan.
+                            </motion.div>
+                        )
                     )}
 
                     {/* ── Topics Tab ──────────────────────────────── */}
