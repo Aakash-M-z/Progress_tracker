@@ -26,31 +26,7 @@ const TOPIC_COLORS = [
     '#fb923c', '#60a5fa',
 ];
 
-/* ── Demo data for empty state ───────────────────────────────── */
-const DEMO_ACTIVITIES: Activity[] = (() => {
-    const topics = ['Arrays', 'Trees', 'Graphs', 'Dynamic Programming', 'Linked Lists', 'Stacks'];
-    const diffs: Activity['difficulty'][] = ['Easy', 'Medium', 'Hard'];
-    const out: Activity[] = [];
-    for (let i = 89; i >= 0; i--) {
-        const d = new Date(Date.now() - i * 86_400_000);
-        if (Math.random() > 0.45) {
-            const n = Math.floor(Math.random() * 3) + 1;
-            for (let j = 0; j < n; j++) {
-                out.push({
-                    id: `demo-${i}-${j}`,
-                    date: d.toISOString().slice(0, 10),
-                    category: topics[Math.floor(Math.random() * topics.length)],
-                    duration: 20 + Math.floor(Math.random() * 60),
-                    description: 'Demo problem',
-                    value: Math.floor(Math.random() * 4) + 1,
-                    difficulty: diffs[Math.floor(Math.random() * 3)],
-                    problemSolved: Math.random() > 0.3,
-                });
-            }
-        }
-    }
-    return out;
-})();
+
 
 /* ── Animated counter hook ───────────────────────────────────── */
 function useCounter(target: number, duration = 900, active = true) {
@@ -174,6 +150,11 @@ const KpiCard: React.FC<{
 /* ── AI Insight banner ───────────────────────────────────────── */
 const InsightBanner: React.FC<{ activities: Activity[]; isDemo: boolean }> = ({ activities, isDemo }) => {
     const insights = useMemo(() => {
+        if (activities.length === 0) {
+            return [
+                { icon: '💡', text: 'No activities logged yet. Log your first solved problem to see automated insights.', color: GOLD }
+            ];
+        }
         const solved = activities.filter(a => a.problemSolved).length;
         const total = activities.length;
         const rate = total ? Math.round((solved / total) * 100) : 0;
@@ -225,7 +206,7 @@ const InsightBanner: React.FC<{ activities: Activity[]; isDemo: boolean }> = ({ 
                 </div>
                 <div>
                     <div className="card-title">AI Insight Summary</div>
-                    {isDemo && <div style={{ fontSize: '0.65rem', color: '#555', marginTop: '1px' }}>Showing demo data — log activities to see your real insights</div>}
+                    {isDemo && <div style={{ fontSize: '0.65rem', color: '#555', marginTop: '1px' }}>Log activities to see your real insights</div>}
                 </div>
             </div>
 
@@ -290,7 +271,7 @@ const AnalyticsDashboard: React.FC = () => {
     const [lineRange, setLineRange] = useState<'30' | '60' | '90'>('30');
 
     const isDemo = activities.length === 0;
-    const data = isDemo ? DEMO_ACTIVITIES : activities;
+    const data = activities;
 
     /* ── KPIs ── */
     const kpis = useMemo(() => {
@@ -380,13 +361,8 @@ const AnalyticsDashboard: React.FC = () => {
             <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
                 <h2 className="page-heading" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     Analytics
-                    {isDemo && (
-                        <span style={{ fontSize: '0.65rem', padding: '2px 10px', borderRadius: '999px', background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.25)', color: GOLD, fontWeight: 700, letterSpacing: '0.08em' }}>
-                            DEMO
-                        </span>
-                    )}
                 </h2>
-                <p className="page-subheading">{isDemo ? 'Sample data — log activities to see your real analytics' : 'Your productivity trends and insights'}</p>
+                <p className="page-subheading">Your productivity trends and insights</p>
             </motion.div>
 
             {/* AI Insight Banner */}
