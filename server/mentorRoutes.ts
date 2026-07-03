@@ -72,7 +72,17 @@ router.get('/insights', async (req, res) => {
         const activities = await ActivityModel.find({ userId }).sort({ createdAt: -1 }).limit(100);
 
         if (sessions.length === 0 && activities.length === 0) {
-            res.json({ ...getMockMentorData(), isFallback: true, isNewUser: true }); return;
+            res.json({
+                weakTopics: [],
+                strongTopics: [],
+                readinessScore: 0,
+                readinessTrend: 0,
+                dailyPlan: null,
+                insights: [],
+                isFallback: false,
+                isNewUser: true
+            });
+            return;
         }
 
         // Aggregate topic performance from interview sessions
