@@ -12,7 +12,7 @@ interface Props {
     items: NavItem[];
 }
 
-const MOBILE_IDS = ['overview', 'tasks', 'analytics', 'roadmap', 'profile'];
+const MOBILE_IDS = ['overview', 'ai', 'interview', 'roadmap', 'subjects'];
 
 const MobileNav: React.FC<Props> = ({ items }) => {
     const mobileItems = items.filter(i => MOBILE_IDS.includes(i.id));
