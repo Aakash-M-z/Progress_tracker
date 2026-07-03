@@ -293,6 +293,33 @@ export class DatabaseAPI {
       return res.json();
     } catch (e) { console.error('getRecommendations:', e); return null; }
   }
+
+  async getProblems(params: {
+    difficulty?: string;
+    topic?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{
+    problems: any[];
+    pagination: { page: number; limit: number; total: number; pages: number };
+  }> {
+    try {
+      const query = new URLSearchParams();
+      if (params.difficulty) query.set('difficulty', params.difficulty.toLowerCase());
+      if (params.topic) query.set('topic', params.topic);
+      if (params.search) query.set('search', params.search);
+      if (params.page) query.set('page', String(params.page));
+      if (params.limit) query.set('limit', String(params.limit));
+
+      const res = await fetchWithAuth(`${API_BASE}/api/problems?${query.toString()}`, { headers: authHeaders() });
+      if (!res.ok) throw new Error(`Failed to fetch problems: ${res.statusText}`);
+      return res.json();
+    } catch (e) {
+      console.error('getProblems:', e);
+      return { problems: [], pagination: { page: 1, limit: 20, total: 0, pages: 0 } };
+    }
+  }
 }
 
 export const databaseAPI = new DatabaseAPI();
