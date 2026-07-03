@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface HeaderProps {
+  onMenuToggle?: () => void;
 }
 
 /* ── Logout confirmation modal (Using Portals for perfect centering) ── */
@@ -68,7 +69,7 @@ const LogoutModal: React.FC<{ onConfirm: () => void; onCancel: () => void }> = (
 };
 
 /* ── Header ──────────────────────────────────────────────────── */
-const Header: React.FC<HeaderProps> = () => {
+const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
   const { user, logout } = useAuth();
   const routerNavigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -117,6 +118,15 @@ const Header: React.FC<HeaderProps> = () => {
   const displayName = user?.name && user.name !== 'Guest' ? user.name : (user?.username ?? 'User');
   const initials = displayName.charAt(0).toUpperCase();
 
+  const navItems = [
+    { label: 'Overview', path: '/dashboard' },
+    { label: 'AI Assistant', path: '/dashboard/ai' },
+    { label: user?.role === 'admin' ? 'Interview Analytics' : 'Mock Interview', path: '/dashboard/interview' },
+    { label: 'DSA Roadmap', path: '/dashboard/roadmap' },
+    { label: 'Core Subjects', path: '/dashboard/subjects' },
+    { label: 'Resources', path: '/dashboard/resources' },
+  ];
+
   return (
     <>
       {showLogoutModal && (
@@ -139,36 +149,69 @@ const Header: React.FC<HeaderProps> = () => {
       >
         <div className="max-w-full mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
 
-          {/* Logo */}
+          {/* Left side: Hamburger (on mobile) + Logo */}
           <div className="flex items-center gap-3">
-            <div style={{
-              width: '36px', height: '36px', borderRadius: '10px',
-              border: '1px solid rgba(212,175,55,0.4)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'rgba(212,175,55,0.08)', overflow: 'hidden',
-            }}>
-              <img
-                src="/logo.png" alt="Logo"
-                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                onError={e => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.parentElement!.innerHTML = '<span style="font-size:1.2rem">◈</span>';
-                }}
-              />
-            </div>
-            <div>
-              <h1 style={{
-                fontFamily: '"Orbitron", "Inter", sans-serif',
-                fontSize: '1rem', fontWeight: 800, color: '#EAEAEA',
-                letterSpacing: '0.05em', lineHeight: 1.2,
+            {onMenuToggle && (
+              <button
+                onClick={onMenuToggle}
+                className="p-2 -ml-2 text-white/40 hover:text-gold transition-colors md:hidden"
+                aria-label="Toggle Menu"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            )}
+            <div className="flex items-center gap-3">
+              <div style={{
+                width: '36px', height: '36px', borderRadius: '10px',
+                border: '1px solid rgba(212,175,55,0.4)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(212,175,55,0.08)', overflow: 'hidden',
               }}>
-                Progress <span style={{ color: '#D4AF37' }}>Tracker</span>
-              </h1>
-              <p style={{ fontSize: '0.6rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.2em' }}>
-                Mastering Algorithms
-              </p>
+                <img
+                  src="/logo.png" alt="Logo"
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  onError={e => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.parentElement!.innerHTML = '<span style="font-size:1.2rem">◈</span>';
+                  }}
+                />
+              </div>
+              <div className="hidden sm:block">
+                <h1 style={{
+                  fontFamily: '"Orbitron", "Inter", sans-serif',
+                  fontSize: '1rem', fontWeight: 800, color: '#EAEAEA',
+                  letterSpacing: '0.05em', lineHeight: 1.2,
+                }}>
+                  Progress <span style={{ color: '#D4AF37' }}>Tracker</span>
+                </h1>
+                <p style={{ fontSize: '0.6rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.2em' }}>
+                  Mastering Algorithms
+                </p>
+              </div>
             </div>
           </div>
+
+          {/* Navigation Links (LeetCode style) */}
+          <nav className="hidden md:flex items-center gap-6 h-full">
+            {navItems.map(item => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.path === '/dashboard'}
+                className={({ isActive }) => `
+                  h-full flex items-center px-1 border-b-2 text-xs font-bold uppercase tracking-wider transition-all duration-200
+                  ${isActive
+                    ? 'border-[#D4AF37] text-[#D4AF37] drop-shadow-[0_0_8px_rgba(212,175,55,0.2)]'
+                    : 'border-transparent text-white/40 hover:text-[#D4AF37] hover:border-gold/30'
+                  }
+                `}
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </nav>
 
           {/* Right side */}
           <div className="flex items-center gap-3">
