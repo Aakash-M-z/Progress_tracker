@@ -1,397 +1,389 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Sparkles, ArrowRight, Play } from 'lucide-react';
 
 interface HomePageProps {
-  onGetStarted: () => void;
+    onGetStarted: () => void;
 }
 
+interface HologramCard {
+    name: string;
+    tx: number;
+    ty: number;
+    rot: number;
+    swayX: number;
+    swayY: number;
+    swayRot: number;
+    delay: number;
+}
+
+const HOLOGRAMS: HologramCard[] = [
+    { name: 'React', tx: -50, ty: -150, rot: -5, swayX: 10, swayY: -12, swayRot: 3, delay: 0 },
+    { name: 'Next.js', tx: 70, ty: -170, rot: 8, swayX: -12, swayY: 10, swayRot: -4, delay: 1.5 },
+    { name: 'Java', tx: -130, ty: -110, rot: -12, swayX: 8, swayY: 14, swayRot: 5, delay: 3.0 },
+    { name: 'Python', tx: 130, ty: -100, rot: 15, swayX: -8, swayY: -14, swayRot: -6, delay: 4.5 },
+    { name: 'Node.js', tx: -30, ty: -220, rot: 3, swayX: 15, swayY: -6, swayRot: 2, delay: 0.8 },
+    { name: 'DSA', tx: 60, ty: -230, rot: -6, swayX: -10, swayY: 16, swayRot: -3, delay: 2.3 },
+    { name: 'Operating Systems', tx: -110, ty: -180, rot: 10, swayX: 14, swayY: 12, swayRot: 4, delay: 3.8 },
+    { name: 'DBMS', tx: 120, ty: -170, rot: -8, swayX: -14, swayY: -10, swayRot: -5, delay: 5.3 },
+    { name: 'Computer Networks', tx: -90, ty: -80, rot: 6, swayX: 10, swayY: -10, swayRot: 3, delay: 1.2 },
+    { name: 'OOP', tx: 90, ty: -80, rot: -10, swayX: -10, swayY: 10, swayRot: -4, delay: 2.7 },
+    { name: 'System Design', tx: 0, ty: -100, rot: 2, swayX: 12, swayY: -12, swayRot: -2, delay: 4.2 },
+    { name: 'AI', tx: 15, ty: -50, rot: -4, swayX: -14, swayY: 14, swayRot: 3, delay: 5.7 },
+    { name: 'Docker', tx: -150, ty: -210, rot: -15, swayX: 12, swayY: -14, swayRot: -5, delay: 0.4 },
+    { name: 'Git', tx: 160, ty: -220, rot: 12, swayX: -12, swayY: -16, swayRot: 6, delay: 1.9 }
+];
+
 const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const [videoError, setVideoError] = useState(false);
-  const [showLoading, setShowLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const [cursorState, setCursorState] = useState('default');
-  const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number; timestamp: number }>>([]);
+    const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
 
-  useEffect(() => {
-    // Preload video for better performance
-    const video = document.createElement('video');
-    video.src = '/27669-365224683_small.mp4';
-    video.load();
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            const x = (e.clientX - window.innerWidth / 2) * 0.015;
+            const y = (e.clientY - window.innerHeight / 2) * 0.015;
+            setMouseOffset({ x, y });
+        };
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, []);
 
-    // Progress counter from 0 to 100 over 3 seconds
-    const duration = 3000; // 3 seconds
-    const interval = 30; // Update every 30ms for smooth animation
-    const increment = 100 / (duration / interval);
-
-    let currentProgress = 0;
-    const progressTimer = setInterval(() => {
-      currentProgress += increment;
-      if (currentProgress >= 100) {
-        setProgress(100);
-        clearInterval(progressTimer);
-        // Hide loading screen after reaching 100
-        setTimeout(() => {
-          setShowLoading(false);
-        }, 100);
-      } else {
-        setProgress(Math.floor(currentProgress));
-      }
-    }, interval);
-
-    return () => clearInterval(progressTimer);
-  }, []);
-
-  // Custom cursor logic
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setCursorPosition({ x: e.clientX, y: e.clientY });
-    };
-
-    const handleMouseDown = () => {
-      setCursorState('click');
-      setTimeout(() => setCursorState('default'), 200);
-    };
-
-    const handleMouseEnter = (e: Event) => {
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'BUTTON' || target.classList.contains('clickable')) {
-        setCursorState('hover');
-      }
-    };
-
-    const handleMouseLeave = () => {
-      setCursorState('default');
-    };
-
-    document.addEventListener('mousemove', handleMouseMove, { passive: true });
-    document.addEventListener('mousedown', handleMouseDown);
-
-    const interactiveElements = document.querySelectorAll('button, .clickable, input, textarea');
-    interactiveElements.forEach(element => {
-      element.addEventListener('mouseenter', handleMouseEnter);
-      element.addEventListener('mouseleave', handleMouseLeave);
-    });
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mousedown', handleMouseDown);
-      interactiveElements.forEach(element => {
-        element.removeEventListener('mouseenter', handleMouseEnter);
-        element.removeEventListener('mouseleave', handleMouseLeave);
-      });
-    };
-  }, [showLoading]);
-
-  // Create water drop ripple effect
-  const createRipple = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const newRipple = {
-      id: Date.now(),
-      x,
-      y,
-      timestamp: Date.now()
-    };
-
-    setRipples(prev => [...prev, newRipple]);
-
-    // Remove ripple after animation completes
-    setTimeout(() => {
-      setRipples(prev => prev.filter(ripple => ripple.id !== newRipple.id));
-    }, 1000);
-  };
-
-  // Handle page click for water drop effect
-  const handlePageClick = (e: React.MouseEvent) => {
-    const newRipple = {
-      id: Date.now(),
-      x: e.clientX,
-      y: e.clientY,
-      timestamp: Date.now()
-    };
-
-    setRipples(prev => [...prev, newRipple]);
-
-    setTimeout(() => {
-      setRipples(prev => prev.filter(ripple => ripple.id !== newRipple.id));
-    }, 1000);
-  };
-
-  // Enhanced sparkle effect function
-  return (
-    <>
-      {/* Custom Cursor */}
-      <div
-        className={`custom-cursor ${cursorState} ${showLoading ? 'loading' : ''}`}
-        style={{
-          left: `${cursorPosition.x}px`,
-          top: `${cursorPosition.y}px`,
-        }}
-      />
-
-      {/* Loading Screen with circular progress - no video background */}
-      {showLoading && (
-        <div className="fixed inset-0 z-50 overflow-hidden bg-black">
-          {/* Solid dark background - no video */}
-
-          {/* Circular progress overlay */}
-          <div className="relative z-10 h-full flex items-center justify-center">
-            <div className="relative">
-              {/* Circular progress indicator - increased clarity */}
-              <svg className="w-72 h-72 md:w-96 md:h-96 transform -rotate-90" viewBox="0 0 200 200">
-                {/* Background circle - more visible */}
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="90"
-                  fill="none"
-                  stroke="rgba(255, 255, 255, 0.2)"
-                  strokeWidth="10"
-                />
-                {/* Progress circle - brighter and thicker */}
-                <circle
-                  cx="100"
-                  cy="100"
-                  r="90"
-                  fill="none"
-                  stroke="rgba(255, 255, 255, 0.9)"
-                  strokeWidth="10"
-                  strokeLinecap="round"
-                  strokeDasharray={`${2 * Math.PI * 90}`}
-                  strokeDashoffset={`${2 * Math.PI * 90 * (1 - progress / 100)}`}
-                  style={{
-                    transition: 'stroke-dashoffset 0.1s linear',
-                    filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.5))',
-                  }}
-                />
-              </svg>
-
-              {/* Progress number in center - increased clarity */}
-              <div
-                className="absolute inset-0 flex items-center justify-center"
-                key={progress}
-              >
-                <div
-                  className="text-white font-light text-7xl md:text-8xl tracking-tight"
-                  style={{
-                    fontFamily: 'system-ui, -apple-system, sans-serif',
-                    fontWeight: 300,
-                    letterSpacing: '-0.05em',
-                    textShadow: '0 0 60px rgba(255, 255, 255, 0.6), 0 0 100px rgba(255, 255, 255, 0.3)',
-                    animation: 'countdownFade 0.3s ease-out',
-                  }}
-                >
-                  {String(Math.min(progress, 100)).padStart(2, '0')}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Main Content - only shown after loading completes */}
-      {!showLoading && (
-        <div
-          className="homepage-container min-h-screen relative overflow-hidden transition-opacity duration-1000 opacity-100"
-          onClick={handlePageClick}
+    return (
+        <div 
+            className="w-screen h-screen bg-[#030305] text-[#eaeaea] relative overflow-hidden flex flex-col md:flex-row select-none font-sans"
+            style={{
+                fontFamily: '"Inter", sans-serif'
+            }}
         >
-          {/* Water Drop Ripples */}
-          {ripples.map((ripple) => (
-            <div
-              key={ripple.id}
-              className="water-ripple"
-              style={{
-                left: ripple.x,
-                top: ripple.y,
-              }}
-            />
-          ))}
+            {/* Google Fonts Preloader */}
+            <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet" />
 
-          {/* Background Video */}
-          <div className="absolute inset-0 z-0">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              className="w-full h-full object-cover"
-              onLoadedData={() => {
-                console.log('Video loaded successfully');
-                setVideoLoaded(true);
-              }}
-              onError={(e) => {
-                console.error('Video error:', e);
-                setVideoError(true);
-              }}
-              onCanPlay={() => {
-                console.log('Video can play');
-                setVideoLoaded(true);
-              }}
-              style={{
-                filter: 'brightness(0.5) contrast(1.4) saturate(0.9)',
-                opacity: videoLoaded ? 1 : 0,
-                transition: 'opacity 1.5s ease-in-out'
-              }}
+            {/* Custom Embedded CSS Styles for Holograms, Fog, and Particles */}
+            <style dangerouslySetInnerHTML={{ __html: `
+                @keyframes hologram-glow-pulse {
+                    0%, 100% {
+                        box-shadow: 0 0 15px rgba(59, 130, 246, 0.25), inset 0 0 10px rgba(59, 130, 246, 0.15);
+                        border-color: rgba(59, 130, 246, 0.45);
+                    }
+                    50% {
+                        box-shadow: 0 0 25px rgba(59, 130, 246, 0.45), inset 0 0 15px rgba(59, 130, 246, 0.25);
+                        border-color: rgba(59, 130, 246, 0.7);
+                    }
+                }
+                
+                @keyframes hologram-float-up {
+                    0% {
+                        transform: translate(0px, 0px) scale(0.1) rotate(0deg);
+                        opacity: 0;
+                        filter: blur(6px);
+                    }
+                    8% {
+                        opacity: 0.85;
+                        filter: blur(0px);
+                    }
+                    35% {
+                        transform: translate(var(--tx), var(--ty)) scale(1) rotate(var(--rot));
+                        opacity: 0.95;
+                    }
+                    70% {
+                        transform: translate(calc(var(--tx) + var(--sway-x)), calc(var(--ty) + var(--sway-y))) scale(1) rotate(calc(var(--rot) + var(--sway-rot)));
+                        opacity: 0.95;
+                    }
+                    85% {
+                        opacity: 0.8;
+                        filter: blur(1.5px);
+                    }
+                    100% {
+                        transform: translate(calc(var(--tx) + var(--sway-x) * 1.6), calc(var(--ty) - 50px)) scale(0.75) rotate(calc(var(--rot) + var(--sway-rot) * 1.6));
+                        opacity: 0;
+                        filter: blur(8px);
+                    }
+                }
+
+                @keyframes screen-flicker {
+                    0%, 100% { opacity: 0.92; }
+                    50% { opacity: 1; }
+                    80% { opacity: 0.94; }
+                }
+
+                @keyframes particle-drift {
+                    0% { transform: translateY(100vh) translateX(0px); opacity: 0; }
+                    20% { opacity: 0.35; }
+                    80% { opacity: 0.35; }
+                    100% { transform: translateY(-10vh) translateX(50px); opacity: 0; }
+                }
+
+                @keyframes ambient-fog {
+                    0%, 100% { opacity: 0.35; transform: scale(1) translate(0px, 0px); }
+                    50% { opacity: 0.55; transform: scale(1.15) translate(-20px, 15px); }
+                }
+
+                @keyframes keyboard-typing {
+                    0%, 100% { opacity: 0.2; }
+                    25% { opacity: 0.8; }
+                    50% { opacity: 0.4; }
+                    75% { opacity: 0.9; }
+                }
+
+                .hologram-card {
+                    background: rgba(8, 12, 28, 0.35);
+                    backdrop-filter: blur(12px);
+                    -webkit-backdrop-filter: blur(12px);
+                    border: 1px solid rgba(59, 130, 246, 0.35);
+                    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2), inset 0 0 10px rgba(59, 130, 246, 0.1);
+                    animation: hologram-float-up 9s infinite linear, hologram-glow-pulse 4s infinite ease-in-out;
+                    transition: filter 0.3s;
+                }
+
+                .hologram-card:hover {
+                    filter: brightness(1.25) drop-shadow(0 0 15px rgba(59, 130, 246, 0.6)) !important;
+                }
+            ` }} />
+
+            {/* Cinematic Background Elements */}
+            <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+                {/* Ambient Deep Blue Volumetric Fog */}
+                <div 
+                    style={{
+                        position: 'absolute',
+                        top: '-10%', left: '-10%', width: '120%', height: '120%',
+                        background: 'radial-gradient(circle at 75% 50%, rgba(29, 78, 216, 0.18) 0%, rgba(3, 3, 5, 0) 65%)',
+                        animation: 'ambient-fog 12s infinite ease-in-out',
+                        transform: `translate(${mouseOffset.x * 0.4}px, ${mouseOffset.y * 0.4}px)`
+                    }}
+                />
+                <div 
+                    style={{
+                        position: 'absolute',
+                        top: '-10%', left: '-10%', width: '120%', height: '120%',
+                        background: 'radial-gradient(circle at 25% 60%, rgba(15, 23, 42, 0.7) 0%, rgba(3, 3, 5, 1) 80%)',
+                    }}
+                />
+
+                {/* Floating Volumetric Particles */}
+                {[...Array(25)].map((_, idx) => {
+                    const delay = idx * 0.5;
+                    const left = Math.random() * 100;
+                    const size = Math.random() * 3 + 1.5;
+                    const duration = Math.random() * 8 + 10;
+                    return (
+                        <div 
+                            key={idx}
+                            className="absolute rounded-full bg-blue-400/30"
+                            style={{
+                                left: `${left}%`,
+                                width: `${size}px`,
+                                height: `${size}px`,
+                                filter: 'blur(0.5px) drop-shadow(0 0 5px rgba(96, 165, 250, 0.4))',
+                                animation: `particle-drift ${duration}s infinite linear`,
+                                animationDelay: `${delay}s`,
+                                transform: `translate(${mouseOffset.x * 0.8}px, ${mouseOffset.y * 0.8}px)`
+                            }}
+                        />
+                    );
+                })}
+            </div>
+
+            {/* LEFT SIDE (45%) */}
+            <div 
+                className="w-full md:w-[45%] h-full flex flex-col justify-center px-8 sm:px-12 md:px-20 z-10 relative transition-transform duration-300"
+                style={{
+                    transform: `translate(${mouseOffset.x * 0.6}px, ${mouseOffset.y * 0.6}px)`
+                }}
             >
-              <source src="/27669-365224683_small.mp4" type="video/mp4" />
-            </video>
-
-            {/* Enhanced overlay gradients for better text clarity */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-black/70"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40"></div>
-            <div className="absolute inset-0 bg-radial-gradient from-transparent via-black/20 to-black/50"></div>
-
-            {/* Animated floating particles with cosmic colors */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {[...Array(20)].map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute animate-float opacity-40"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 5}s`,
-                    animationDuration: `${8 + Math.random() * 4}s`
-                  }}
+                {/* Glowing Badge */}
+                <div 
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-6 w-fit"
+                    style={{
+                        background: 'rgba(59, 130, 246, 0.08)',
+                        border: '1px solid rgba(59, 130, 246, 0.25)',
+                        color: '#60a5fa',
+                        boxShadow: '0 0 15px rgba(59, 130, 246, 0.1)'
+                    }}
                 >
-                  <div className={`w-2 h-2 rounded-full ${i % 4 === 0 ? 'bg-purple-400 shadow-purple-400/50' :
-                    i % 4 === 1 ? 'bg-blue-400 shadow-blue-400/50' :
-                      i % 4 === 2 ? 'bg-cyan-400 shadow-cyan-400/50' : 'bg-white shadow-white/50'
-                    } animate-pulse shadow-lg`} style={{
-                      boxShadow: `0 0 10px currentColor`
-                    }}></div>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#60a5fa] animate-ping" />
+                    🚀 AI Powered Interview Preparation
                 </div>
-              ))}
-            </div>
 
-            {/* Enhanced shooting stars effect with cosmic colors */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {[...Array(4)].map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute animate-shooting-star opacity-70"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 50}%`,
-                    animationDelay: `${i * 2.5 + Math.random() * 2}s`,
-                    animationDuration: '3.5s'
-                  }}
+                {/* Headline */}
+                <h1 
+                    style={{ 
+                        fontFamily: '"Orbitron", "Inter", sans-serif',
+                        lineHeight: '1.05',
+                        letterSpacing: '-0.02em'
+                    }} 
+                    className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#eaeaea] mb-8"
                 >
-                  <div className={`w-1 h-24 transform rotate-45 ${i % 3 === 0 ? 'bg-gradient-to-b from-white via-purple-300 to-transparent' :
-                    i % 3 === 1 ? 'bg-gradient-to-b from-white via-blue-300 to-transparent' :
-                      'bg-gradient-to-b from-white via-cyan-300 to-transparent'
-                    }`} style={{
-                      boxShadow: `0 0 20px rgba(255, 255, 255, 0.6)`
-                    }}></div>
+                    MASTER<br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-blue-500">TECHNICAL</span><br />
+                    INTERVIEWS<br />
+                    <span className="text-[#3b82f6]" style={{ textShadow: '0 0 30px rgba(59, 130, 246, 0.35)' }}>WITH AI</span>
+                </h1>
+
+                {/* Description */}
+                <p className="text-white/60 text-sm md:text-base max-w-md leading-relaxed mb-8 font-light">
+                    Master DSA, Operating Systems, DBMS, Computer Networks, OOP, System Design, AI Mock Interviews, and Resources in one immersive platform.
+                </p>
+
+                {/* Buttons */}
+                <div className="flex flex-wrap items-center gap-4 mb-12">
+                    <button 
+                        onClick={onGetStarted}
+                        className="px-8 py-4 rounded-xl font-extrabold text-xs tracking-wider uppercase bg-white text-black hover:bg-[#3b82f6] hover:text-white transition-all duration-500 shadow-[0_4px_20px_rgba(255,255,255,0.06)] hover:shadow-[0_4px_30px_rgba(59,130,246,0.55)] flex items-center gap-2 hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                        Start Learning <ArrowRight size={14} />
+                    </button>
+                    <button 
+                        className="px-8 py-4 rounded-xl font-extrabold text-xs tracking-wider uppercase border border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.08] hover:border-white/30 transition-all duration-300 flex items-center gap-2"
+                    >
+                        <Play size={12} fill="#fff" /> Watch Demo
+                    </button>
                 </div>
-              ))}
-            </div>
 
-            {/* Fallback dark gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-950 via-black to-gray-950"
-              style={{ opacity: videoLoaded ? 0 : 1 }}></div>
-          </div>
-
-          {/* Content Layer - Enhanced button layout */}
-          <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-8">
-            {/* Animated background elements */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {/* Pulsing rings */}
-              <div className="absolute top-1/4 left-1/4 w-96 h-96 border border-blue-400/20 rounded-full animate-ping" style={{ animationDuration: '4s' }}></div>
-              <div className="absolute bottom-1/4 right-1/4 w-64 h-64 border border-purple-400/20 rounded-full animate-ping" style={{ animationDuration: '6s', animationDelay: '2s' }}></div>
-
-              {/* Floating geometric shapes */}
-              <div className="absolute top-1/3 right-1/5 w-8 h-8 bg-gradient-to-br from-cyan-400/30 to-blue-500/30 transform rotate-45 animate-float" style={{ animationDelay: '1s' }}></div>
-              <div className="absolute bottom-1/3 left-1/5 w-6 h-6 bg-gradient-to-br from-purple-400/30 to-pink-500/30 rounded-full animate-float" style={{ animationDelay: '3s' }}></div>
-            </div>
-
-            {/* Start Your Journey Button - appears after loading */}
-            {!showLoading && (
-              <div className="animate-slideInFromBottom">
-                {/* Circular button without decorative elements */}
-                <div className="relative">
-                  <button
-                    onClick={(e) => {
-                      createRipple(e);
-                      onGetStarted();
-                    }}
-                    className="group relative overflow-hidden bg-black/30 border border-yellow-600/50 text-yellow-100 w-80 h-80 rounded-full font-bold text-2xl hover:bg-black/50 hover:border-yellow-500/80 hover:text-yellow-50 transition-all duration-700 hover:scale-110 active:scale-95 shadow-lg shadow-black/50 hover:shadow-2xl hover:shadow-yellow-900/30 gold-theme-button opacity-100 clickable magnetic-cursor water-drop-button flex items-center justify-center animate-pulse-slow"
-                    onMouseEnter={(e) => {
-                      setCursorState('hover');
-                      // Enhanced magnetic effect
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const centerX = rect.left + rect.width / 2;
-                      const centerY = rect.top + rect.height / 2;
-                      setCursorPosition({ x: centerX, y: centerY });
-                    }}
-                    onMouseLeave={() => {
-                      setCursorState('default');
-                    }}
-                    onMouseMove={(e) => {
-                      // Enhanced magnetic pull
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const centerX = rect.left + rect.width / 2;
-                      const centerY = rect.top + rect.height / 2;
-                      const mouseX = e.clientX;
-                      const mouseY = e.clientY;
-
-                      const magneticX = mouseX + (centerX - mouseX) * 0.08;
-                      const magneticY = mouseY + (centerY - mouseY) * 0.08;
-
-                      setCursorPosition({ x: magneticX, y: magneticY });
-                    }}
-                  >
-                    {/* Button content with enhanced visibility - Text Only */}
-                    <span className="relative z-10 flex flex-col items-center justify-center">
-                      <span className="text-yellow-50 group-hover:text-white transition-all duration-700 font-light tracking-widest text-center leading-relaxed text-3xl group-hover:animate-pulse" style={{
-                        fontFamily: 'Georgia, "Times New Roman", serif',
-                        textShadow: '0 4px 12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.4)',
-                        filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8))',
-                        letterSpacing: '0.15em',
-                        transform: 'group-hover:scale(1.05)'
-                      }}>
-                        Start Your<br />Journey
-                      </span>
-                    </span>
-
-                    {/* Golden dark theme interactive animations */}
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-900/20 via-yellow-600/30 to-yellow-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-spin-slow"></div>
-                    <div className="absolute inset-0 rounded-full bg-gradient-radial from-yellow-500/10 via-black/20 to-transparent scale-0 group-hover:scale-100 transition-transform duration-700 ease-out animate-pulse"></div>
-                    <div className="absolute inset-0 rounded-full bg-yellow-800/30 scale-0 group-active:scale-100 transition-transform duration-200 ease-out"></div>
-
-                    {/* Golden floating particles around button */}
-                    <div className="absolute inset-0 pointer-events-none">
-                      {[...Array(8)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute w-1.5 h-1.5 bg-yellow-500/70 rounded-full animate-float opacity-0 group-hover:opacity-100 transition-opacity duration-500 shadow-lg shadow-yellow-500/50"
-                          style={{
-                            left: `${15 + i * 45}%`,
-                            top: `${15 + (i % 3) * 35}%`,
-                            animationDelay: `${i * 0.4}s`,
-                            animationDuration: `${4 + i * 0.3}s`,
-                            boxShadow: '0 0 8px rgba(255, 215, 0, 0.6)'
-                          }}
-                        ></div>
-                      ))}
+                {/* Trust Indicators */}
+                <div className="grid grid-cols-2 gap-4 max-w-sm text-xs font-semibold text-white/40">
+                    <div className="flex items-center gap-2">
+                        <span className="text-[#3b82f6]">✓</span> AI Mentor
                     </div>
-
-                    {/* Golden ring effect */}
-                    <div className="absolute inset-2 rounded-full border border-yellow-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-spin-slow"></div>
-                    <div className="absolute inset-4 rounded-full border border-yellow-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-spin-reverse"></div>
-                  </button>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[#3b82f6]">✓</span> Personalized Roadmaps
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[#3b82f6]">✓</span> Mock Interviews
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[#3b82f6]">✓</span> Interview Ready
+                    </div>
                 </div>
-              </div>
-            )}
-          </div>
+            </div>
+
+            {/* RIGHT SIDE (55%) */}
+            <div 
+                className="w-full md:w-[55%] h-full flex items-center justify-center relative overflow-visible z-10"
+                style={{
+                    transform: `translate(${mouseOffset.x * 1.1}px, ${mouseOffset.y * 1.1}px)`
+                }}
+            >
+                {/* SVG Cinematic Studio workspace */}
+                <div className="w-full max-w-[560px] aspect-[4/3] relative flex items-center justify-center">
+                    <svg viewBox="0 0 600 450" className="w-full h-full object-contain filter drop-shadow-[0_8px_30px_rgba(0,0,0,0.8)]">
+                        <defs>
+                            {/* Blue ambient spotlight */}
+                            <radialGradient id="desk-spot" cx="50%" cy="80%" r="50%">
+                                <stop offset="0%" stopColor="#1e3a8a" stopOpacity="0.65" />
+                                <stop offset="100%" stopColor="#1e3a8a" stopOpacity="0" />
+                            </radialGradient>
+                            {/* Laptop screen volumetric light */}
+                            <linearGradient id="laptop-beam" x1="0.5" y1="0.8" x2="0.5" y2="0">
+                                <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.4" />
+                                <stop offset="40%" stopColor="#3b82f6" stopOpacity="0.15" />
+                                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                            </linearGradient>
+                            {/* External monitor screen code */}
+                            <pattern id="screen-code" width="40" height="40" patternUnits="userSpaceOnUse">
+                                <rect width="30" height="2" fill="#2563eb" opacity="0.3" y="5" />
+                                <rect width="20" height="2" fill="#3b82f6" opacity="0.4" y="15" />
+                                <rect width="35" height="2" fill="#60a5fa" opacity="0.3" y="25" />
+                                <rect width="15" height="2" fill="#2563eb" opacity="0.4" y="35" />
+                            </pattern>
+                        </defs>
+
+                        {/* Subtle ambient wall glow */}
+                        <circle cx="380" cy="180" r="140" fill="url(#desk-spot)" />
+
+                        {/* LED Desk Lamp Volumetric Light Beam */}
+                        <polygon points="120,110 50,450 250,450" fill="rgba(59, 130, 246, 0.08)" style={{ filter: 'blur(10px)' }} />
+
+                        {/* Modern Desk top */}
+                        <polygon points="80,380 520,380 570,410 30,410" fill="#080c18" stroke="#1d4ed8" strokeWidth="1" strokeOpacity="0.3" />
+
+                        {/* External Widescreen Monitor */}
+                        <rect x="220" y="100" width="220" height="130" rx="8" fill="#05070c" stroke="#1e293b" strokeWidth="3" />
+                        <rect x="226" y="106" width="208" height="118" rx="4" fill="#020306" />
+                        {/* Monitor Content: Glowing matrix code line patterns */}
+                        <rect x="236" y="116" width="188" height="98" fill="url(#screen-code)" style={{ animation: 'screen-flicker 5s infinite' }} />
+                        {/* Monitor Stand */}
+                        <path d="M315,230 L320,300 L340,300 L345,230 Z" fill="#0e172c" />
+                        <ellipse cx="330" cy="300" rx="25" ry="5" fill="#0b0f19" />
+
+                        {/* Soft LED lamp on left */}
+                        <path d="M120,380 L120,120 A 100,100 0 0,1 210,90" fill="none" stroke="#0e172c" strokeWidth="6" strokeLinecap="round" />
+                        <rect x="180" y="85" width="40" height="15" rx="3" fill="#1e3a8a" transform="rotate(-15, 200, 92)" style={{ filter: 'drop-shadow(0 0 5px #3b82f6)' }} />
+
+                        {/* Plant decoration on right */}
+                        <rect x="470" y="340" width="25" height="40" rx="2" fill="#0f172a" />
+                        <path d="M472,340 C465,310 455,315 450,290 C470,305 478,320 482,340" fill="#0a1224" />
+                        <path d="M492,340 C500,310 510,315 515,290 C495,305 488,320 482,340" fill="#080e1c" />
+
+                        {/* Coffee Mug & Mouse */}
+                        <rect x="420" y="365" width="14" height="16" rx="2" fill="#1e293b" />
+                        <path d="M434,369 C438,369 438,377 434,377" fill="none" stroke="#1e293b" strokeWidth="2" />
+                        <ellipse cx="380" cy="378" rx="8" ry="4" fill="#0a0f1d" />
+
+                        {/* Mechanical Keyboard */}
+                        <polygon points="240,372 350,372 346,382 236,382" fill="#090d1a" stroke="#2563eb" strokeWidth="1" strokeOpacity="0.4" />
+                        <line x1="244" y1="377" x2="342" y2="377" stroke="#3b82f6" strokeWidth="1.5" strokeOpacity="0.8" style={{ animation: 'keyboard-typing 1.8s infinite' }} />
+
+                        {/* The Developer sitting in ergonomic chair (Back profile) */}
+                        <path d="M290,260 C265,260 250,285 245,310 C240,335 255,420 255,450 L385,450 C385,420 395,335 390,310 C385,285 375,260 350,260 Z" fill="#05070c" />
+                        {/* Head */}
+                        <circle cx="320" cy="225" r="22" fill="#05070c" />
+                        {/* Shoulders / Neck */}
+                        <path d="M305,247 L335,247 L340,265 L300,265 Z" fill="#05070c" />
+                        {/* Futuristic ergonomic chair back spine design */}
+                        <path d="M320,260 L320,400" stroke="#0f172a" strokeWidth="8" strokeLinecap="round" />
+                        <path d="M285,280 C300,270 340,270 355,280" fill="none" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+                        <path d="M280,315 C300,305 340,305 360,315" fill="none" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+
+                        {/* Glowing Laptop (Opened in front of developer) */}
+                        <polygon points="285,342 355,342 360,348 280,348" fill="#1e293b" />
+                        <polygon points="290,310 350,310 355,342 285,342" fill="#020306" stroke="#2563eb" strokeWidth="1" />
+                        {/* Laptop screen glowing content area */}
+                        <polygon points="293,313 347,313 351,340 289,340" fill="#1d4ed8" opacity="0.3" style={{ animation: 'screen-flicker 2.5s infinite' }} />
+                        {/* Screen blue glow beam overlay */}
+                        <polygon points="290,310 350,310 420,180 220,180" fill="url(#laptop-beam)" style={{ animation: 'screen-flicker 3s infinite' }} />
+
+                        {/* Illuminating glow on Developer's face profile */}
+                        <path d="M308,206 C308,206 312,216 316,218 C320,220 326,218 326,218" fill="none" stroke="#60a5fa" strokeWidth="1" opacity="0.4" style={{ filter: 'blur(1px)' }} />
+                    </svg>
+
+                    {/* Holographic thoughts cards stream (DREAM EFFECT) */}
+                    <div 
+                        style={{
+                            position: 'absolute',
+                            left: '53.5%', // align directly over the open laptop screen
+                            top: '73%',
+                            width: '0px',
+                            height: '0px',
+                            overflow: 'visible'
+                        }}
+                    >
+                        {HOLOGRAMS.map((card, idx) => (
+                            <div
+                                key={idx}
+                                className="hologram-card absolute flex items-center justify-center px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-wider text-[#60a5fa] border border-blue-500/30 whitespace-nowrap"
+                                style={{
+                                    '--tx': `${card.tx}px`,
+                                    '--ty': `${card.ty}px`,
+                                    '--rot': `${card.rot}deg`,
+                                    '--sway-x': `${card.swayX}px`,
+                                    '--sway-y': `${card.swayY}px`,
+                                    '--sway-rot': `${card.swayRot}deg`,
+                                    animationDelay: `${card.delay}s`,
+                                    transformOrigin: 'bottom center',
+                                    left: '-50px', // offset center
+                                    width: '100px',
+                                    height: '28px',
+                                    cursor: 'pointer'
+                                } as React.CSSProperties}
+                            >
+                                <span className="drop-shadow-[0_0_8px_rgba(96,165,250,0.6)]">{card.name}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
         </div>
-      )}
-    </>
-  );
+    );
 };
 
 export default HomePage;
