@@ -1039,3 +1039,156 @@ textarea,
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   LANDING PAGE STYLES - Glass Morphism & Premium Animations
+═══════════════════════════════════════════════════════════════ */
+
+/* Landing page specific animations */
+@keyframes breathe {
+
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1), 0 0 60px rgba(255, 255, 255, 0.05);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.2), 0 0 120px rgba(255, 255, 255, 0.08);
+  }
+}
+
+@keyframes landing-float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes landing-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Landing page glass morphism */
+.landing-glass {
+  background: rgba(8, 8, 8, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.landing-glass-hover {
+  background: rgba(12, 12, 12, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Landing page text utilities */
+.landing-text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.landing-glow-white {
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.08);
+}
+
+.landing-glow-white-sm {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+/* Landing typography */
+.landing-letter-tight {
+  letter-spacing: -0.04em;
+}
+
+.landing-letter-tighter {
+  letter-spacing: -0.06em;
+}
+
+.landing-letter-widest {
+  letter-spacing: 0.16em;
+}
+
+/* Landing animation classes */
+.landing-animate-breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.landing-animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.landing-animate-float {
+  animation: landing-float 6s ease-in-out infinite;
+}
+
+.landing-shimmer-text {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 1) 50%,
+      rgba(255, 255, 255, 0.4) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: landing-shimmer 4s linear infinite;
+}
+
+/* Landing page specific text colors */
+.landing-text-primary-white {
+  color: #ffffff;
+}
+
+.landing-text-secondary-white {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.landing-text-tertiary-white {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Landing page backgrounds */
+.landing-bg-surface {
+  background-color: #080808;
+}
+
+.landing-bg-surface-2 {
+  background-color: #111111;
+}
+
+/* Landing borders */
+.landing-border-subtle {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.landing-border-subtle-hover {
+  border-color: rgba(255, 255, 255, 0.16);
+}
