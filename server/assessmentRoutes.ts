@@ -949,11 +949,14 @@ assessmentRouter.get('/my', requireCandidateAuth, async (req: any, res: Response
     }
 });
 
-// ── GET /api/assessments/preview/:token — Public assessment landing info ───────
-assessmentRouter.get('/preview/:token', async (req: Request, res: Response) => {
+// ── GET /api/assessments/preview/:token & /public/:token — Public assessment landing info ───
+const handleAssessmentPreview = async (req: Request, res: Response) => {
     try {
-        const { token } = req.params;
-        const assessment = await AssessmentModel.findOne({ shareToken: token });
+        const token = String(req.params.token || '');
+        const isMongoId = /^[0-9a-fA-F]{24}$/.test(token);
+        const assessment = await AssessmentModel.findOne({
+            $or: [{ shareToken: token }, { _id: isMongoId ? token : null }]
+        });
 
         if (!assessment) {
             return res.status(404).json({ error: 'Assessment not found or invalid link.' });
@@ -973,25 +976,29 @@ assessmentRouter.get('/preview/:token', async (req: Request, res: Response) => {
         const categories = Array.from(new Set((assessment.questions || []).map((q: any) => q.category)));
 
         res.json({
+            id: assessment._id.toString(),
             title: assessment.title,
             description: assessment.description,
             instructions: assessment.instructions,
-            duration: assessment.duration,
+            duration: assessment.duration || 60,
             questionCount: assessment.questions?.length || 0,
-            totalPoints: assessment.totalPoints,
-            passingScore: assessment.passingScore,
-            accessMode: assessment.accessMode,
+            totalPoints: assessment.totalPoints || 50,
+            passingScore: assessment.passingScore || 60,
+            accessMode: assessment.accessMode || 'public',
             requireFullscreen: assessment.settings?.requireFullscreen !== false,
             startAt: assessment.startAt,
             endAt: assessment.endAt,
             availabilityStatus,
-            categories,
+            categories: categories.length > 0 ? categories : ['DSA', 'Problem Solving'],
             creatorName: assessment.creatorName || 'AlgoAscent'
         });
     } catch (err: any) {
         res.status(500).json({ error: 'Failed to load assessment preview', details: err.message });
     }
-});
+};
+
+assessmentRouter.get('/preview/:token', handleAssessmentPreview);
+assessmentRouter.get('/public/:token', handleAssessmentPreview);
 
 // ── POST /api/assessments/:token/start — Start / Resume Attempt ────────────────
 assessmentRouter.post('/:token/start', async (req: any, res: Response) => {
