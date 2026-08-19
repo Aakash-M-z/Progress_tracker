@@ -49,11 +49,18 @@ const CandidateReportModal: React.FC<CandidateReportModalProps> = ({
     if (!isOpen) return null;
 
     const attempt = data?.attempt;
-    const assessment = data?.assessment;
+    const assessment = data?.assessment || {
+        id: assessmentId,
+        title: attempt?.assessmentTitle || 'Technical Assessment',
+        duration: 60,
+        passingScore: 60,
+        totalPoints: attempt?.maxScore || 50,
+        questions: data?.questions || []
+    };
     const userProfile = data?.userProfile;
 
     const handlePrintPDF = () => {
-        if (!attempt || !assessment) return;
+        if (!attempt) return;
         assessmentExporter.printCandidateReportPDF(assessment, attempt, userProfile);
     };
 

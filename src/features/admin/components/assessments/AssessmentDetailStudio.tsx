@@ -78,11 +78,33 @@ export const AssessmentDetailStudio: React.FC<AssessmentDetailStudioProps> = ({
         );
     }
 
-    const { assessment, summary, scoreDistribution, categoryPerformance, questionAnalytics, participants } = data;
+    const assessment = data?.assessment || {
+        id: assessmentId,
+        title: 'Technical Assessment',
+        duration: 60,
+        passingScore: 60,
+        totalPoints: 50,
+        status: 'published',
+        accessMode: 'public',
+        questions: []
+    };
+    const summary = data?.summary || {
+        started: 0,
+        completed: 0,
+        completionRate: 0,
+        averageScore: 0,
+        highestScore: 0,
+        lowestScore: 0,
+        averageTimeSeconds: 0
+    };
+    const scoreDistribution = data?.scoreDistribution || [];
+    const categoryPerformance = data?.categoryPerformance || [];
+    const questionAnalytics = data?.questionAnalytics || [];
+    const participants = data?.participants || [];
 
     const filteredParticipants: ExportParticipant[] = (participants || []).filter((p: any) => {
-        const matchesSearch = p.name?.toLowerCase().includes(candidateSearch.toLowerCase()) ||
-            p.email?.toLowerCase().includes(candidateSearch.toLowerCase());
+        const matchesSearch = (p?.name || '').toLowerCase().includes(candidateSearch.toLowerCase()) ||
+            (p?.email || '').toLowerCase().includes(candidateSearch.toLowerCase());
 
         let matchesFilter = true;
         if (candidateFilter === 'completed') matchesFilter = p.status === 'completed';
