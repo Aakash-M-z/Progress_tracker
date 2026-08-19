@@ -152,3 +152,45 @@ const jobResultSchema = new Schema({
     createdAt: { type: Date, default: Date.now, index: { expireAfterSeconds: 86400 } }, // 24-hour TTL
 });
 export const JobResultModel = mongoose.model('JobResult', jobResultSchema);
+
+// ── Connected Platform Accounts ─────────────────────────────────────────────
+const connectedAccountSchema = new Schema({
+    userId: { type: String, required: true, index: true },
+    platform: { type: String, required: true, index: true },
+    username: { type: String, required: true },
+    profileUrl: { type: String, default: '' },
+    rating: { type: Number, default: null },
+    rank: { type: Schema.Types.Mixed, default: null },
+    solvedCount: { type: Number, default: 0 },
+    contestCount: { type: Number, default: null },
+    lastSyncedAt: { type: Date, default: Date.now },
+    syncStatus: { type: String, default: 'success' },
+    metadata: { type: Schema.Types.Mixed, default: {} }
+});
+connectedAccountSchema.index({ userId: 1, platform: 1 }, { unique: true });
+export const ConnectedAccountModel = mongoose.model('ConnectedAccount', connectedAccountSchema);
+
+// ── Contests Cache ──────────────────────────────────────────────────────────
+const contestSchema = new Schema({
+    platform: { type: String, required: true, index: true },
+    contestId: { type: String, required: true, unique: true, index: true },
+    title: { type: String, required: true },
+    startTime: { type: Date, required: true, index: true },
+    endTime: { type: Date, required: true },
+    url: { type: String, default: '' },
+    status: { type: String, default: 'upcoming' }
+});
+export const ContestModel = mongoose.model('Contest', contestSchema);
+
+// ── Contest Reminders ───────────────────────────────────────────────────────
+const contestReminderSchema = new Schema({
+    userId: { type: String, required: true, index: true },
+    contestId: { type: String, required: true, index: true },
+    reminderTime: { type: Date, required: true },
+    reminderType: { type: String, required: true },
+    sent: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now }
+});
+contestReminderSchema.index({ userId: 1, contestId: 1, reminderType: 1 }, { unique: true });
+export const ContestReminderModel = mongoose.model('ContestReminder', contestReminderSchema);
+

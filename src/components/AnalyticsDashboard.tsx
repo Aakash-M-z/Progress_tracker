@@ -14,14 +14,14 @@ import DailyRecommendations from '../features/recommendations/components/DailyRe
 import { useActivities } from '../hooks/useActivities';
 
 /* ── Palette ─────────────────────────────────────────────────── */
-const GOLD = '#D4AF37';
-const GOLD2 = '#FFD700';
+const GOLD = '#6366f1'; // Premium Indigo
+const GOLD2 = '#818cf8'; // Premium Indigo Light
 const EASY = '#22c55e';
 const MEDIUM = '#f59e0b';
 const HARD = '#ef4444';
 const INDIGO = '#818cf8';
 const TOPIC_COLORS = [
-    '#D4AF37', '#818cf8', '#22c55e', '#38bdf8',
+    '#6366f1', '#818cf8', '#22c55e', '#38bdf8',
     '#f59e0b', '#a78bfa', '#ef4444', '#34d399',
     '#fb923c', '#60a5fa',
 ];

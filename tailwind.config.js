@@ -26,16 +26,16 @@ export default {
       },
       colors: {
         gold: {
-          50: '#FFFDF0',
-          100: '#FFF8D6',
-          200: '#FFEEA3',
-          300: '#FFE066',
-          400: '#FFD700', // Pure Gold
-          500: '#D4AF37', // Metallic Gold - PRIMARY
-          600: '#B8960C',
-          700: '#9A7D0A',
-          800: '#7D6608',
-          900: '#5C4A05',
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8', // Premium Light Accent
+          500: '#6366f1', // Premium Indigo - PRIMARY
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
         },
         dark: {
           50: '#2A2A2A',
@@ -64,15 +64,15 @@ export default {
         }
       },
       boxShadow: {
-        'gold': '0 0 20px rgba(212, 175, 55, 0.3)',
-        'gold-lg': '0 0 40px rgba(212, 175, 55, 0.4)',
-        'gold-xl': '0 0 60px rgba(212, 175, 55, 0.5)',
+        'gold': '0 0 20px rgba(99, 102, 241, 0.2)',
+        'gold-lg': '0 0 40px rgba(99, 102, 241, 0.3)',
+        'gold-xl': '0 0 60px rgba(99, 102, 241, 0.4)',
         'card': '0 4px 24px rgba(0,0,0,0.4)',
-        'card-hover': '0 8px 40px rgba(0,0,0,0.6), 0 0 20px rgba(212,175,55,0.15)',
+        'card-hover': '0 8px 40px rgba(0,0,0,0.6), 0 0 20px rgba(99, 102, 241, 0.1)',
       },
       borderColor: {
-        'gold-dim': 'rgba(212, 175, 55, 0.2)',
-        'gold-mid': 'rgba(212, 175, 55, 0.4)',
+        'gold-dim': 'rgba(99, 102, 241, 0.15)',
+        'gold-mid': 'rgba(99, 102, 241, 0.3)',
       },
     },
   },

@@ -15,6 +15,8 @@ import { calculateNextReview } from './utils/spacedRepetition.js';
 import adminRoutes from './adminRoutes.js';
 import userRoutes from './userRoutes.js';
 import interviewRoutes from './interviewRoutes.js';
+import platformRoutes from './platformRoutes.js';
+import contestRoutes from './contestRoutes.js';
 import { AIController } from './controllers/ai.controller.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -305,6 +307,8 @@ api.post('/auth/logout', (req, res) => {
 
 // Profile routes
 api.use('/user', userRoutes);
+api.use('/platforms', platformRoutes);
+api.use('/contests', contestRoutes);
 
 // ── User routes ──────────────────────────────────────────────────
 // IMPORTANT: specific paths must come before wildcard /:id

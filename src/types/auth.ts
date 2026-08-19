@@ -3,6 +3,7 @@ export interface User {
   email: string;
   name: string;
   username?: string;
+  avatar?: string;
   role: 'admin' | 'user';
   plan: 'free' | 'premium';
   isActive?: boolean;       // optional — older sessions may not have it

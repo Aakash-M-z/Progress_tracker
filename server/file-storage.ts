@@ -1,5 +1,5 @@
 import { IStorage } from "./storage.js";
-import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask, ProblemReview, InsertProblemReview } from "../shared/schema.js";
+import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask, ProblemReview, InsertProblemReview, ConnectedAccount, InsertConnectedAccount, Contest, ContestReminder } from "../shared/schema.js";
 import fs from 'fs';
 import path from 'path';
 
@@ -10,11 +10,17 @@ export class FileStorage implements IStorage {
     private tasks: Map<string, Task>;
     private problemReviews: Map<string, ProblemReview>;
     private jobResults: Map<string, any>;
+    private connectedAccounts: Map<string, ConnectedAccount>;
+    private contests: Map<string, Contest>;
+    private contestReminders: Map<string, ContestReminder>;
     private currentUserId: number;
     private currentActivityId: number;
     private currentLogId: number;
     private currentTaskId: number;
     private currentReviewId: number;
+    private currentAccountId: number;
+    private currentContestId: number;
+    private currentReminderId: number;
     private filePath: string;
 
     constructor() {
@@ -24,11 +30,17 @@ export class FileStorage implements IStorage {
         this.tasks = new Map();
         this.problemReviews = new Map();
         this.jobResults = new Map();
+        this.connectedAccounts = new Map();
+        this.contests = new Map();
+        this.contestReminders = new Map();
         this.currentUserId = 1;
         this.currentActivityId = 1;
         this.currentLogId = 1;
         this.currentTaskId = 1;
         this.currentReviewId = 1;
+        this.currentAccountId = 1;
+        this.currentContestId = 1;
+        this.currentReminderId = 1;
         this.filePath = path.join(process.cwd(), 'local-data.json');
         this.loadData();
     }
@@ -70,6 +82,30 @@ export class FileStorage implements IStorage {
                 if (data.jobResults) {
                     data.jobResults.forEach(([id, res]: [string, any]) => this.jobResults.set(id, res));
                 }
+                if (data.connectedAccounts) {
+                    data.connectedAccounts.forEach((a: ConnectedAccount) => this.connectedAccounts.set(a.id.toString(), {
+                        ...a,
+                        lastSyncedAt: new Date(a.lastSyncedAt)
+                    }));
+                    const ids = data.connectedAccounts.map((a: ConnectedAccount) => parseInt(a.id)).filter((n: number) => !isNaN(n));
+                    this.currentAccountId = ids.length > 0 ? Math.max(...ids) + 1 : 1;
+                }
+                if (data.contests) {
+                    data.contests.forEach((c: Contest) => this.contests.set(c.contestId, {
+                        ...c,
+                        startTime: new Date(c.startTime),
+                        endTime: new Date(c.endTime)
+                    }));
+                }
+                if (data.contestReminders) {
+                    data.contestReminders.forEach((r: ContestReminder) => this.contestReminders.set(r.id.toString(), {
+                        ...r,
+                        reminderTime: new Date(r.reminderTime),
+                        createdAt: new Date(r.createdAt)
+                    }));
+                    const ids = data.contestReminders.map((r: ContestReminder) => parseInt(r.id)).filter((n: number) => !isNaN(n));
+                    this.currentReminderId = ids.length > 0 ? Math.max(...ids) + 1 : 1;
+                }
             } catch (e) {
                 console.error("Failed to load local data:", e);
             }
@@ -85,6 +121,9 @@ export class FileStorage implements IStorage {
                 tasks: Array.from(this.tasks.values()),
                 problemReviews: Array.from(this.problemReviews.values()),
                 jobResults: Array.from(this.jobResults.entries()),
+                connectedAccounts: Array.from(this.connectedAccounts.values()),
+                contests: Array.from(this.contests.values()),
+                contestReminders: Array.from(this.contestReminders.values()),
             };
             fs.writeFileSync(this.filePath, JSON.stringify(data, null, 2));
         } catch (e) {
@@ -276,5 +315,111 @@ export class FileStorage implements IStorage {
 
     async getJobResult(jobId: string): Promise<any | undefined> {
         return this.jobResults.get(jobId);
+    }
+
+    // ── Connected Platform Accounts ─────────────────────────────────────────
+    async getConnectedAccounts(userId: string): Promise<ConnectedAccount[]> {
+        return Array.from(this.connectedAccounts.values())
+            .filter(a => a.userId === userId.toString())
+            .sort((a, b) => new Date(b.lastSyncedAt).getTime() - new Date(a.lastSyncedAt).getTime());
+    }
+
+    async getConnectedAccount(userId: string, platform: string): Promise<ConnectedAccount | undefined> {
+        return Array.from(this.connectedAccounts.values()).find(
+            a => a.userId === userId.toString() && a.platform === platform
+        );
+    }
+
+    async upsertConnectedAccount(account: InsertConnectedAccount): Promise<ConnectedAccount> {
+        const existing = await this.getConnectedAccount(account.userId, account.platform);
+        if (existing) {
+            const updated: ConnectedAccount = {
+                ...existing,
+                ...account,
+                lastSyncedAt: new Date(),
+            };
+            this.connectedAccounts.set(existing.id, updated);
+            this.saveData();
+            return updated;
+        } else {
+            const id = this.currentAccountId++;
+            const newAcc: ConnectedAccount = {
+                ...account,
+                id: id.toString(),
+                lastSyncedAt: new Date(),
+            };
+            this.connectedAccounts.set(id.toString(), newAcc);
+            this.saveData();
+            return newAcc;
+        }
+    }
+
+    async deleteConnectedAccount(userId: string, platform: string): Promise<boolean> {
+        const existing = await this.getConnectedAccount(userId, platform);
+        if (existing) {
+            this.connectedAccounts.delete(existing.id);
+            this.saveData();
+            return true;
+        }
+        return false;
+    }
+
+    // ── Contests ────────────────────────────────────────────────────────────
+    async getUpcomingContests(): Promise<Contest[]> {
+        const now = new Date();
+        return Array.from(this.contests.values())
+            .filter(c => new Date(c.endTime) >= now)
+            .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+    }
+
+    async upsertContests(contests: Omit<Contest, 'id'>[]): Promise<void> {
+        for (const c of contests) {
+            const id = this.currentContestId++;
+            this.contests.set(c.contestId, { ...c, id: id.toString() });
+        }
+        this.saveData();
+    }
+
+    // ── Contest Reminders ───────────────────────────────────────────────────
+    async getContestReminders(userId: string): Promise<ContestReminder[]> {
+        return Array.from(this.contestReminders.values())
+            .filter(r => r.userId === userId.toString())
+            .sort((a, b) => new Date(a.reminderTime).getTime() - new Date(b.reminderTime).getTime());
+    }
+
+    async createContestReminder(userId: string, contestId: string, reminderTime: Date, reminderType: string): Promise<ContestReminder> {
+        const existing = Array.from(this.contestReminders.values()).find(
+            r => r.userId === userId.toString() && r.contestId === contestId && r.reminderType === reminderType
+        );
+        if (existing) {
+            return existing;
+        }
+        const id = this.currentReminderId++;
+        const reminder: ContestReminder = {
+            id: id.toString(),
+            userId: userId.toString(),
+            contestId,
+            reminderTime,
+            reminderType,
+            sent: false,
+            createdAt: new Date(),
+        };
+        this.contestReminders.set(id.toString(), reminder);
+        this.saveData();
+        return reminder;
+    }
+
+    async deleteContestReminder(userId: string, contestId: string, reminderType?: string): Promise<boolean> {
+        let deleted = false;
+        for (const [id, r] of this.contestReminders.entries()) {
+            if (r.userId === userId.toString() && r.contestId === contestId) {
+                if (!reminderType || r.reminderType === reminderType) {
+                    this.contestReminders.delete(id);
+                    deleted = true;
+                }
+            }
+        }
+        if (deleted) this.saveData();
+        return deleted;
     }
 }

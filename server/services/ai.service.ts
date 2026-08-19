@@ -13,6 +13,14 @@ export interface AIUserStats {
     streak: number;
     topCat: string;
     username?: string;
+    connectedAccounts?: Array<{
+        platform: string;
+        username: string;
+        rating?: number | null;
+        rank?: string | number | null;
+        solvedCount: number;
+        contestCount?: number | null;
+    }>;
 }
 
 export class AIService {
@@ -26,21 +34,30 @@ export class AIService {
             throw new Error('AI service is not configured (missing API key)');
         }
 
-        const hasUserData = userStats && (userStats.solved > 0 || userStats.streak > 0 || userStats.topCat);
+        const hasUserData = userStats && (userStats.solved > 0 || userStats.streak > 0 || userStats.topCat || (userStats.connectedAccounts && userStats.connectedAccounts.length > 0));
+
+        let platformContext = '';
+        if (userStats?.connectedAccounts && userStats.connectedAccounts.length > 0) {
+            const lines = userStats.connectedAccounts.map(a => 
+                `• ${a.platform.toUpperCase()} (@${a.username}): Solved ${a.solvedCount} problems${a.rating ? `, Rating: ${a.rating}` : ''}${a.rank ? `, Rank: ${a.rank}` : ''}`
+            );
+            platformContext = `\nConnected Coding Ecosystem Accounts:\n${lines.join('\n')}\n`;
+        }
 
         const systemPrompt = hasUserData
-            ? `You are an expert AI mentor and interviewer for Software Engineering and DSA.
-You have access to the user's progress data:
-- Problems solved: ${userStats.solved || 0}
+            ? `You are Dora AI, the intelligent mentor & competitive programming coach for the AlgoAscent platform.
+You have access to the user's comprehensive coding identity across platforms:
+- Total internal problems solved: ${userStats.solved || 0}
 - Current streak: ${userStats.streak || 0} days
-- Strongest/Most active topic: ${userStats.topCat || 'N/A'}
-
-Act as a mentor + interviewer. Use this data to personalize your responses.
-Encourage them on their streak. If they ask for advice, guide them based on their recent topics.
-Keep your tone friendly, helpful, and clear.`
-            : `You are a helpful AI assistant for coding interviews and DSA.
-Provide clean code solutions, explain the approach, and state time/space complexity.
-Act as a mentor. Keep your tone friendly, helpful, and clear.`;
+- Most active subject/topic: ${userStats.topCat || 'Algorithms'}
+${platformContext}
+Act as a world-class coding mentor, contest coach, and interviewer:
+1. Provide personalized advice using their ratings and multi-platform stats (LeetCode, Codeforces, CodeChef, etc.).
+2. If they ask about contest preparation or what to do today, give specific, actionable problem recommendations (e.g. recommend 2 Medium DP or Graph problems).
+3. If they ask about their performance, analyze their strengths, weaknesses, and rating trends.
+4. Keep answers encouraging, crisp, structured, and developer-focused with clean markdown.`
+            : `You are Dora AI, an intelligent coding mentor for AlgoAscent.
+Provide clean code solutions, explain approaches, state time/space complexity, and help prepare for competitive programming contests and technical interviews. Keep your tone encouraging and concise.`;
 
         const messages = [
             { role: 'system', content: systemPrompt },

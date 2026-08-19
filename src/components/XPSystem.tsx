@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Activity } from '../types';
 import { useActivities } from '../hooks/useActivities';
+import { useAuth } from '../contexts/AuthContext';
 import { SUBJECTS, loadProgress } from './CoreSubjects';
 
 /* ── XP Config ─────────────────────────────────────────────── */
@@ -41,7 +42,7 @@ function calcStreak(activities: Activity[]): number {
   return s;
 }
 
-export function calcXP(activities: Activity[]): { total: number; breakdown: { label: string; xp: number; count: number }[] } {
+export function calcXP(activities: Activity[], userId?: string): { total: number; breakdown: { label: string; xp: number; count: number }[] } {
   const streak = calcStreak(activities);
   const easy = activities.filter(a => a.problemSolved && a.difficulty === 'Easy').length;
   const medium = activities.filter(a => a.problemSolved && a.difficulty === 'Medium').length;
@@ -49,7 +50,7 @@ export function calcXP(activities: Activity[]): { total: number; breakdown: { la
   const sessions = activities.length;
 
   // Subject XP from localStorage
-  const subjectProgress = loadProgress();
+  const subjectProgress = loadProgress(userId);
   let subjectXP = 0;
   SUBJECTS.forEach(s => {
     const sp = subjectProgress[s.id] || {};
@@ -85,8 +86,9 @@ export function getLevelInfo(xp: number) {
 
 /* ── XP Badge (compact, for dashboard) ────────────────────── */
 export const XPBadge: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
+  const { user } = useAuth();
   const { data: activities = [] } = useActivities();
-  const { total, breakdown } = useMemo(() => calcXP(activities), [activities]);
+  const { total, breakdown } = useMemo(() => calcXP(activities, user?.id), [activities, user?.id]);
   const { current, next, progressPct, xpToNext } = useMemo(() => getLevelInfo(total), [total]);
 
   return (
@@ -148,8 +150,9 @@ export const XPBadge: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
 
 /* ── Full XP Panel ─────────────────────────────────────────── */
 const XPSystem: React.FC = () => {
+  const { user } = useAuth();
   const { data: activities = [] } = useActivities();
-  const { total, breakdown } = useMemo(() => calcXP(activities), [activities]);
+  const { total, breakdown } = useMemo(() => calcXP(activities, user?.id), [activities, user?.id]);
   const { current, next, progressPct, xpToNext } = useMemo(() => getLevelInfo(total), [total]);
 
   return (

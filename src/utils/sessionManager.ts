@@ -46,8 +46,19 @@ export class SessionManager {
     static clearSession(): void {
         localStorage.removeItem(USER_KEY);
         localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem('user_custom_avatar');
+        sessionStorage.removeItem('active_mock_session');
+        sessionStorage.removeItem('last_interview_result');
         Object.keys(localStorage)
-            .filter(k => k.startsWith('activities_'))
+            .filter(k => 
+                k.startsWith('activities_') ||
+                k.startsWith('user_custom_avatar_') ||
+                k.startsWith('dailyProblem_') ||
+                k.startsWith('notifications_') ||
+                k.startsWith('core_subject_progress') ||
+                k.startsWith('subject_xp') ||
+                k.startsWith('platform_accounts_')
+            )
             .forEach(k => localStorage.removeItem(k));
     }
 

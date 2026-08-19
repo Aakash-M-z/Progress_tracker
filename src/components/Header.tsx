@@ -107,7 +107,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
 
   const menuItems = [
     { label: 'Profile', icon: '◉', path: '/dashboard/profile' },
-    { label: 'Settings', icon: '⚙', path: '/dashboard/settings' },
   ];
 
   const adminItems = user?.role === 'admin' ? [
@@ -117,13 +116,11 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
 
   const displayName = user?.name && user.name !== 'Guest' ? user.name : (user?.username ?? 'User');
   const initials = displayName.charAt(0).toUpperCase();
+  const userAvatar = user?.avatar || null;
 
   const navItems = [
     { label: 'Overview', path: '/dashboard' },
-    { label: 'AI Assistant', path: '/dashboard/ai' },
     { label: user?.role === 'admin' ? 'Interview Analytics' : 'Mock Interview', path: '/dashboard/interview' },
-    { label: 'DSA Roadmap', path: '/dashboard/roadmap' },
-    { label: 'Core Subjects', path: '/dashboard/subjects' },
     { label: 'Resources', path: '/dashboard/resources' },
   ];
 
@@ -139,22 +136,22 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
       <header
         className="sticky top-0 z-50"
         style={{
-          background: 'rgba(11,11,11,0.95)',
-          borderBottom: '1px solid rgba(212,175,55,0.2)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
+          background: 'rgba(5,5,7,0.92)',
+          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          boxShadow: '0 4px 30px rgba(0,0,0,0.4)',
           height: '64px',
         }}
       >
-        <div className="max-w-full mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
-
+        <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 md:px-8 h-full flex items-center justify-between">
+ 
           {/* Left side: Hamburger (on mobile) + Logo */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {onMenuToggle && (
               <button
                 onClick={onMenuToggle}
-                className="p-2 -ml-2 text-white/40 hover:text-gold transition-colors md:hidden"
+                className="p-2 -ml-2 text-white/40 hover:text-white transition-colors md:hidden"
                 aria-label="Toggle Menu"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,36 +161,31 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
             )}
             <div className="flex items-center gap-3">
               <div style={{
-                width: '36px', height: '36px', borderRadius: '10px',
-                border: '1px solid rgba(212,175,55,0.4)',
+                width: '34px', height: '34px', borderRadius: '8px',
+                border: '1px solid rgba(255,255,255,0.1)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(212,175,55,0.08)', overflow: 'hidden',
+                background: 'rgba(255,255,255,0.03)',
               }}>
-                <img
-                  src="/logo.png" alt="Logo"
-                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                  onError={e => {
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.parentElement!.innerHTML = '<span style="font-size:1.2rem">◈</span>';
-                  }}
-                />
+                <svg className="w-5 h-5 text-[#818cf8]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                </svg>
               </div>
               <div className="hidden sm:block">
                 <h1 style={{
                   fontFamily: '"Orbitron", "Inter", sans-serif',
-                  fontSize: '1rem', fontWeight: 800, color: '#EAEAEA',
-                  letterSpacing: '0.05em', lineHeight: 1.2,
+                  fontSize: '0.92rem', fontWeight: 800, color: '#F8FAFC',
+                  letterSpacing: '0.04em', lineHeight: 1.2,
                 }}>
-                  Progress <span style={{ color: '#D4AF37' }}>Tracker</span>
+                  Progress <span className="text-[#818cf8]">Tracker</span>
                 </h1>
-                <p style={{ fontSize: '0.6rem', color: '#555', textTransform: 'uppercase', letterSpacing: '0.2em' }}>
+                <p style={{ fontSize: '0.56rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.18em' }}>
                   Mastering Algorithms
                 </p>
               </div>
             </div>
           </div>
-
-          {/* Navigation Links (LeetCode style) */}
+ 
+          {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-6 h-full">
             {navItems.map(item => (
               <NavLink
@@ -203,8 +195,8 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                 className={({ isActive }) => `
                   h-full flex items-center px-1 border-b-2 text-xs font-bold uppercase tracking-wider transition-all duration-200
                   ${isActive
-                    ? 'border-[#D4AF37] text-[#D4AF37] drop-shadow-[0_0_8px_rgba(212,175,55,0.2)]'
-                    : 'border-transparent text-white/40 hover:text-[#D4AF37] hover:border-gold/30'
+                    ? 'border-[#6366f1] text-white drop-shadow-[0_0_8px_rgba(99,102,241,0.2)]'
+                    : 'border-transparent text-white/40 hover:text-white/80 hover:border-white/10'
                   }
                 `}
               >
@@ -216,72 +208,37 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
           {/* Right side */}
           <div className="flex items-center gap-3">
 
-            {/* User dropdown */}
+            {/* User Avatar Only Dropdown Button */}
             <div ref={dropdownRef} style={{ position: 'relative' }}>
               <button
                 onClick={() => setShowDropdown(d => !d)}
+                className={`relative w-9 h-9 rounded-full overflow-hidden flex items-center justify-center transition-all duration-200 border-2 cursor-pointer ${
+                  showDropdown
+                    ? 'border-indigo-400 shadow-[0_0_16px_rgba(99,102,241,0.5)] scale-105'
+                    : 'border-white/15 hover:border-indigo-400/70 hover:scale-105'
+                }`}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '10px',
-                  padding: '6px 12px',
-                  background: showDropdown ? 'rgba(212,175,55,0.08)' : 'rgba(255,255,255,0.04)',
-                  border: `1px solid ${showDropdown ? 'rgba(212,175,55,0.45)' : 'rgba(212,175,55,0.2)'}`,
-                  borderRadius: '10px', cursor: 'pointer',
-                  transition: 'all 0.2s ease',
+                  background: 'linear-gradient(135deg, #818cf8, #4f46e5)',
                 }}
-                onMouseEnter={e => {
-                  if (!showDropdown) {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(212,175,55,0.45)';
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(212,175,55,0.06)';
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!showDropdown) {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(212,175,55,0.2)';
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)';
-                  }
-                }}
+                aria-label="User Profile Menu"
               >
-                {/* Avatar */}
-                <div style={{
-                  width: '28px', height: '28px', borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #D4AF37, #8A6012)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '0.75rem', fontWeight: 700, color: '#0B0B0B',
-                  flexShrink: 0,
-                }}>
-                  {initials}
-                </div>
-                <div className="hidden sm:block text-left">
-                  <p style={{ fontSize: '0.8rem', fontWeight: 600, color: '#EAEAEA', lineHeight: 1.2 }}>
-                    {displayName}
-                  </p>
-                  <p style={{ fontSize: '0.6rem', color: '#D4AF37', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    {user?.role || 'Member'}
-                  </p>
-                </div>
-                <svg
-                  style={{
-                    width: '12px', height: '12px', color: '#555',
-                    transition: 'transform 0.2s',
-                    transform: showDropdown ? 'rotate(180deg)' : 'rotate(0deg)',
-                    flexShrink: 0,
-                  }}
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                {userAvatar ? (
+                  <img src={userAvatar} alt={displayName} className="w-full h-full object-cover rounded-full" />
+                ) : (
+                  <span className="text-xs font-black text-white">{initials}</span>
+                )}
               </button>
-
+ 
               {/* Dropdown panel */}
               {showDropdown && (
                 <div
                   style={{
                     position: 'absolute', right: 0, top: 'calc(100% + 8px)',
                     width: '230px',
-                    background: '#111',
-                    border: '1px solid rgba(212,175,55,0.2)',
+                    background: '#0d0d12',
+                    border: '1px solid rgba(255,255,255,0.08)',
                     borderRadius: '14px',
-                    boxShadow: '0 20px 56px rgba(0,0,0,0.75), 0 0 24px rgba(212,175,55,0.05)',
+                    boxShadow: '0 20px 56px rgba(0,0,0,0.85), 0 0 24px rgba(99,102,241,0.02)',
                     zIndex: 100, overflow: 'hidden',
                     animation: 'dropdownOpen 0.18s cubic-bezier(0.22,1,0.36,1) both',
                   }}
@@ -293,13 +250,19 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                     display: 'flex', alignItems: 'center', gap: '12px',
                   }}>
                     <div style={{
-                      width: '38px', height: '38px', borderRadius: '50%', flexShrink: 0,
-                      background: 'linear-gradient(135deg, #D4AF37, #8A6012)',
+                      width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0,
+                      background: 'linear-gradient(135deg, #818cf8, #4f46e5)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '1rem', fontWeight: 700, color: '#0B0B0B',
-                      boxShadow: '0 0 12px rgba(212,175,55,0.3)',
+                      fontSize: '1rem', fontWeight: 700, color: '#ffffff',
+                      boxShadow: '0 0 12px rgba(99,102,241,0.2)',
+                      overflow: 'hidden',
+                      border: '1px solid rgba(255,255,255,0.1)'
                     }}>
-                      {initials}
+                      {userAvatar ? (
+                        <img src={userAvatar} alt={displayName} className="w-full h-full object-cover" />
+                      ) : (
+                        initials
+                      )}
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#EAEAEA', lineHeight: 1.3 }}>
@@ -313,7 +276,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                       </p>
                     </div>
                   </div>
-
+ 
                   {/* Menu items */}
                   <div style={{ padding: '6px' }}>
                     {menuItems.map(item => (
@@ -328,8 +291,8 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                           transition: 'all 0.15s ease', textAlign: 'left',
                         }}
                         onMouseEnter={e => {
-                          (e.currentTarget as HTMLElement).style.background = 'rgba(212,175,55,0.08)';
-                          (e.currentTarget as HTMLElement).style.color = '#D4AF37';
+                          (e.currentTarget as HTMLElement).style.background = 'rgba(99,102,241,0.06)';
+                          (e.currentTarget as HTMLElement).style.color = '#818cf8';
                         }}
                         onMouseLeave={e => {
                           (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -340,16 +303,16 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                         {item.label}
                       </button>
                     ))}
-
+ 
                     <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '4px 2px' }} />
-
+ 
                     {/* Admin section — only visible to admins */}
                     {adminItems.length > 0 && (
                       <>
                         <div style={{
                           padding: '8px 12px 4px',
                           fontSize: '0.65rem', fontWeight: 700,
-                          color: '#D4AF37', textTransform: 'uppercase', letterSpacing: '0.12em',
+                          color: '#818cf8', textTransform: 'uppercase', letterSpacing: '0.12em',
                         }}>
                           Admin
                         </div>
@@ -361,11 +324,11 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                               width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
                               padding: '9px 12px', borderRadius: '8px',
                               background: 'transparent', border: 'none',
-                              color: '#D4AF37', fontSize: '0.85rem', cursor: 'pointer',
+                              color: '#818cf8', fontSize: '0.85rem', cursor: 'pointer',
                               transition: 'all 0.15s ease', textAlign: 'left', opacity: 0.85,
                             }}
                             onMouseEnter={e => {
-                              (e.currentTarget as HTMLElement).style.background = 'rgba(212,175,55,0.1)';
+                              (e.currentTarget as HTMLElement).style.background = 'rgba(99,102,241,0.08)';
                               (e.currentTarget as HTMLElement).style.opacity = '1';
                             }}
                             onMouseLeave={e => {
@@ -380,7 +343,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                         <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '4px 2px' }} />
                       </>
                     )}
-
+ 
                     {/* Logout */}
                     <button
                       onClick={() => { setShowDropdown(false); setShowLogoutModal(true); }}

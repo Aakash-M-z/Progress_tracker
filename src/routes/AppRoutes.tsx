@@ -6,7 +6,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 const OverviewPage = React.lazy(() => import('../features/overview/OverviewPage'));
 const TasksPage = React.lazy(() => import('../features/tasks/TasksPage'));
 const AnalyticsPage = React.lazy(() => import('../features/analytics/AnalyticsPage'));
-const AIPage = React.lazy(() => import('../features/ai/AIPage'));
 const RoadmapPage = React.lazy(() => import('../features/roadmap/RoadmapPage'));
 const SubjectsPage = React.lazy(() => import('../features/subjects/SubjectsPage'));
 const StatisticsPage = React.lazy(() => import('../features/statistics/StatisticsPage'));
@@ -29,7 +28,6 @@ import BadgeSystem from '../components/BadgeSystem';
 import XPSystem from '../components/XPSystem';
 import SolutionResources from '../components/SolutionResources';
 import UserProfile from '../components/UserProfile';
-import Settings from '../components/Settings';
 import RoleBasedRoute from '../components/RoleBasedRoute';
 
 // Heavy components — lazy loaded to reduce initial bundle size
@@ -38,7 +36,6 @@ const CoreSubjects = React.lazy(() => import('../components/CoreSubjects'));
 
 export interface AppRoutesProps {
   overviewTabNode: React.ReactNode;
-  aiTabNode: React.ReactNode;
 }
 
 const PageTransition = ({ children }: { children: React.ReactNode }) => {
@@ -88,7 +85,7 @@ const PageLoader = () => (
   </div>
 );
 
-const AppRoutes: React.FC<AppRoutesProps> = ({ overviewTabNode, aiTabNode }) => {
+const AppRoutes: React.FC<AppRoutesProps> = ({ overviewTabNode }) => {
   const location = useLocation();
 
   return (
@@ -121,13 +118,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ overviewTabNode, aiTabNode }) => 
             <AnalyticsPage>
               <PageTransition><AnalyticsDashboard /></PageTransition>
             </AnalyticsPage>
-          </Suspense>
-        } />
-        <Route path="/dashboard/ai" element={
-          <Suspense fallback={<PageLoader />}>
-            <AIPage>
-              <PageTransition>{aiTabNode}</PageTransition>
-            </AIPage>
           </Suspense>
         } />
         <Route path="/dashboard/interview" element={
@@ -196,11 +186,6 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ overviewTabNode, aiTabNode }) => 
             <ProfilePage>
               <PageTransition><UserProfile /></PageTransition>
             </ProfilePage>
-          </Suspense>
-        } />
-        <Route path="/dashboard/settings" element={
-          <Suspense fallback={<PageLoader />}>
-            <PageTransition><Settings /></PageTransition>
           </Suspense>
         } />
         <Route path="/dashboard/admin" element={

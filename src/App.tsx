@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './queryClient';
 import Header from './components/Header';
 import Login from './components/Login';
 import HomePage from './components/HomePage';
@@ -15,6 +16,7 @@ import { SkeletonStatRow, SkeletonChart, SkeletonTaskList } from './components/S
 import { useActivities, useAddActivity, useDeleteActivity } from './hooks/useActivities';
 
 import LeetCodeQuestions from './components/LeetCodeQuestions';
+import OverviewHub from './components/OverviewHub';
 import ProgressStats from './components/ProgressStats';
 import ActivityForm from './components/ActivityForm';
 import DSARoadmap from './components/DSARoadmap';
@@ -47,7 +49,6 @@ import AppRoutes from './routes/AppRoutes';
 
 const NAV_ITEMS = [
     { id: 'overview', label: 'Overview', icon: '⊞', section: 'main', path: '/dashboard' },
-    { id: 'ai', label: 'AI Assistant', icon: '◈', section: 'main', path: '/dashboard/ai' },
     { id: 'roadmap', label: 'DSA Roadmap', icon: '◎', section: 'tools', path: '/dashboard/roadmap' },
     { id: 'subjects', label: 'Core Subjects', icon: '⬡', section: 'tools', path: '/dashboard/subjects' },
     { id: 'resources', label: 'Resources', icon: '◇', section: 'tools', path: '/dashboard/resources' },
@@ -154,7 +155,7 @@ const OverviewTab: React.FC = () => {
                     <div className="animate-pulse">Loading dashboard...</div>
                 </div>
             ) : (
-                <LeetCodeQuestions
+                <OverviewHub
                     activities={displayActivities}
                     onAddActivity={onAddActivity}
                 />
@@ -163,28 +164,7 @@ const OverviewTab: React.FC = () => {
     );
 }
 
-/* ── AI Tab (chat + analysis + recommendations sub-tabs) ─────── */
-const AITab: React.FC = () => {
-    const [sub, setSub] = useState<'chat' | 'analysis' | 'recommendations'>('chat');
-    return (
-        <div className="section-gap">
-            <div className="tab-nav" style={{ width: 'fit-content' }}>
-                {([
-                    ['chat', '◈ Chat'],
-                    ['analysis', '◐ Analysis'],
-                    ['recommendations', '◆ Recommendations'],
-                ] as const).map(([id, label]) => (
-                    <button key={id} onClick={() => setSub(id)} className={`tab-item ${sub === id ? 'active' : ''}`}>
-                        {label}
-                    </button>
-                ))}
-            </div>
-            {sub === 'chat' && <AIAssistant />}
-            {sub === 'analysis' && <AIAnalysis />}
-            {sub === 'recommendations' && <RecommendationEngine />}
-        </div>
-    );
-};
+
 
 /* ── AppContent ───────────────────────────────────────────────── */
 const AppContent: React.FC = () => {
@@ -337,17 +317,16 @@ const AppContent: React.FC = () => {
                     </AnimatePresence>
 
                     {/* Main content area */}
-                    <div className="flex-1 overflow-y-auto overflow-x-hidden relative transition-all duration-300 bg-[#080808]">
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden relative transition-all duration-300 bg-[#040406]">
                         <motion.main
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, ease: "easeOut" }}
-                            className="max-w-[1200px] mx-auto p-4 md:p-8 pb-20 md:pb-8"
+                            className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 md:px-8 py-6 pb-20 md:pb-8"
                         >
                             <ErrorBoundary>
                                 <AppRoutes
                                     overviewTabNode={<OverviewTab />}
-                                    aiTabNode={<AITab />}
                                 />
                             </ErrorBoundary>
                         </motion.main>
@@ -369,7 +348,6 @@ const AppContent: React.FC = () => {
         <ErrorBoundary>
             <AppRoutes
                 overviewTabNode={<OverviewTab />}
-                aiTabNode={<AITab />}
             />
         </ErrorBoundary>
     );
@@ -377,7 +355,6 @@ const AppContent: React.FC = () => {
 
 /* ── Root App ─────────────────────────────────────────────────── */
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
-const queryClient = new QueryClient();
 
 const App: React.FC = () => (
     <ErrorBoundary>

@@ -100,14 +100,14 @@ const SUBJECTS: Subject[] = [
 ];
 
 /* ── Storage helpers ───────────────────────────────────────── */
-const STORAGE_KEY = 'core_subject_progress';
-
-function loadProgress(): Record<string, SubjectProgress> {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+export function loadProgress(userId?: string): Record<string, SubjectProgress> {
+    const key = userId ? `core_subject_progress_${userId}` : 'core_subject_progress_guest';
+    try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch { return {}; }
 }
 
-function saveProgress(p: Record<string, SubjectProgress>) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+export function saveProgress(p: Record<string, SubjectProgress>, userId?: string) {
+    const key = userId ? `core_subject_progress_${userId}` : 'core_subject_progress_guest';
+    localStorage.setItem(key, JSON.stringify(p));
 }
 
 /* ── AI Explain Modal ──────────────────────────────────────── */
@@ -490,15 +490,21 @@ const SubjectCard: React.FC<{ subject: Subject; progress: SubjectProgress; onUpd
 
 /* ── Main CoreSubjects Component ───────────────────────────── */
 const CoreSubjects: React.FC = () => {
-    const [allProgress, setAllProgress] = useState<Record<string, SubjectProgress>>(loadProgress);
+    const { user } = useAuth();
+    const [allProgress, setAllProgress] = useState<Record<string, SubjectProgress>>(() => loadProgress(user?.id));
+
+    // Reload progress whenever user changes
+    React.useEffect(() => {
+        setAllProgress(loadProgress(user?.id));
+    }, [user?.id]);
 
     const updateSubjectProgress = useCallback((subjectId: string, p: SubjectProgress) => {
         setAllProgress(prev => {
             const next = { ...prev, [subjectId]: p };
-            saveProgress(next);
+            saveProgress(next, user?.id);
             return next;
         });
-    }, []);
+    }, [user?.id]);
 
     const overallStats = useMemo(() => {
         let total = 0, done = 0, revisit = 0;
@@ -544,5 +550,5 @@ const CoreSubjects: React.FC = () => {
     );
 };
 
-export { SUBJECTS, loadProgress };
+export { SUBJECTS };
 export default CoreSubjects;
