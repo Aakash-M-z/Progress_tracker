@@ -79,8 +79,9 @@ const STATUS_STYLE: Record<string, { color: string; bg: string }> = {
   'Mastered': { color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
 };
 
-const DSARoadmap: React.FC = () => {
-  const { data: activities = [] } = useActivities();
+const DSARoadmap: React.FC<Props> = ({ activities: propActivities }) => {
+  const { data: queryActivities = [] } = useActivities();
+  const activities = propActivities || queryActivities;
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
   const roadmapData = useMemo(() => {

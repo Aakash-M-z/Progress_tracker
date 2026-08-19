@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { UserModel, ActivityModel, AdminLogModel, TaskModel, ProblemReviewModel, JobResultModel } from './models.js';
+import { UserModel, ActivityModel, AdminLogModel, TaskModel, ProblemReviewModel, JobResultModel, ConnectedAccountModel, ContestModel, ContestReminderModel } from './models.js';
 import { IStorage } from './storage.js';
-import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask, ProblemReview, InsertProblemReview } from '../shared/schema.js';
+import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask, ProblemReview, InsertProblemReview, ConnectedAccount, InsertConnectedAccount, Contest, ContestReminder } from '../shared/schema.js';
 
 export let mongoConnected = false;
 
@@ -271,6 +271,112 @@ export class MongoStorage implements IStorage {
             interval: doc.interval,
             easeFactor: doc.easeFactor,
             lastReviewed: doc.lastReviewed,
+            createdAt: doc.createdAt,
+        };
+    }
+
+    // ── Connected Platform Accounts ─────────────────────────────────────────
+    async getConnectedAccounts(userId: string): Promise<ConnectedAccount[]> {
+        const accounts = await ConnectedAccountModel.find({ userId }).sort({ lastSyncedAt: -1 });
+        return accounts.map(a => this.mapConnectedAccount(a));
+    }
+
+    async getConnectedAccount(userId: string, platform: string): Promise<ConnectedAccount | undefined> {
+        const account = await ConnectedAccountModel.findOne({ userId, platform });
+        return account ? this.mapConnectedAccount(account) : undefined;
+    }
+
+    async upsertConnectedAccount(data: InsertConnectedAccount): Promise<ConnectedAccount> {
+        const account = await ConnectedAccountModel.findOneAndUpdate(
+            { userId: data.userId, platform: data.platform },
+            { ...data, lastSyncedAt: new Date() },
+            { new: true, upsert: true }
+        );
+        return this.mapConnectedAccount(account);
+    }
+
+    async deleteConnectedAccount(userId: string, platform: string): Promise<boolean> {
+        const result = await ConnectedAccountModel.findOneAndDelete({ userId, platform });
+        return !!result;
+    }
+
+    // ── Contests ────────────────────────────────────────────────────────────
+    async getUpcomingContests(): Promise<Contest[]> {
+        const now = new Date();
+        const contests = await ContestModel.find({ endTime: { $gte: now } }).sort({ startTime: 1 });
+        return contests.map(c => this.mapContest(c));
+    }
+
+    async upsertContests(contests: Omit<Contest, 'id'>[]): Promise<void> {
+        for (const c of contests) {
+            await ContestModel.findOneAndUpdate(
+                { contestId: c.contestId },
+                c,
+                { upsert: true }
+            );
+        }
+    }
+
+    // ── Contest Reminders ───────────────────────────────────────────────────
+    async getContestReminders(userId: string): Promise<ContestReminder[]> {
+        const reminders = await ContestReminderModel.find({ userId }).sort({ reminderTime: 1 });
+        return reminders.map(r => this.mapContestReminder(r));
+    }
+
+    async createContestReminder(userId: string, contestId: string, reminderTime: Date, reminderType: string): Promise<ContestReminder> {
+        const reminder = await ContestReminderModel.findOneAndUpdate(
+            { userId, contestId, reminderType },
+            { userId, contestId, reminderTime, reminderType, sent: false, createdAt: new Date() },
+            { new: true, upsert: true }
+        );
+        return this.mapContestReminder(reminder);
+    }
+
+    async deleteContestReminder(userId: string, contestId: string, reminderType?: string): Promise<boolean> {
+        const query: any = { userId, contestId };
+        if (reminderType) query.reminderType = reminderType;
+        const result = await ContestReminderModel.deleteMany(query);
+        return result.deletedCount > 0;
+    }
+
+    private mapConnectedAccount(doc: any): ConnectedAccount {
+        return {
+            id: doc._id.toString(),
+            userId: doc.userId,
+            platform: doc.platform,
+            username: doc.username,
+            profileUrl: doc.profileUrl ?? '',
+            rating: doc.rating ?? null,
+            rank: doc.rank ?? null,
+            solvedCount: doc.solvedCount ?? 0,
+            contestCount: doc.contestCount ?? null,
+            lastSyncedAt: doc.lastSyncedAt,
+            syncStatus: doc.syncStatus ?? 'success',
+            metadata: doc.metadata ?? {},
+        };
+    }
+
+    private mapContest(doc: any): Contest {
+        return {
+            id: doc._id.toString(),
+            platform: doc.platform,
+            contestId: doc.contestId,
+            title: doc.title,
+            startTime: doc.startTime,
+            endTime: doc.endTime,
+            url: doc.url ?? '',
+            status: doc.status ?? 'upcoming',
+        };
+    }
+
+    private mapContestReminder(doc: any): ContestReminder {
+        return {
+            id: doc._id.toString(),
+            userId: doc.userId,
+            contestId: doc.contestId,
+            reminderTime: doc.reminderTime,
+            reminderType: doc.reminderType,
+            sent: doc.sent ?? false,
             createdAt: doc.createdAt,
         };
     }

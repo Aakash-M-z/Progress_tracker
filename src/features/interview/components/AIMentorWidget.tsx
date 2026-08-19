@@ -152,7 +152,7 @@ const AIMentorWidget: React.FC = () => {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="card-dark border border-white/5 overflow-hidden"
+            className="rounded-3xl bg-[#090b14] border border-white/[0.08] shadow-[0_0_50px_rgba(0,0,0,0.6)] overflow-hidden"
         >
             {/* Header */}
             <div className="px-8 pt-8 pb-0">

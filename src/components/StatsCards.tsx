@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, Flame, BarChart3, Target, Star, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Activity } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 import { calcXP, getLevelInfo } from './XPSystem';
 
 /* ── Animated counter ────────────────────────────────────────── */
@@ -39,7 +40,8 @@ const Bar: React.FC<{ pct: number; color: string; gradient?: string; delay?: num
 
 /* ── XP Breakdown Modal ──────────────────────────────────────── */
 const XPModal: React.FC<{ activities: Activity[]; onClose: () => void }> = ({ activities, onClose }) => {
-    const { total, breakdown } = calcXP(activities);
+    const { user } = useAuth();
+    const { total, breakdown } = calcXP(activities, user?.id);
     const { current, next, progressPct, xpToNext } = getLevelInfo(total);
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -199,7 +201,8 @@ const StatsCards: React.FC<{ activities: Activity[] }> = ({ activities }) => {
     const accuracy = totalProblems > 0 ? Math.round((totalSolved / totalProblems) * 100) : 0;
 
     // XP
-    const { total: xpTotal, breakdown } = calcXP(activities);
+    const { user } = useAuth();
+    const { total: xpTotal, breakdown } = calcXP(activities, user?.id);
     const { current: lvl, next: nextLvl, progressPct: xpPct, xpToNext } = getLevelInfo(xpTotal);
 
     // Animated counters

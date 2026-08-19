@@ -1,4 +1,4 @@
-import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask, ProblemReview, InsertProblemReview } from "../shared/schema.js";
+import { User, InsertUser, Activity, InsertActivity, AdminLog, InsertAdminLog, Task, InsertTask, ProblemReview, InsertProblemReview, ConnectedAccount, InsertConnectedAccount, Contest, ContestReminder } from "../shared/schema.js";
 import { FileStorage } from "./file-storage.js";
 import { MongoStorage, connectMongo } from "./mongo-storage.js";
 
@@ -31,6 +31,18 @@ export interface IStorage {
   // Job Results
   saveJobResult(jobId: string, result: any): Promise<void>;
   getJobResult(jobId: string): Promise<any | undefined>;
+  // Connected Platform Accounts
+  getConnectedAccounts(userId: string): Promise<ConnectedAccount[]>;
+  getConnectedAccount(userId: string, platform: string): Promise<ConnectedAccount | undefined>;
+  upsertConnectedAccount(account: InsertConnectedAccount): Promise<ConnectedAccount>;
+  deleteConnectedAccount(userId: string, platform: string): Promise<boolean>;
+  // Contests
+  getUpcomingContests(): Promise<Contest[]>;
+  upsertContests(contests: Omit<Contest, 'id'>[]): Promise<void>;
+  // Contest Reminders
+  getContestReminders(userId: string): Promise<ContestReminder[]>;
+  createContestReminder(userId: string, contestId: string, reminderTime: Date, reminderType: string): Promise<ContestReminder>;
+  deleteContestReminder(userId: string, contestId: string, reminderType?: string): Promise<boolean>;
 }
 
 // Try MongoDB first; if it fails (no network, wrong URI, etc.) fall back to FileStorage
@@ -82,6 +94,19 @@ class StorageProxy implements IStorage {
   async upsertProblemReview(review: InsertProblemReview) { return (await this.s()).upsertProblemReview(review); }
   async saveJobResult(jobId: string, result: any) { return (await this.s()).saveJobResult(jobId, result); }
   async getJobResult(jobId: string) { return (await this.s()).getJobResult(jobId); }
+  // Connected Platform Accounts
+  async getConnectedAccounts(userId: string) { return (await this.s()).getConnectedAccounts(userId); }
+  async getConnectedAccount(userId: string, platform: string) { return (await this.s()).getConnectedAccount(userId, platform); }
+  async upsertConnectedAccount(account: InsertConnectedAccount) { return (await this.s()).upsertConnectedAccount(account); }
+  async deleteConnectedAccount(userId: string, platform: string) { return (await this.s()).deleteConnectedAccount(userId, platform); }
+  // Contests
+  async getUpcomingContests() { return (await this.s()).getUpcomingContests(); }
+  async upsertContests(contests: Omit<Contest, 'id'>[]) { return (await this.s()).upsertContests(contests); }
+  // Contest Reminders
+  async getContestReminders(userId: string) { return (await this.s()).getContestReminders(userId); }
+  async createContestReminder(userId: string, contestId: string, reminderTime: Date, reminderType: string) { return (await this.s()).createContestReminder(userId, contestId, reminderTime, reminderType); }
+  async deleteContestReminder(userId: string, contestId: string, reminderType?: string) { return (await this.s()).deleteContestReminder(userId, contestId, reminderType); }
 }
 
 export const storage: IStorage = new StorageProxy();
+

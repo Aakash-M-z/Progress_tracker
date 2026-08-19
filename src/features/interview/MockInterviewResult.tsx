@@ -3,17 +3,18 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { Award, CheckCircle2, XCircle, Sparkles, Copy, ArrowRight, RotateCcw, BarChart3, HelpCircle, Code2, Database } from 'lucide-react';
 
 // ── Score Ring (SVG Animated) ────────────────────────────────
 const ScoreRing: React.FC<{
     score: number;
     label: string;
-    color: string;
+    color?: string;
     size?: number;
     delay?: number;
-}> = ({ score, label, color, size = 90, delay = 0 }) => {
+}> = ({ score, label, size = 96, delay = 0 }) => {
     const [animatedScore, setAnimatedScore] = useState(0);
-    const radius = (size - 10) / 2;
+    const radius = (size - 12) / 2;
     const circumference = 2 * Math.PI * radius;
     const progress = (animatedScore / 100) * circumference;
 
@@ -35,8 +36,8 @@ const ScoreRing: React.FC<{
 
     const getColor = (val: number) => {
         if (val >= 80) return '#10B981';
-        if (val >= 60) return '#D4AF37';  
-        if (val >= 40) return '#F59E0B';
+        if (val >= 65) return '#6366F1';
+        if (val >= 50) return '#F59E0B';
         return '#EF4444';
     };
 
@@ -48,7 +49,7 @@ const ScoreRing: React.FC<{
                 <svg width={size} height={size} className="transform -rotate-90">
                     <circle
                         cx={size / 2} cy={size / 2} r={radius}
-                        fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="6"
+                        fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6"
                     />
                     <motion.circle
                         cx={size / 2} cy={size / 2} r={radius}
@@ -59,14 +60,14 @@ const ScoreRing: React.FC<{
                         initial={{ strokeDashoffset: circumference }}
                         animate={{ strokeDashoffset: circumference - progress }}
                         transition={{ duration: 1.2, delay: delay / 1000, ease: 'easeOut' }}
-                        style={{ filter: `drop-shadow(0 0 8px ${ringColor}60)` }}
+                        style={{ filter: `drop-shadow(0 0 10px ${ringColor}60)` }}
                     />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xl font-black text-white font-mono">{animatedScore}</span>
+                    <span className="text-2xl font-black text-white font-mono">{animatedScore}</span>
                 </div>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.15em] text-white/30">{label}</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300 text-center max-w-[110px]">{label}</span>
         </div>
     );
 };
@@ -76,23 +77,24 @@ const HireVerdictCard: React.FC<{
     verdict: string;
     confidence: number;
     reasoning: string;
-}> = ({ verdict, confidence, reasoning }) => {
+    role?: string;
+}> = ({ verdict, confidence, reasoning, role }) => {
     const configs: Record<string, { label: string; color: string; bg: string; border: string; icon: string; glow: string }> = {
         STRONG_HIRE: {
             label: 'STRONG HIRE', color: 'text-emerald-300', bg: 'bg-emerald-500/10',
-            border: 'border-emerald-500/40', icon: '🏆', glow: 'shadow-[0_0_40px_rgba(16,185,129,0.2)]'
+            border: 'border-emerald-500/40', icon: '🏆', glow: 'shadow-[0_0_50px_rgba(16,185,129,0.25)]'
         },
         HIRE: {
             label: 'HIRE', color: 'text-green-400', bg: 'bg-green-500/10',
-            border: 'border-green-500/30', icon: '✅', glow: 'shadow-[0_0_30px_rgba(34,197,94,0.15)]'
+            border: 'border-green-500/30', icon: '✅', glow: 'shadow-[0_0_40px_rgba(34,197,94,0.2)]'
         },
         BORDERLINE: {
-            label: 'BORDERLINE', color: 'text-yellow-400', bg: 'bg-yellow-500/10',
-            border: 'border-yellow-500/30', icon: '⚖️', glow: 'shadow-[0_0_30px_rgba(234,179,8,0.15)]'
+            label: 'BORDERLINE', color: 'text-amber-400', bg: 'bg-amber-500/10',
+            border: 'border-amber-500/30', icon: '⚖️', glow: 'shadow-[0_0_40px_rgba(245,158,11,0.2)]'
         },
         NO_HIRE: {
             label: 'NO HIRE', color: 'text-red-400', bg: 'bg-red-500/10',
-            border: 'border-red-500/30', icon: '❌', glow: 'shadow-[0_0_30px_rgba(239,68,68,0.15)]'
+            border: 'border-red-500/30', icon: '❌', glow: 'shadow-[0_0_40px_rgba(239,68,68,0.2)]'
         }
     };
 
@@ -100,25 +102,19 @@ const HireVerdictCard: React.FC<{
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, type: 'spring', stiffness: 150 }}
-            className={`${cfg.bg} ${cfg.border} ${cfg.glow} border rounded-3xl p-8 text-center relative overflow-hidden`}
+            transition={{ delay: 0.2, type: 'spring', stiffness: 150 }}
+            className={`${cfg.bg} ${cfg.border} ${cfg.glow} border rounded-3xl p-8 sm:p-10 text-center relative overflow-hidden backdrop-blur-xl`}
         >
-            <div className="absolute inset-0 opacity-5">
-                {[...Array(15)].map((_, i) => (
-                    <div key={i} className="absolute text-white text-xl" style={{
-                        top: `${Math.random() * 100}%`, left: `${Math.random() * 100}%`, opacity: 0.3
-                    }}>{cfg.icon}</div>
-                ))}
-            </div>
             <div className="relative z-10">
-                <div className="text-5xl mb-4">{cfg.icon}</div>
-                <div className={`text-3xl font-black mb-2 tracking-widest ${cfg.color}`}>{cfg.label}</div>
-                <div className="text-white/40 text-xs uppercase tracking-widest mb-6">
-                    Confidence: <span className={`font-black ${cfg.color}`}>{confidence}%</span>
+                <div className="text-5xl mb-3">{cfg.icon}</div>
+                <div className="text-xs font-bold text-slate-300 uppercase tracking-widest mb-1">Hiring Committee Verdict • {role || 'Software Engineer'}</div>
+                <div className={`text-3xl sm:text-4xl font-black mb-3 tracking-wider ${cfg.color}`}>{cfg.label}</div>
+                <div className="text-slate-400 text-xs uppercase tracking-widest mb-6">
+                    Placement Confidence: <span className={`font-black ${cfg.color}`}>{confidence}%</span>
                 </div>
-                <div className="max-w-lg mx-auto text-sm text-white/60 leading-relaxed italic border-t border-white/10 pt-6">
+                <div className="max-w-xl mx-auto text-sm sm:text-base text-slate-200 leading-relaxed italic border-t border-white/10 pt-6">
                     "{reasoning}"
                 </div>
             </div>
@@ -126,92 +122,48 @@ const HireVerdictCard: React.FC<{
     );
 };
 
-// ── Approach Quality Badge ───────────────────────────────────
-const ApproachBadge: React.FC<{ quality: string }> = ({ quality }) => {
-    const badges: Record<string, { label: string; color: string; bg: string }> = {
-        OPTIMAL:      { label: 'Optimal Solution', color: 'text-emerald-400', bg: 'bg-emerald-500/15 border-emerald-500/30' },
-        SUBOPTIMAL:   { label: 'Suboptimal Solution', color: 'text-yellow-400', bg: 'bg-yellow-500/15 border-yellow-500/30' },
-        BRUTE_FORCE:  { label: 'Brute Force', color: 'text-red-400', bg: 'bg-red-500/15 border-red-500/30' }
-    };
-    const b = badges[quality] || badges['SUBOPTIMAL'];
-    return (
-        <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest border ${b.bg} ${b.color}`}>
-            <span className={`w-2 h-2 rounded-full ${quality === 'OPTIMAL' ? 'bg-emerald-400' : quality === 'BRUTE_FORCE' ? 'bg-red-400' : 'bg-yellow-400'} animate-pulse`} />
-            {b.label}
-        </span>
-    );
-};
-
-// ── Complexity Comparison Table ──────────────────────────────
-const ComplexityTable: React.FC<{ analysis: any }> = ({ analysis }) => {
-    if (!analysis) return null;
-    const rows = [
-        { label: 'Time', yours: analysis.time, optimal: analysis.optimalTime },
-        { label: 'Space', yours: analysis.space, optimal: analysis.optimalSpace }
-    ];
-    const isSame = (a: string, b: string) => a?.toLowerCase() === b?.toLowerCase();
-
-    return (
-        <div className="overflow-hidden rounded-2xl border border-white/10">
-            <table className="w-full">
-                <thead className="bg-white/[0.03]">
-                    <tr>
-                        {['Metric', 'Your Solution', 'Optimal'].map(h => (
-                            <th key={h} className="text-[10px] uppercase tracking-widest text-white/25 font-black p-4 text-left">{h}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows.map(row => (
-                        <tr key={row.label} className="border-t border-white/5">
-                            <td className="p-4 text-xs font-bold text-white/40 uppercase">{row.label}</td>
-                            <td className="p-4">
-                                <span className={`font-mono text-sm font-bold ${isSame(row.yours, row.optimal) ? 'text-emerald-400' : 'text-yellow-400'}`}>
-                                    {row.yours || 'N/A'}
-                                </span>
-                            </td>
-                            <td className="p-4">
-                                <span className="font-mono text-sm font-bold text-emerald-400">{row.optimal || 'N/A'}</span>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    );
-};
-
-// ── Main Result Page ─────────────────────────────────────────
-const MockInterviewResult = () => {
+const MockInterviewResult: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [showIdeal, setShowIdeal] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [showIdeal, setShowIdeal] = useState(false);
 
-    const result = location.state?.result;
+    // Retrieve state from router location or sessionStorage fallback
+    const result = location.state || (() => {
+        try {
+            const raw = sessionStorage.getItem('last_interview_result');
+            if (raw) return JSON.parse(raw);
+        } catch {}
+        return null;
+    })();
 
     if (!result) {
         return (
-            <div className="text-center mt-20 flex flex-col gap-4 items-center">
-                <div className="text-5xl opacity-20">📭</div>
-                <div className="text-red-400 font-bold">No interview result found.</div>
-                <button onClick={() => navigate('/dashboard/interview')} className="mt-4 bg-white/5 border border-white/10 px-6 py-2.5 rounded-xl text-white/70 hover:text-white transition-all text-sm">
-                    Back to Interviews
+            <div className="w-full max-w-2xl mx-auto text-center py-20">
+                <p className="text-slate-400 mb-6">No recent interview result found.</p>
+                <button
+                    onClick={() => navigate('/dashboard/interview')}
+                    className="px-6 py-3 rounded-2xl bg-white text-black font-extrabold text-sm"
+                >
+                    Start a New Interview
                 </button>
             </div>
         );
     }
 
-    const { score, feedback, type, question } = result;
-    
-    // Support both old and new API shape
-    const hireVerdict     = feedback?.hireVerdict     || 'BORDERLINE';
-    const hireConfidence  = feedback?.hireConfidence  || 70;
-    const hireReasoning   = feedback?.hireReasoning   || 'Performance was evaluated. See detailed breakdown below.';
-    const approachQuality = feedback?.approachQuality || 'SUBOPTIMAL';
-    const communication   = score?.communication       || 70;
-    const stepFeedback    = feedback?.stepByStepFeedback || [];
-    const resumeBullet    = feedback?.resumeBullet     || '';
+    const { score, feedback, role = 'Software Engineer', duration = 15 } = result;
+
+    const hireVerdict = feedback?.hireVerdict || (score?.overallScore >= 80 ? 'HIRE' : 'BORDERLINE');
+    const hireConfidence = feedback?.hireConfidence || 82;
+    const hireReasoning = feedback?.hireReasoning || 'Candidate demonstrated solid problem solving and core engineering knowledge.';
+    const categoryScores = score?.categoryScores || {
+        dsa: score?.correctness || 75,
+        coreCS: score?.optimization || 80,
+        projectDefense: score?.clarity || 80,
+        communication: score?.communication || 75,
+    };
+    const questionAudit = feedback?.questionAudit || [];
+    const resumeBullet = feedback?.resumeBullet || '';
 
     const handleCopyBullet = () => {
         if (resumeBullet) {
@@ -222,122 +174,80 @@ const MockInterviewResult = () => {
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto section-gap pb-16">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full max-w-5xl mx-auto space-y-8 pb-16">
 
             {/* Header */}
-            <div className="text-center space-y-3">
+            <div className="text-center space-y-2">
                 <motion.span
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="inline-block bg-[#D4AF37]/15 text-[#D4AF37] px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-[0.2em]"
+                    className="inline-block bg-white/[0.06] text-slate-300 border border-white/10 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider"
                 >
-                    {type} Interview Complete
+                    {duration}-Minute Placement Mock • {role}
                 </motion.span>
                 <motion.h2
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="text-4xl font-black text-white tracking-tighter"
+                    className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight"
                 >
-                    Performance Report
+                    Interview Evaluation & Placement Report
                 </motion.h2>
                 <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="text-white/30 text-sm"
+                    className="text-slate-400 text-xs sm:text-sm"
                 >
-                    AI-powered evaluation by your senior interviewer
+                    Comprehensive AI multi-domain breakdown, strengths, weaknesses, and model answers.
                 </motion.p>
             </div>
 
-            {/* Hire Verdict */}
-            <HireVerdictCard verdict={hireVerdict} confidence={hireConfidence} reasoning={hireReasoning} />
+            {/* Hiring Verdict Card */}
+            <HireVerdictCard verdict={hireVerdict} confidence={hireConfidence} reasoning={hireReasoning} role={role} />
 
-            {/* Score Rings */}
+            {/* Multi-Domain Score Breakdown */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="card-dark p-8 border border-white/5"
+                transition={{ delay: 0.3 }}
+                className="p-8 rounded-3xl bg-[#090b14] border border-white/[0.08] shadow-[0_0_50px_rgba(0,0,0,0.6)]"
             >
-                <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/30">Score Breakdown</h3>
-                    <ApproachBadge quality={approachQuality} />
+                <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/[0.06]">
+                    <div className="flex items-center gap-2.5">
+                        <BarChart3 className="w-5 h-5 text-indigo-400" />
+                        <h3 className="text-sm font-extrabold uppercase tracking-wider text-white">
+                            Multi-Pillar Performance Scores
+                        </h3>
+                    </div>
+                    <span className="text-xs text-slate-400 font-mono">Weighted Average: <strong className="text-white">{score?.overallScore || 80}/100</strong></span>
                 </div>
-                <div className="flex flex-wrap justify-around gap-8">
-                    {[
-                        { score: score?.overallScore || 0, label: 'Overall', delay: 0 },
-                        { score: score?.correctness || 0, label: 'Correctness', delay: 150 },
-                        { score: score?.optimization || 0, label: 'Optimization', delay: 300 },
-                        { score: score?.clarity || 0, label: 'Code Clarity', delay: 450 },
-                        { score: communication, label: 'Communication', delay: 600 },
-                    ].map(s => (
-                        <ScoreRing key={s.label} score={s.score} label={s.label} color="#D4AF37" delay={s.delay} />
-                    ))}
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 justify-items-center">
+                    <ScoreRing score={categoryScores.dsa || 75} label="Live DSA & Coding" delay={0} />
+                    <ScoreRing score={categoryScores.coreCS || 80} label="Core CS (OOP/OS/SQL/CN/Git)" delay={150} />
+                    <ScoreRing score={categoryScores.projectDefense || 80} label="Project & Resume Defense" delay={300} />
+                    <ScoreRing score={categoryScores.communication || 75} label="Communication & Clarity" delay={450} />
                 </div>
             </motion.div>
 
-            {/* Complexity Comparison */}
-            {feedback?.complexityAnalysis && (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="card-dark p-8 border border-white/5"
-                >
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/30 mb-6 flex items-center gap-3">
-                        <span className="w-8 h-[1px] bg-white/10" /> Complexity Analysis
-                    </h3>
-                    <ComplexityTable analysis={feedback.complexityAnalysis} />
-                </motion.div>
-            )}
-
-            {/* Step-by-Step Feedback */}
-            {stepFeedback.length > 0 && (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.55 }}
-                    className="card-dark p-8 border border-blue-500/10"
-                >
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-blue-400/60 mb-6 flex items-center gap-3">
-                        <span className="text-lg">🔬</span> Step-by-Step Analysis
-                    </h3>
-                    <div className="space-y-4">
-                        {stepFeedback.map((step: string, i: number) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.6 + i * 0.1 }}
-                                className="flex gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/5"
-                            >
-                                <div className="w-7 h-7 rounded-lg bg-blue-500/20 flex items-center justify-center text-xs font-black text-blue-400 flex-shrink-0">
-                                    {i + 1}
-                                </div>
-                                <p className="text-sm text-white/60 leading-relaxed">{step}</p>
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
-            )}
-
-            {/* Strengths & Weaknesses */}
+            {/* Strengths & Areas to Strengthen */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="card-dark p-8 border-l-4 border-emerald-500/50"
+                    transition={{ delay: 0.4 }}
+                    className="p-6 sm:p-8 rounded-3xl bg-[#090b14] border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.05)]"
                 >
-                    <h3 className="text-sm font-black uppercase tracking-widest text-emerald-400/80 mb-6 flex items-center gap-2">
-                        <span>💪</span> Strengths
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-400 mb-4 flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>Key Strengths</span>
                     </h3>
                     <ul className="space-y-3">
-                        {(feedback?.strengths || []).map((str: string, i: number) => (
-                            <li key={i} className="flex gap-3 text-sm text-white/60">
-                                <span className="text-emerald-400 mt-0.5 flex-shrink-0">▸</span> {str}
+                        {(feedback?.strengths || ['Clear architectural description', 'Good problem decomposition']).map((str: string, i: number) => (
+                            <li key={i} className="flex gap-2.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                <span className="text-emerald-400 font-bold">✓</span>
+                                <span>{str}</span>
                             </li>
                         ))}
                     </ul>
@@ -346,16 +256,18 @@ const MockInterviewResult = () => {
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.7 }}
-                    className="card-dark p-8 border-l-4 border-red-500/50"
+                    transition={{ delay: 0.45 }}
+                    className="p-6 sm:p-8 rounded-3xl bg-[#090b14] border border-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.05)]"
                 >
-                    <h3 className="text-sm font-black uppercase tracking-widest text-red-400/80 mb-6 flex items-center gap-2">
-                        <span>🚨</span> Areas to Strengthen
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-red-400 mb-4 flex items-center gap-2">
+                        <XCircle className="w-4 h-4" />
+                        <span>Areas to Strengthen</span>
                     </h3>
                     <ul className="space-y-3">
-                        {(feedback?.weaknesses || []).map((w: string, i: number) => (
-                            <li key={i} className="flex gap-3 text-sm text-white/60">
-                                <span className="text-red-400 mt-0.5 flex-shrink-0">▸</span> {w}
+                        {(feedback?.weaknesses || ['Handle edge cases under scale', 'Deepen SQL indexing explanation']).map((w: string, i: number) => (
+                            <li key={i} className="flex gap-2.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                <span className="text-red-400 font-bold">✕</span>
+                                <span>{w}</span>
                             </li>
                         ))}
                     </ul>
@@ -367,17 +279,61 @@ const MockInterviewResult = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.75 }}
-                    className="card-dark p-8 border border-indigo-500/20"
+                    transition={{ delay: 0.5 }}
+                    className="p-6 sm:p-8 rounded-3xl bg-[#090b14] border border-indigo-500/20"
                 >
-                    <h3 className="text-sm font-black uppercase tracking-widest text-indigo-400/80 mb-6 flex items-center gap-2">
-                        <span>🚀</span> Priority Action Items
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-indigo-400 mb-4 flex items-center gap-2">
+                        <Sparkles className="w-4 h-4" />
+                        <span>Priority Actionable Improvements</span>
                     </h3>
                     <div className="space-y-3">
                         {feedback.improvements.map((imp: string, i: number) => (
-                            <div key={i} className="flex gap-4 items-start p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/15">
-                                <div className="w-6 h-6 rounded-md bg-indigo-500/20 flex items-center justify-center text-xs font-black text-indigo-400 flex-shrink-0">{i + 1}</div>
-                                <p className="text-sm text-white/60 leading-relaxed">{imp}</p>
+                            <div key={i} className="flex gap-3 items-start p-3.5 rounded-2xl bg-indigo-500/5 border border-indigo-500/15 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                <span className="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-300 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                                    {i + 1}
+                                </span>
+                                <span>{imp}</span>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
+            )}
+
+            {/* Question-by-Question Audit */}
+            {questionAudit.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.55 }}
+                    className="p-6 sm:p-8 rounded-3xl bg-[#090b14] border border-white/[0.08]"
+                >
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-6 flex items-center gap-2">
+                        <HelpCircle className="w-4 h-4 text-sky-400" />
+                        <span>Question-by-Question Detailed Review</span>
+                    </h3>
+                    <div className="space-y-4">
+                        {questionAudit.map((q: any, idx: number) => (
+                            <div key={idx} className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-extrabold text-white">Q{idx + 1}: {q.question}</span>
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-400 font-mono">
+                                        {q.category}
+                                    </span>
+                                </div>
+                                <div className="text-xs text-slate-300 bg-black/40 p-3 rounded-xl border border-white/5">
+                                    <strong className="text-slate-400">Your Answer: </strong>
+                                    {q.candidateAnswer}
+                                </div>
+                                <div className="text-xs text-indigo-300 leading-relaxed">
+                                    <strong className="text-indigo-400">Feedback: </strong>
+                                    {q.evaluation}
+                                </div>
+                                {q.idealAnswer && (
+                                    <div className="text-xs text-emerald-300/90 leading-relaxed pt-2 border-t border-white/5">
+                                        <strong className="text-emerald-400">Ideal Answer: </strong>
+                                        {q.idealAnswer}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -389,93 +345,47 @@ const MockInterviewResult = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8 }}
-                    className="card-dark p-8 border border-[#D4AF37]/20 bg-[#D4AF37]/[0.02]"
+                    transition={{ delay: 0.6 }}
+                    className="p-6 sm:p-8 rounded-3xl bg-[#090b14] border border-white/[0.08]"
                 >
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-[#D4AF37]/80 flex items-center gap-2">
-                            <span>📄</span> Resume Bullet Point
+                    <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                            <span>📄</span>
+                            <span>Resume-Ready Bullet Point</span>
                         </h3>
                         <button
                             onClick={handleCopyBullet}
-                            className="text-xs text-[#D4AF37]/60 hover:text-[#D4AF37] font-bold transition-colors border border-[#D4AF37]/20 hover:border-[#D4AF37]/50 px-3 py-1.5 rounded-lg"
+                            className="text-xs text-slate-300 hover:text-white font-bold transition-colors border border-white/10 hover:border-white/30 px-3 py-1.5 rounded-xl flex items-center gap-1.5 cursor-pointer"
                         >
-                            {copied ? '✓ Copied!' : 'Copy'}
+                            <Copy className="w-3.5 h-3.5" />
+                            <span>{copied ? 'Copied!' : 'Copy'}</span>
                         </button>
                     </div>
-                    <div className="p-4 rounded-xl bg-black/40 border border-[#D4AF37]/10">
-                        <p className="text-white/70 text-sm leading-relaxed font-medium">• {resumeBullet}</p>
+                    <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-xs sm:text-sm text-slate-200 font-mono">
+                        • {resumeBullet}
                     </div>
-                    <p className="text-white/20 text-xs mt-3">Add this to your resume under Projects or Technical Skills.</p>
                 </motion.div>
             )}
 
-            {/* Ideal Solution Reveal */}
+            {/* Bottom Actions */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.85 }}
-                className="card-dark border border-white/5 overflow-hidden"
-            >
-                <button
-                    onClick={() => setShowIdeal(s => !s)}
-                    className="w-full flex items-center justify-between p-8 hover:bg-white/[0.02] transition-colors"
-                >
-                    <div className="flex items-center gap-3">
-                        <span className="text-lg">✨</span>
-                        <div className="text-left">
-                            <div className="text-sm font-black text-white uppercase tracking-widest">Ideal Solution</div>
-                            <div className="text-xs text-white/30 mt-0.5">See the production-quality answer</div>
-                        </div>
-                    </div>
-                    <div className={`transition-transform duration-300 text-white/30 ${showIdeal ? 'rotate-180' : ''}`}>▼</div>
-                </button>
-
-                <AnimatePresence>
-                    {showIdeal && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            <div className="border-t border-white/5 p-6">
-                                <SyntaxHighlighter
-                                    language="javascript"
-                                    style={oneDark}
-                                    customStyle={{
-                                        borderRadius: '12px',
-                                        fontSize: '0.8rem',
-                                        background: '#0d0d0d',
-                                        border: '1px solid rgba(255,255,255,0.05)'
-                                    }}
-                                >
-                                    {feedback?.idealAnswer || '// No ideal solution provided'}
-                                </SyntaxHighlighter>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-                className="flex flex-col sm:flex-row gap-4 justify-center"
+                transition={{ delay: 0.65 }}
+                className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
             >
                 <button
                     onClick={() => navigate('/dashboard/interview')}
-                    className="bg-[#D4AF37] text-black font-black px-10 py-4 rounded-xl hover:bg-white transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)] text-sm uppercase tracking-widest"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-white text-black font-extrabold text-xs uppercase tracking-wider hover:bg-slate-200 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 active:scale-95"
                 >
-                    Take Another Interview
+                    <RotateCcw className="w-4 h-4" />
+                    <span>Take Another Mock Interview</span>
                 </button>
                 <button
                     onClick={() => navigate('/dashboard/analytics')}
-                    className="border border-white/10 text-white/60 hover:text-white font-bold px-8 py-4 rounded-xl hover:bg-white/5 transition-all text-sm"
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-white/[0.04] border border-white/10 text-white font-bold text-xs uppercase tracking-wider hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2"
                 >
-                    View My Analytics
+                    <span>View Analytics & Streaks</span>
                 </button>
             </motion.div>
         </motion.div>

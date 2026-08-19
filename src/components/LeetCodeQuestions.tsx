@@ -109,21 +109,21 @@ const LeetCodeQuestions: React.FC<Props> = ({ activities, onAddActivity }) => {
     };
 
     return (
-        <div className="card-dark" style={{ padding: '24px', marginTop: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+        <div className="card-dark" style={{ padding: '28px', marginTop: '24px', background: '#07070a', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
                 <div>
-                    <h3 className="card-title" style={{ fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span>📚</span> LeetCode Problem Dataset
+                    <h3 className="card-title" style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700, color: 'var(--gold)' }}>
+                        LeetCode Problem Dataset
                     </h3>
-                    <p className="kpi-sub" style={{ marginTop: '2px' }}>Browse, redirect, and track your solves directly</p>
+                    <p className="page-subheading" style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '4px' }}>Browse, redirect, and track your solves directly</p>
                 </div>
-                <div className="kpi-sub bg-white/5 px-3 py-1 rounded-full text-xs font-semibold">
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', color: '#94a3b8', padding: '4px 12px', borderRadius: '999px', fontSize: '0.72rem', fontWeight: 600 }}>
                     {totalProblems} Problems Available
                 </div>
             </div>
 
             {/* Filters Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px', marginBottom: '24px' }}>
                 {/* Search */}
                 <div>
                     <input
@@ -132,15 +132,17 @@ const LeetCodeQuestions: React.FC<Props> = ({ activities, onAddActivity }) => {
                         value={search}
                         onChange={e => setSearch(e.target.value)}
                         style={{
-                            width: '100%',
-                            background: 'rgba(255,255,255,0.03)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            borderRadius: '10px',
-                            padding: '10px 14px',
-                            color: '#fff',
-                            fontSize: '0.85rem',
-                            outline: 'none',
+                          width: '100%',
+                          background: 'rgba(255,255,255,0.02)',
+                          border: '1px solid rgba(255,255,255,0.06)',
+                          borderRadius: '8px',
+                          padding: '10px 14px',
+                          color: '#fff',
+                          fontSize: '0.82rem',
+                          outline: 'none',
+                          transition: 'all 0.2s ease',
                         }}
+                        className="focus:border-[#6366f1]/40 focus:bg-white/[0.03]"
                     />
                 </div>
 
@@ -150,21 +152,23 @@ const LeetCodeQuestions: React.FC<Props> = ({ activities, onAddActivity }) => {
                         value={difficulty}
                         onChange={e => setDifficulty(e.target.value)}
                         style={{
-                            width: '100%',
-                            background: 'rgba(255,255,255,0.03)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            borderRadius: '10px',
-                            padding: '10px 14px',
-                            color: '#fff',
-                            fontSize: '0.85rem',
-                            outline: 'none',
-                            cursor: 'pointer'
+                          width: '100%',
+                          background: 'rgba(255,255,255,0.02)',
+                          border: '1px solid rgba(255,255,255,0.06)',
+                          borderRadius: '8px',
+                          padding: '10px 14px',
+                          color: '#fff',
+                          fontSize: '0.82rem',
+                          outline: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
                         }}
+                        className="focus:border-[#6366f1]/40 focus:bg-white/[0.03]"
                     >
-                        <option value="" style={{ background: '#0c0c0c' }}>All Difficulties</option>
-                        <option value="easy" style={{ background: '#0c0c0c' }}>Easy</option>
-                        <option value="medium" style={{ background: '#0c0c0c' }}>Medium</option>
-                        <option value="hard" style={{ background: '#0c0c0c' }}>Hard</option>
+                        <option value="" style={{ background: '#0a0a0f' }}>All Difficulties</option>
+                        <option value="easy" style={{ background: '#0a0a0f' }}>Easy</option>
+                        <option value="medium" style={{ background: '#0a0a0f' }}>Medium</option>
+                        <option value="hard" style={{ background: '#0a0a0f' }}>Hard</option>
                     </select>
                 </div>
 
@@ -174,47 +178,49 @@ const LeetCodeQuestions: React.FC<Props> = ({ activities, onAddActivity }) => {
                         value={topic}
                         onChange={e => setTopic(e.target.value)}
                         style={{
-                            width: '100%',
-                            background: 'rgba(255,255,255,0.03)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            borderRadius: '10px',
-                            padding: '10px 14px',
-                            color: '#fff',
-                            fontSize: '0.85rem',
-                            outline: 'none',
-                            cursor: 'pointer'
+                          width: '100%',
+                          background: 'rgba(255,255,255,0.02)',
+                          border: '1px solid rgba(255,255,255,0.06)',
+                          borderRadius: '8px',
+                          padding: '10px 14px',
+                          color: '#fff',
+                          fontSize: '0.82rem',
+                          outline: 'none',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
                         }}
+                        className="focus:border-[#6366f1]/40 focus:bg-white/[0.03]"
                     >
-                        <option value="" style={{ background: '#0c0c0c' }}>All Topics</option>
+                        <option value="" style={{ background: '#0a0a0f' }}>All Topics</option>
                         {TOPICS.map(t => (
-                            <option key={t} value={t} style={{ background: '#0c0c0c' }}>{t}</option>
+                            <option key={t} value={t} style={{ background: '#0a0a0f' }}>{t}</option>
                         ))}
                     </select>
                 </div>
             </div>
 
             {/* Questions Table/List */}
-            <div style={{ overflowX: 'auto', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+            <div style={{ overflowX: 'auto', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '10px', background: '#050508' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
                     <thead>
-                        <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                            <th style={{ padding: '12px 16px', color: '#888', fontWeight: 600 }}>ID</th>
-                            <th style={{ padding: '12px 16px', color: '#888', fontWeight: 600 }}>Title</th>
-                            <th style={{ padding: '12px 16px', color: '#888', fontWeight: 600 }}>Topic</th>
-                            <th style={{ padding: '12px 16px', color: '#888', fontWeight: 600 }}>Difficulty</th>
-                            <th style={{ padding: '12px 16px', color: '#888', fontWeight: 600, textAlign: 'center' }}>Status</th>
+                        <tr style={{ background: 'rgba(255,255,255,0.01)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                            <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>ID</th>
+                            <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Title</th>
+                            <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Topic</th>
+                            <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Difficulty</th>
+                            <th style={{ padding: '12px 16px', color: '#475569', fontWeight: 700, fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', textAlign: 'center' }}>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: '#555' }}>
-                                    <div className="animate-pulse">Loading LeetCode questions...</div>
+                                <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: '#475569' }}>
+                                    <div className="animate-pulse font-medium">Loading LeetCode questions...</div>
                                 </td>
                             </tr>
                         ) : problems.length === 0 ? (
                             <tr>
-                                <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: '#555' }}>
+                                <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: '#475569' }}>
                                     No problems matched the search criteria.
                                 </td>
                             </tr>
@@ -224,38 +230,38 @@ const LeetCodeQuestions: React.FC<Props> = ({ activities, onAddActivity }) => {
                                 return (
                                     <tr
                                         key={problem.leetcodeId}
-                                        style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.2s' }}
-                                        className="hover:bg-white/[0.01]"
+                                        style={{ borderBottom: '1px solid rgba(255,255,255,0.02)', transition: 'background 0.2s' }}
+                                        className="hover:bg-white/[0.015]"
                                     >
-                                        <td style={{ padding: '14px 16px', color: '#555', fontWeight: 500 }}>{problem.leetcodeId}</td>
+                                        <td style={{ padding: '14px 16px', color: '#334155', fontWeight: 500 }}>{problem.leetcodeId}</td>
                                         <td style={{ padding: '14px 16px' }}>
                                             <a
                                                 href={problem.url || `https://leetcode.com/problems/${problem.slug}/`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 style={{
-                                                    color: '#EAEAEA',
+                                                    color: '#f1f5f9',
                                                     fontWeight: 600,
                                                     textDecoration: 'none',
-                                                    display: 'flex',
+                                                    display: 'inline-flex',
                                                     alignItems: 'center',
                                                     gap: '6px'
                                                 }}
-                                                className="hover:text-gold transition-colors"
+                                                className="hover:text-[#818cf8] transition-colors"
                                             >
                                                 {problem.title}
-                                                <span style={{ fontSize: '0.75rem', opacity: 0.4 }}>↗</span>
+                                                <span style={{ fontSize: '0.72rem', opacity: 0.35 }}>↗</span>
                                             </a>
                                         </td>
-                                        <td style={{ padding: '14px 16px', color: '#888' }}>{problem.topic}</td>
+                                        <td style={{ padding: '14px 16px', color: '#94a3b8' }}>{problem.topic}</td>
                                         <td style={{ padding: '14px 16px' }}>
                                             <span style={{
-                                                fontSize: '0.72rem',
-                                                padding: '2px 8px',
+                                                fontSize: '0.68rem',
+                                                padding: '3px 10px',
                                                 borderRadius: '999px',
                                                 fontWeight: 700,
-                                                background: problem.difficulty === 'easy' ? 'rgba(34,197,94,0.1)' : problem.difficulty === 'medium' ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)',
-                                                color: problem.difficulty === 'easy' ? '#22c55e' : problem.difficulty === 'medium' ? '#f59e0b' : '#ef4444',
+                                                background: problem.difficulty === 'easy' ? 'rgba(34,197,94,0.06)' : problem.difficulty === 'medium' ? 'rgba(245,158,11,0.06)' : 'rgba(239,68,68,0.06)',
+                                                color: problem.difficulty === 'easy' ? '#4ade80' : problem.difficulty === 'medium' ? '#fbbf24' : '#f87171',
                                                 textTransform: 'capitalize'
                                             }}>
                                                 {problem.difficulty}
@@ -263,24 +269,24 @@ const LeetCodeQuestions: React.FC<Props> = ({ activities, onAddActivity }) => {
                                         </td>
                                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                                             {isSolved ? (
-                                                <span style={{ color: '#22c55e', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                                                    ✓ <span style={{ fontSize: '0.75rem', textTransform: 'uppercase' }}>Solved</span>
+                                                <span style={{ color: '#4ade80', fontWeight: 700, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                                                    ✓ <span style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Solved</span>
                                                 </span>
                                             ) : (
                                                 <button
                                                     onClick={() => setLoggingProblem(problem)}
                                                     style={{
-                                                        background: 'rgba(212,175,55,0.08)',
-                                                        border: '1px solid rgba(212,175,55,0.2)',
-                                                        color: '#D4AF37',
-                                                        padding: '4px 12px',
+                                                        background: 'rgba(255,255,255,0.02)',
+                                                        border: '1px solid rgba(255,255,255,0.08)',
+                                                        color: '#e2e8f0',
+                                                        padding: '6px 14px',
                                                         borderRadius: '8px',
                                                         fontSize: '0.75rem',
-                                                        fontWeight: 700,
+                                                        fontWeight: 600,
                                                         cursor: 'pointer',
-                                                        transition: 'all 0.2s'
+                                                        transition: 'all 0.2s ease'
                                                     }}
-                                                    className="hover:bg-gold hover:text-black hover:scale-105 active:scale-95"
+                                                    className="hover:bg-white hover:text-black hover:border-white hover:shadow-[0_0_12px_rgba(255,255,255,0.1)] active:scale-[0.98]"
                                                 >
                                                     Mark Solved
                                                 </button>
@@ -342,34 +348,36 @@ const LeetCodeQuestions: React.FC<Props> = ({ activities, onAddActivity }) => {
                         position: 'fixed',
                         top: 0, left: 0, right: 0, bottom: 0,
                         background: 'rgba(0,0,0,0.85)',
-                        backdropFilter: 'blur(8px)',
+                        backdropFilter: 'blur(12px)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         zIndex: 1000,
                         padding: '16px'
                     }}>
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.96, y: 15 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            exit={{ opacity: 0, scale: 0.96, y: 15 }}
                             className="card-dark"
                             style={{
                                 width: '100%',
                                 maxWidth: '440px',
-                                padding: '24px',
-                                border: '1px solid rgba(212,175,55,0.25)',
-                                boxShadow: '0 10px 40px rgba(0,0,0,0.6)'
+                                padding: '32px',
+                                background: '#0d0d12',
+                                border: '1px solid rgba(255,255,255,0.08)',
+                                borderRadius: '20px',
+                                boxShadow: '0 24px 64px rgba(0,0,0,0.8)'
                             }}
                         >
-                            <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#EAEAEA', marginBottom: '4px' }}>
+                            <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f1f5f9', marginBottom: '4px' }}>
                                 Log solved problem
                             </h4>
-                            <p style={{ fontSize: '0.8rem', color: '#D4AF37', fontWeight: 600, marginBottom: '20px' }}>
+                            <p style={{ fontSize: '0.85rem', color: '#818cf8', fontWeight: 600, marginBottom: '20px' }}>
                                 {loggingProblem.title}
                             </p>
 
                             <form onSubmit={handleLogSolveSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#888', textTransform: 'uppercase', marginBottom: '6px' }}>
+                                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.04em' }}>
                                         Time Spent (minutes)
                                     </label>
                                     <input
@@ -381,35 +389,41 @@ const LeetCodeQuestions: React.FC<Props> = ({ activities, onAddActivity }) => {
                                         onChange={e => setDuration(parseInt(e.target.value, 10) || 0)}
                                         style={{
                                             width: '100%',
-                                            background: 'rgba(255,255,255,0.03)',
-                                            border: '1px solid rgba(255,255,255,0.08)',
+                                            background: 'rgba(255,255,255,0.02)',
+                                            border: '1px solid rgba(255,255,255,0.06)',
                                             borderRadius: '8px',
-                                            padding: '8px 12px',
+                                            padding: '10px 14px',
                                             color: '#fff',
-                                            fontSize: '0.85rem'
+                                            fontSize: '0.82rem',
+                                            outline: 'none',
+                                            transition: 'all 0.2s ease',
                                         }}
+                                        className="focus:border-[#6366f1]/40 focus:bg-white/[0.03]"
                                     />
                                 </div>
 
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#888', textTransform: 'uppercase', marginBottom: '6px' }}>
+                                    <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.04em' }}>
                                         Solution Notes (Optional)
                                     </label>
                                     <textarea
                                         rows={3}
-                                        placeholder="e.g. Spent a lot of time optimization. Space complexity is O(1)..."
+                                        placeholder="e.g. Optimized the space complexity to O(1) by using two pointers..."
                                         value={notes}
                                         onChange={e => setNotes(e.target.value)}
                                         style={{
                                             width: '100%',
-                                            background: 'rgba(255,255,255,0.03)',
-                                            border: '1px solid rgba(255,255,255,0.08)',
+                                            background: 'rgba(255,255,255,0.02)',
+                                            border: '1px solid rgba(255,255,255,0.06)',
                                             borderRadius: '8px',
-                                            padding: '8px 12px',
+                                            padding: '10px 14px',
                                             color: '#fff',
-                                            fontSize: '0.85rem',
-                                            resize: 'none'
+                                            fontSize: '0.82rem',
+                                            resize: 'none',
+                                            outline: 'none',
+                                            transition: 'all 0.2s ease',
                                         }}
+                                        className="focus:border-[#6366f1]/40 focus:bg-white/[0.03]"
                                     />
                                 </div>
 
@@ -419,13 +433,14 @@ const LeetCodeQuestions: React.FC<Props> = ({ activities, onAddActivity }) => {
                                         onClick={() => setLoggingProblem(null)}
                                         style={{
                                             background: 'transparent',
-                                            border: '1px solid rgba(255,255,255,0.1)',
-                                            color: '#888',
-                                            padding: '8px 16px',
+                                            border: '1px solid rgba(255,255,255,0.08)',
+                                            color: '#94a3b8',
+                                            padding: '8px 18px',
                                             borderRadius: '8px',
                                             fontSize: '0.8rem',
                                             fontWeight: 600,
-                                            cursor: 'pointer'
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s'
                                         }}
                                         className="hover:text-white hover:border-white/20"
                                     >
@@ -435,16 +450,17 @@ const LeetCodeQuestions: React.FC<Props> = ({ activities, onAddActivity }) => {
                                         type="submit"
                                         disabled={submitting}
                                         style={{
-                                            background: 'linear-gradient(135deg, #D4AF37, #B8960C)',
+                                            background: '#ffffff',
                                             border: 'none',
-                                            color: '#0B0B0B',
-                                            padding: '8px 20px',
+                                            color: '#040406',
+                                            padding: '8px 22px',
                                             borderRadius: '8px',
                                             fontSize: '0.8rem',
                                             fontWeight: 700,
-                                            cursor: submitting ? 'not-allowed' : 'pointer'
+                                            cursor: submitting ? 'not-allowed' : 'pointer',
+                                            transition: 'all 0.2s'
                                         }}
-                                        className="hover:brightness-110"
+                                        className="hover:bg-[#f1f5f9] hover:shadow-[0_0_12px_rgba(255,255,255,0.1)] active:scale-95"
                                     >
                                         {submitting ? 'Logging...' : 'Log Solve'}
                                     </button>

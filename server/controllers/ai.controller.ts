@@ -41,13 +41,33 @@ export class AIController {
                 }
             }
 
-            const { message, history = [], userStats } = req.body;
+            const { message, history = [], userStats = {} } = req.body;
 
             if (!message) {
                 return res.status(400).json({ error: 'Message is required' });
             }
 
-            const reply = await AIService.generateResponse(message, history, userStats);
+            // Enrich userStats with connected accounts if user is authenticated
+            let enrichedStats = { ...userStats };
+            if (authUser?.id) {
+                try {
+                    const accounts = await storage.getConnectedAccounts(authUser.id);
+                    if (accounts && accounts.length > 0) {
+                        enrichedStats.connectedAccounts = accounts.map(a => ({
+                            platform: a.platform,
+                            username: a.username,
+                            rating: a.rating,
+                            rank: a.rank,
+                            solvedCount: a.solvedCount,
+                            contestCount: a.contestCount,
+                        }));
+                    }
+                } catch (accErr) {
+                    console.warn('[AIController] Could not fetch connected accounts for AI context:', accErr);
+                }
+            }
+
+            const reply = await AIService.generateResponse(message, history, enrichedStats);
             res.json({ reply });
 
         } catch (error: any) {

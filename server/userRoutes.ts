@@ -39,13 +39,16 @@ export async function authenticate(req: any, res: any, next: any) {
 // ── GET /api/user/profile ─────────────────────────────────────────────────────
 router.get('/profile', authenticate, (req: any, res: any) => {
     const { password, ...safeUser } = req.user;
-    res.json(safeUser);
+    res.json({
+        ...safeUser,
+        avatar: (safeUser as any).avatar || safeUser.profileImage || null,
+    });
 });
 
 // ── PUT /api/user/profile ─────────────────────────────────────────────────────
 router.put('/profile', authenticate, async (req: any, res: any) => {
     try {
-        const { name, email, profileImage, learningGoal } = req.body;
+        const { name, email, profileImage, avatar, learningGoal } = req.body;
 
         if (email && !email.includes('@')) {
             return res.status(400).json({ error: 'Invalid email format' });
@@ -54,14 +57,18 @@ router.put('/profile', authenticate, async (req: any, res: any) => {
         const updateData: any = {};
         if (name !== undefined) updateData.name = name;
         if (email !== undefined) updateData.email = email;
-        if (profileImage !== undefined) updateData.profileImage = profileImage;
+        if (avatar !== undefined) updateData.profileImage = avatar;
+        else if (profileImage !== undefined) updateData.profileImage = profileImage;
         if (learningGoal !== undefined) updateData.learningGoal = learningGoal;
 
         const updatedUser = await storage.updateUser(req.user.id, updateData);
         if (!updatedUser) return res.status(500).json({ error: 'Failed to update user' });
 
         const { password, ...safeUser } = updatedUser;
-        res.json(safeUser);
+        res.json({
+            ...safeUser,
+            avatar: (safeUser as any).avatar || safeUser.profileImage || null,
+        });
     } catch (err: any) {
         res.status(500).json({ error: err.message });
     }

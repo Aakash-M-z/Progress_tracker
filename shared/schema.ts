@@ -124,3 +124,42 @@ export interface ProblemReview {
 }
 
 export type InsertProblemReview = Omit<ProblemReview, 'id' | 'createdAt' | 'lastReviewed'>;
+
+export interface ConnectedAccount {
+  id: string;
+  userId: string;
+  platform: string;
+  username: string;
+  profileUrl?: string;
+  rating?: number | null;
+  rank?: string | number | null;
+  solvedCount: number;
+  contestCount?: number | null;
+  lastSyncedAt: Date;
+  syncStatus: 'success' | 'failed' | 'syncing';
+  metadata?: Record<string, any>;
+}
+
+export type InsertConnectedAccount = Omit<ConnectedAccount, 'id' | 'lastSyncedAt'>;
+
+export interface Contest {
+  id: string;
+  platform: string;
+  contestId: string;
+  title: string;
+  startTime: Date;
+  endTime: Date;
+  url: string;
+  status: 'upcoming' | 'active' | 'ended';
+}
+
+export interface ContestReminder {
+  id: string;
+  userId: string;
+  contestId: string;
+  reminderTime: Date;
+  reminderType: string;
+  sent: boolean;
+  createdAt: Date;
+}
+
