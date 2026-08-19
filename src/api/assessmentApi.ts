@@ -720,28 +720,37 @@ export const assessmentApi = {
     },
 
     async getPublicAssessmentLanding(shareToken: string) {
+        let rawData: any = null;
         try {
-            const res = await fetch(`${API_BASE}/api/assessments/public/${shareToken}`);
-            if (res.ok) return res.json();
+            let res = await fetch(`${API_BASE}/api/assessments/preview/${shareToken}`);
+            if (!res.ok) {
+                res = await fetch(`${API_BASE}/api/assessments/public/${shareToken}`);
+            }
+            if (res.ok) {
+                rawData = await res.json();
+            }
         } catch (err) {
             console.warn('[assessmentApi] getPublicAssessmentLanding fallback for:', shareToken);
         }
 
         const localList = getStoredLocalAssessments();
         const found = localList.find(a => a.shareToken === shareToken || a.id === shareToken) || localList[0];
+        const src = rawData?.assessment || rawData || found;
+
         return {
-            assessment: {
-                id: found.id,
-                title: found.title,
-                description: found.description,
-                instructions: found.instructions,
-                duration: found.duration,
-                passingScore: found.passingScore,
-                totalPoints: found.totalPoints,
-                questionCount: found.questions?.length || 4,
-                accessMode: found.accessMode,
-                settings: found.settings
-            }
+            id: src.id || src._id || found?.id,
+            title: src.title || found?.title || 'Technical Assessment',
+            description: src.description || found?.description || '',
+            instructions: src.instructions || found?.instructions || '',
+            duration: src.duration || found?.duration || 60,
+            passingScore: src.passingScore || found?.passingScore || 60,
+            totalPoints: src.totalPoints || found?.totalPoints || 50,
+            questionCount: src.questionCount || src.questions?.length || found?.questionCount || 4,
+            accessMode: src.accessMode || found?.accessMode || 'public',
+            requireFullscreen: src.requireFullscreen ?? (src.settings?.requireFullscreen !== false),
+            availabilityStatus: src.availabilityStatus || 'available',
+            categories: src.categories && src.categories.length > 0 ? src.categories : ['DSA', 'Algorithmic Problem Solving'],
+            settings: src.settings || found?.settings || { requireFullscreen: true }
         };
     },
 

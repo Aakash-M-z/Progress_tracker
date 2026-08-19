@@ -133,7 +133,16 @@ const AssessmentLandingPage: React.FC = () => {
         );
     }
 
-    const isAvailable = preview?.availabilityStatus === 'available';
+    const asmt = preview?.assessment || preview || {};
+    const title = asmt.title || 'Campus Placement Technical Assessment';
+    const description = asmt.description;
+    const duration = asmt.duration || 60;
+    const questionCount = asmt.questionCount || asmt.questions?.length || 4;
+    const passingScore = asmt.passingScore || 60;
+    const accessMode = asmt.accessMode || 'public';
+    const categories = asmt.categories && asmt.categories.length > 0 ? asmt.categories : ['DSA', 'Algorithmic Problem Solving'];
+    const availabilityStatus = asmt.availabilityStatus || 'available';
+    const isAvailable = availabilityStatus === 'available' || !asmt.availabilityStatus;
 
     return (
         <div className="min-h-screen bg-[#07070a] text-slate-200 flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden">
@@ -163,25 +172,25 @@ const AssessmentLandingPage: React.FC = () => {
                     </div>
 
                     <span className="px-3 py-1 rounded-full text-[0.7rem] font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-                        {preview?.accessMode} Examination
+                        {accessMode} Examination
                     </span>
                 </div>
 
                 {/* Main Assessment Brief */}
                 <div className="space-y-3">
                     <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
-                        {preview?.title}
+                        {title}
                     </h1>
-                    {preview?.description && (
+                    {description && (
                         <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                            {preview?.description}
+                            {description}
                         </p>
                     )}
 
                     {/* Section Badges */}
-                    {preview?.categories && preview.categories.length > 0 && (
+                    {categories && categories.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 pt-2">
-                            {preview.categories.map((c: string) => (
+                            {categories.map((c: string) => (
                                 <span
                                     key={c}
                                     className="px-2.5 py-1 rounded-lg text-[0.65rem] font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-slate-300"
@@ -197,15 +206,15 @@ const AssessmentLandingPage: React.FC = () => {
                 <div className="grid grid-cols-3 gap-3 p-4 rounded-2xl bg-black/40 border border-white/5 text-center">
                     <div>
                         <span className="text-[0.65rem] uppercase font-bold text-slate-500 block mb-0.5">Duration</span>
-                        <strong className="text-base sm:text-lg text-white">{preview?.duration} Minutes</strong>
+                        <strong className="text-base sm:text-lg text-white">{duration} Minutes</strong>
                     </div>
                     <div>
                         <span className="text-[0.65rem] uppercase font-bold text-slate-500 block mb-0.5">Questions</span>
-                        <strong className="text-base sm:text-lg text-indigo-400">{preview?.questionCount} Total</strong>
+                        <strong className="text-base sm:text-lg text-indigo-400">{questionCount} Total</strong>
                     </div>
                     <div>
                         <span className="text-[0.65rem] uppercase font-bold text-slate-500 block mb-0.5">Passing Score</span>
-                        <strong className="text-base sm:text-lg text-emerald-400">{preview?.passingScore}%</strong>
+                        <strong className="text-base sm:text-lg text-emerald-400">{passingScore}%</strong>
                     </div>
                 </div>
 
@@ -219,7 +228,7 @@ const AssessmentLandingPage: React.FC = () => {
                             <span className="text-indigo-400 font-bold">•</span>
                             <span><strong>Authoritative Timer:</strong> The clock starts immediately upon entering and runs continuously on the server.</span>
                         </li>
-                        {preview?.requireFullscreen && (
+                        {asmt.requireFullscreen && (
                             <li className="flex items-start gap-2">
                                 <span className="text-indigo-400 font-bold">•</span>
                                 <span><strong>Fullscreen Enforcement:</strong> Exiting fullscreen or switching tabs will be recorded in your assessment audit log.</span>
@@ -233,7 +242,7 @@ const AssessmentLandingPage: React.FC = () => {
                 </div>
 
                 {/* Guest Candidate Form if public link */}
-                {preview?.accessMode === 'public' && !isAuthenticated && (
+                {accessMode === 'public' && !isAuthenticated && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-indigo-950/20 border border-indigo-500/20">
                         <div>
                             <label className="text-[0.65rem] uppercase font-bold text-slate-400 block mb-1">Your Full Name</label>
@@ -270,9 +279,9 @@ const AssessmentLandingPage: React.FC = () => {
                 <div>
                     {!isAvailable ? (
                         <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-center text-rose-300 text-xs font-bold">
-                            ⚠️ This assessment is currently {preview?.availabilityStatus}.
+                            ⚠️ This assessment is currently {availabilityStatus}.
                         </div>
-                    ) : (preview?.accessMode === 'authenticated' || preview?.accessMode === 'private') && !isAuthenticated ? (
+                    ) : (accessMode === 'authenticated' || accessMode === 'private') && !isAuthenticated ? (
                         <button
                             onClick={handleStart}
                             className="w-full py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-sm tracking-wide shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all"
