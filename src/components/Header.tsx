@@ -106,12 +106,14 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
   }, [logout, routerNavigate]);
 
   const menuItems = [
+    { label: 'My Assessments', icon: '📝', path: '/dashboard/assessments' },
     { label: 'Profile', icon: '◉', path: '/dashboard/profile' },
   ];
 
   const adminItems = user?.role === 'admin' ? [
     { label: 'Admin Panel', icon: '◈', path: '/dashboard/admin' },
-    { label: 'Manage Users', icon: '◎', path: '/dashboard/admin' },
+    { label: 'Assessments', icon: '📝', path: '/dashboard/admin/assessments' },
+    { label: 'Manage Users', icon: '◎', path: '/dashboard/admin/users' },
   ] : [];
 
   const displayName = user?.name && user.name !== 'Guest' ? user.name : (user?.username ?? 'User');
@@ -120,6 +122,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
 
   const navItems = [
     { label: 'Overview', path: '/dashboard' },
+    { label: 'Assessments', path: user?.role === 'admin' ? '/dashboard/admin/assessments' : '/dashboard/assessments' },
     { label: user?.role === 'admin' ? 'Interview Analytics' : 'Mock Interview', path: '/dashboard/interview' },
     { label: 'Resources', path: '/dashboard/resources' },
   ];
@@ -176,10 +179,10 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                   fontSize: '0.92rem', fontWeight: 800, color: '#F8FAFC',
                   letterSpacing: '0.04em', lineHeight: 1.2,
                 }}>
-                  Progress <span className="text-[#818cf8]">Tracker</span>
+                  Algo<span className="text-[#818cf8]">Ascent</span>
                 </h1>
                 <p style={{ fontSize: '0.56rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.18em' }}>
-                  Mastering Algorithms
+                  Technical Assessment Studio
                 </p>
               </div>
             </div>

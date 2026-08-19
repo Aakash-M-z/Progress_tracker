@@ -18,6 +18,10 @@ const MockInterviewPage = React.lazy(() => import('../features/interview/MockInt
 const MockInterviewSession = React.lazy(() => import('../features/interview/MockInterviewSession'));
 const MockInterviewResult = React.lazy(() => import('../features/interview/MockInterviewResult'));
 const LandingPage = React.lazy(() => import('../features/landing/LandingPage'));
+const AssessmentLandingPage = React.lazy(() => import('../features/assessment/AssessmentLandingPage'));
+const AssessmentTakingSession = React.lazy(() => import('../features/assessment/AssessmentTakingSession'));
+const AssessmentResultPage = React.lazy(() => import('../features/assessment/AssessmentResultPage'));
+const MyAssessmentsPage = React.lazy(() => import('../features/assessment/MyAssessmentsPage'));
 
 // Import actual components to render as children (since we want them rendered inside the lazy boundaries)
 import TaskManager from '../components/TaskManager';
@@ -98,12 +102,34 @@ const AppRoutes: React.FC<AppRoutesProps> = ({ overviewTabNode }) => {
           </Suspense>
         } />
 
+        {/* ASSESSMENTS — PUBLIC & CANDIDATE PORTAL */}
+        <Route path="/assessment/:token" element={
+          <Suspense fallback={<PageLoader />}>
+            <AssessmentLandingPage />
+          </Suspense>
+        } />
+        <Route path="/assessment/:token/take" element={
+          <Suspense fallback={<PageLoader />}>
+            <AssessmentTakingSession />
+          </Suspense>
+        } />
+        <Route path="/assessment/:token/result" element={
+          <Suspense fallback={<PageLoader />}>
+            <AssessmentResultPage />
+          </Suspense>
+        } />
+
         {/* DASHBOARD - MAIN */}
         <Route path="/dashboard" element={
           <Suspense fallback={<PageLoader />}>
             <OverviewPage>
               <PageTransition>{overviewTabNode}</PageTransition>
             </OverviewPage>
+          </Suspense>
+        } />
+        <Route path="/dashboard/assessments" element={
+          <Suspense fallback={<PageLoader />}>
+            <PageTransition><MyAssessmentsPage /></PageTransition>
           </Suspense>
         } />
         <Route path="/dashboard/tasks" element={

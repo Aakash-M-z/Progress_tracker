@@ -16,11 +16,11 @@ const Hero: React.FC = () => {
         </div>
 
         <h1 className="hero-title-animate bg-gradient-to-r from-white/60 via-indigo-200/70 to-white/60 bg-clip-text text-4xl font-black leading-tight text-transparent sm:text-5xl md:text-6xl cursor-pointer transition-all duration-300 hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.15)] hover:scale-102 active:scale-98 opacity-70 hover:opacity-85">
-          Progress Tracker
+          AlgoAscent
         </h1>
 
         <p className="max-w-2xl text-base text-indigo-100/70 sm:text-lg opacity-80">
-          A minimal, modern dashboard to visualize momentum, celebrate streaks, and keep shipping—built with a clean, developer-friendly UI.
+          An intelligent engineering and technical assessment platform to master algorithms, simulate real-world interviews, and build verified software engineering excellence.
         </p>
 
         <div className="flex items-center gap-3 rounded-full border border-white/8 bg-white/3 px-4 py-2 text-sm text-indigo-50/70 shadow-lg backdrop-blur-sm hero-loading-animate opacity-75" role="status" aria-live="polite">

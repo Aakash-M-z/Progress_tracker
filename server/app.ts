@@ -1220,6 +1220,11 @@ api.get('/test-email', async (req, res) => {
 // Advanced Enterprise Admin routes module
 api.use('/admin', requireAdmin, adminRoutes);
 
+// Assessment Management System routes
+import { assessmentRouter, adminAssessmentRouter } from './assessmentRoutes.js';
+api.use('/assessments', assessmentRouter);
+api.use('/admin/assessments', requireAdmin, adminAssessmentRouter);
+
 // Mock Interview routes
 api.use('/interview', interviewRoutes);
 
