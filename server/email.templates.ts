@@ -249,3 +249,55 @@ export function accountActivatedTemplate(username: string): string {
 
   return layout(content);
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ASSESSMENT ASSIGNED EMAIL
+// ─────────────────────────────────────────────────────────────────────────────
+export function assessmentAssignedTemplate(
+  candidateName: string,
+  assessmentTitle: string,
+  durationMinutes: number,
+  questionCount: number,
+  deadlineFormatted: string | null,
+  assessmentUrl: string
+): string {
+  const content = `
+    <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:${TEXT};">
+      New Assessment Assigned
+    </h1>
+    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.6;">
+      Hi <strong style="color:${TEXT};">${candidateName}</strong>, you have been invited to complete a technical assessment on
+      <strong style="color:${GOLD};">${APP_NAME}</strong>.
+    </p>
+
+    <!-- Assessment Details Box -->
+    <table width="100%" cellpadding="0" cellspacing="0"
+           style="background:#141624;border:1px solid rgba(212,175,55,0.25);
+                  border-radius:12px;padding:18px 20px;margin-bottom:24px;">
+      <tr><td>
+        <h3 style="margin:0 0 12px;font-size:17px;font-weight:800;color:${GOLD};">${assessmentTitle}</h3>
+        <p style="margin:4px 0;font-size:13px;color:${TEXT};">
+          ⏱️ <strong>Duration:</strong> ${durationMinutes} minutes
+        </p>
+        <p style="margin:4px 0;font-size:13px;color:${TEXT};">
+          📝 <strong>Questions:</strong> ${questionCount} total
+        </p>
+        ${deadlineFormatted ? `<p style="margin:4px 0;font-size:13px;color:#f59e0b;">
+          ⏳ <strong>Deadline:</strong> ${deadlineFormatted}
+        </p>` : ''}
+      </td></tr>
+    </table>
+
+    <p style="margin:0 0 16px;font-size:13px;color:${MUTED};line-height:1.6;">
+      Please ensure you have an uninterrupted environment before clicking start. Once started, your timer cannot be paused.
+    </p>
+
+    ${ctaButton(assessmentUrl, 'Start Assessment Now →')}
+
+    ${divider}
+    <p style="margin:0;font-size:12px;color:${MUTED};text-align:center;line-height:1.6;">
+      This assessment invitation was sent via ${APP_NAME}.
+    </p>`;
+
+  return layout(content);
+}

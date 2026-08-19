@@ -18,7 +18,8 @@ import {
     passwordResetTemplate, 
     emailVerificationTemplate, 
     accountDeactivatedTemplate, 
-    accountActivatedTemplate 
+    accountActivatedTemplate,
+    assessmentAssignedTemplate
 } from './email.templates.js';
 import { PasswordResetTokenModel } from './models.js';
 
@@ -171,6 +172,32 @@ export async function sendAccountActivatedEmail(email: string, username: string)
         subject: 'Your AlgoAscent account has been reactivated',
         html: accountActivatedTemplate(username),
         tag: 'account-activated',
+    });
+}
+
+export async function sendAssessmentAssignedEmail(
+    email: string,
+    username: string,
+    assessmentTitle: string,
+    durationMinutes: number,
+    questionCount: number,
+    deadlineFormatted: string | null,
+    shareToken: string
+): Promise<boolean> {
+    const frontendUrl = getFrontendUrl();
+    const assessmentUrl = `${frontendUrl}/assessment/${shareToken}`;
+    return send({
+        to: email,
+        subject: `New Assessment Assigned: ${assessmentTitle}`,
+        html: assessmentAssignedTemplate(
+            username,
+            assessmentTitle,
+            durationMinutes,
+            questionCount,
+            deadlineFormatted,
+            assessmentUrl
+        ),
+        tag: 'assessment-assigned',
     });
 }
 

@@ -13,13 +13,15 @@ import FeatureToggles from '../features/admin/components/FeatureToggles';
 import AuditLogTimeline from '../features/admin/components/AuditLogTimeline';
 import NotificationsSender from '../features/admin/components/NotificationsSender';
 import InterviewAnalyticsDashboard from '../features/admin/components/InterviewAnalyticsDashboard';
+import AdminAssessmentManager from '../features/admin/components/assessments/AdminAssessmentManager';
 
-type AdminTab = 'analytics' | 'users' | 'ai' | 'security' | 'system';
+type AdminTab = 'analytics' | 'assessments' | 'users' | 'ai' | 'security' | 'system';
 
-const VALID_TABS: AdminTab[] = ['analytics', 'users', 'ai', 'security', 'system'];
+const VALID_TABS: AdminTab[] = ['analytics', 'assessments', 'users', 'ai', 'security', 'system'];
 
 const tabs: { id: AdminTab; label: string; icon: string }[] = [
     { id: 'analytics', label: 'Analytics', icon: '📈' },
+    { id: 'assessments', label: 'Assessment Studio', icon: '◈' },
     { id: 'users', label: 'Users', icon: '👥' },
     { id: 'ai', label: 'AI Console', icon: '🤖' },
     { id: 'security', label: 'Security & Logs', icon: '🛡️' },
@@ -98,6 +100,8 @@ const AdminPanel: React.FC = () => {
                     transition={{ duration: 0.25, ease: 'easeInOut' }}
                 >
                     {activeTab === 'analytics' && <AdvancedAnalytics />}
+
+                    {activeTab === 'assessments' && <AdminAssessmentManager />}
 
                     {activeTab === 'users' && <UsersTable />}
 

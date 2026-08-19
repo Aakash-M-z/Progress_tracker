@@ -194,3 +194,190 @@ const contestReminderSchema = new Schema({
 contestReminderSchema.index({ userId: 1, contestId: 1, reminderType: 1 }, { unique: true });
 export const ContestReminderModel = mongoose.model('ContestReminder', contestReminderSchema);
 
+// ── Assessment Management System Models ───────────────────────────────────────
+
+const assessmentQuestionEmbeddedSchema = new Schema({
+    id: { type: String, required: true },
+    questionId: { type: String },
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    category: {
+        type: String,
+        enum: ['Coding', 'DSA', 'Aptitude', 'Logical Reasoning', 'Quantitative Ability', 'OOP', 'DBMS', 'SQL', 'OS', 'CN', 'Git', 'Technical'],
+        required: true,
+        default: 'Technical'
+    },
+    questionType: {
+        type: String,
+        enum: ['coding', 'mcq', 'multi_select', 'subjective'],
+        required: true,
+        default: 'mcq'
+    },
+    difficulty: {
+        type: String,
+        enum: ['Easy', 'Medium', 'Hard'],
+        default: 'Medium'
+    },
+    points: { type: Number, default: 10 },
+    order: { type: Number, default: 0 },
+    options: [{ id: String, text: String }],
+    correctAnswer: { type: Schema.Types.Mixed }, // String or Array or Text - Hidden from candidate until evaluation
+    explanation: { type: String, default: '' },
+    functionName: { type: String, default: 'solution' },
+    params: [{ type: String }],
+    starterCode: { type: Map, of: String, default: {} },
+    testCases: [{
+        input: { type: Schema.Types.Mixed },
+        expectedOutput: { type: Schema.Types.Mixed },
+        description: { type: String }
+    }],
+    hiddenTestCases: [{
+        input: { type: Schema.Types.Mixed },
+        expectedOutput: { type: Schema.Types.Mixed },
+        description: { type: String }
+    }],
+    timeLimit: { type: Number, default: 2 }, // seconds
+    memoryLimit: { type: Number, default: 256 }, // MB
+    tags: [{ type: String }]
+}, { _id: false });
+
+const assessmentSchema = new Schema({
+    title: { type: String, required: true, index: true },
+    description: { type: String, default: '' },
+    instructions: { type: String, default: '' },
+    createdBy: { type: String, required: true, index: true },
+    creatorName: { type: String, default: 'Admin' },
+    duration: { type: Number, required: true, default: 60 }, // minutes
+    startAt: { type: Date, default: null },
+    endAt: { type: Date, default: null },
+    passingScore: { type: Number, default: 60 }, // percentage
+    maxAttempts: { type: Number, default: 1 },
+    accessMode: {
+        type: String,
+        enum: ['public', 'authenticated', 'private'],
+        default: 'authenticated'
+    },
+    shareToken: { type: String, required: true, unique: true, index: true },
+    assignedUserIds: [{ type: String, index: true }],
+    assignedEmails: [{ type: String, index: true }],
+    settings: {
+        requireFullscreen: { type: Boolean, default: true },
+        trackTabSwitches: { type: Boolean, default: true },
+        randomizeQuestions: { type: Boolean, default: false },
+        randomizeOptions: { type: Boolean, default: false },
+        showResultsImmediately: { type: Boolean, default: true },
+        negativeMarking: { type: Boolean, default: false },
+        negativeMarkingFactor: { type: Number, default: 0.25 }
+    },
+    status: {
+        type: String,
+        enum: ['draft', 'published', 'closed', 'archived'],
+        default: 'published',
+        index: true
+    },
+    questions: [assessmentQuestionEmbeddedSchema],
+    totalPoints: { type: Number, default: 0 },
+    questionCount: { type: Number, default: 0 },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+assessmentSchema.index({ createdAt: -1 });
+export const AssessmentModel = mongoose.model('Assessment', assessmentSchema);
+
+const assessmentAttemptSchema = new Schema({
+    assessmentId: { type: String, required: true, index: true },
+    userId: { type: String, required: true, index: true },
+    userEmail: { type: String, default: '' },
+    userName: { type: String, default: 'Candidate' },
+    status: {
+        type: String,
+        enum: ['in_progress', 'completed', 'expired', 'locked'],
+        default: 'in_progress',
+        index: true
+    },
+    startedAt: { type: Date, default: Date.now },
+    expiresAt: { type: Date, required: true, index: true },
+    submittedAt: { type: Date, default: null },
+    questionOrder: [{ type: String }],
+    answers: { type: Map, of: Schema.Types.Mixed, default: {} }, // questionId -> { value, answeredAt, timeSpent }
+    codingSubmissions: { type: Map, of: Schema.Types.Mixed, default: {} }, // questionId -> { code, language, testResults, passedCount, runtimeMs, pointsEarned }
+    score: { type: Number, default: 0 },
+    maxScore: { type: Number, default: 0 },
+    percentage: { type: Number, default: 0 },
+    passed: { type: Boolean, default: false },
+    accuracy: { type: Number, default: 0 },
+    attemptedCount: { type: Number, default: 0 },
+    correctCount: { type: Number, default: 0 },
+    totalQuestions: { type: Number, default: 0 },
+    categoryScores: { type: Map, of: Schema.Types.Mixed, default: {} }, // category -> { earned, max, percentage }
+    timeTakenSeconds: { type: Number, default: 0 },
+    integrityEvents: [{
+        type: { type: String, required: true },
+        timestamp: { type: Date, default: Date.now },
+        details: { type: String, default: '' }
+    }],
+    integrityScore: { type: Number, default: 100 },
+    tabSwitchCount: { type: Number, default: 0 },
+    fullscreenExitCount: { type: Number, default: 0 },
+    aiEvaluation: {
+        summary: { type: String, default: '' },
+        strengths: [{ type: String }],
+        weaknesses: [{ type: String }],
+        recommendations: [{ type: String }]
+    },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+assessmentAttemptSchema.index({ assessmentId: 1, userId: 1 });
+assessmentAttemptSchema.index({ submittedAt: -1 });
+export const AssessmentAttemptModel = mongoose.model('AssessmentAttempt', assessmentAttemptSchema);
+
+const assessmentQuestionBankSchema = new Schema({
+    title: { type: String, required: true, index: true },
+    description: { type: String, required: true },
+    category: {
+        type: String,
+        enum: ['Coding', 'DSA', 'Aptitude', 'Logical Reasoning', 'Quantitative Ability', 'OOP', 'DBMS', 'SQL', 'OS', 'CN', 'Git', 'Technical', 'Frontend', 'Backend', 'Full Stack'],
+        required: true,
+        index: true
+    },
+    questionType: {
+        type: String,
+        enum: ['coding', 'mcq', 'multi_select', 'subjective'],
+        required: true,
+        index: true
+    },
+    difficulty: {
+        type: String,
+        enum: ['Easy', 'Medium', 'Hard'],
+        required: true,
+        index: true
+    },
+    points: { type: Number, default: 10 },
+    options: [{ id: String, text: String }],
+    correctAnswer: { type: Schema.Types.Mixed },
+    explanation: { type: String, default: '' },
+    functionName: { type: String, default: 'solution' },
+    params: [{ type: String }],
+    starterCode: { type: Map, of: String, default: {} },
+    testCases: [{
+        input: { type: Schema.Types.Mixed },
+        expectedOutput: { type: Schema.Types.Mixed },
+        description: { type: String }
+    }],
+    hiddenTestCases: [{
+        input: { type: Schema.Types.Mixed },
+        expectedOutput: { type: Schema.Types.Mixed },
+        description: { type: String }
+    }],
+    expectedComplexity: {
+        time: { type: String, default: '' },
+        space: { type: String, default: '' }
+    },
+    timeLimit: { type: Number, default: 2 },
+    memoryLimit: { type: Number, default: 256 },
+    tags: [{ type: String, index: true }],
+    createdAt: { type: Date, default: Date.now }
+});
+export const AssessmentQuestionBankModel = mongoose.model('AssessmentQuestionBank', assessmentQuestionBankSchema);
+
