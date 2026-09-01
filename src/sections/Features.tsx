@@ -1,174 +1,228 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { staggerContainer, fadeUp, fadeIn, scaleIn } from '@/animations/variants';
-
-const FEATURES = [
-  {
-    id: 'ai-practice',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <circle cx="10" cy="10" r="3" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.41 1.41M14.36 14.36l1.41 1.41M4.22 15.78l1.41-1.41M14.36 5.64l1.41-1.41" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-    label: 'AI Interview Practice',
-    title: 'Practice with intelligence.',
-    description: 'Conversational AI that adapts to your level, gives precise feedback, and simulates real interview environments from top tech companies.',
-  },
-  {
-    id: 'roadmap',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M10 2L3 7v11h14V7L10 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M7 18v-6h6v6" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-      </svg>
-    ),
-    label: 'Interactive Roadmaps',
-    title: 'Know exactly where you stand.',
-    description: 'Dynamic learning paths across DSA, system design, and full-stack. Every step is tracked, every gap is surfaced.',
-  },
-  {
-    id: 'challenges',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M4 4h12v8H4V4z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M7 16h6M10 12v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M7 7l1.5 1.5L11 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    label: 'Coding Challenges',
-    title: 'Problems that actually matter.',
-    description: 'Curated challenges mirroring real FAANG interviews. Detailed explanations, multiple approaches, and time complexity breakdowns.',
-  },
-  {
-    id: 'system-design',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <rect x="2" y="2" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
-        <rect x="12" y="2" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
-        <rect x="7" y="12" width="6" height="6" rx="1" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M5 8v2M15 8v2M10 12V10M5 10h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-    label: 'System Design',
-    title: 'Think at scale.',
-    description: 'Master distributed systems, scalability patterns, and architectural decisions that define senior engineering interviews.',
-  },
-  {
-    id: 'personalized',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M10 12a4 4 0 100-8 4 4 0 000 8z" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M4 18c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-    label: 'Personalized Learning',
-    title: 'Built around you.',
-    description: 'AI identifies your weak spots, builds a custom curriculum, and adjusts difficulty as you improve. No generic one-size-fits-all.',
-  },
-  {
-    id: 'analytics',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M3 14l4-4 3 3 4-5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M3 17h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-    label: 'Deep Analytics',
-    title: 'Measure what matters.',
-    description: 'Track solve times, pattern recognition speed, consistency, and interview readiness with precision metrics that don\'t lie.',
-  },
-];
+import { 
+  Code2, 
+  Terminal, 
+  ShieldCheck, 
+  Cpu, 
+  Layers, 
+  Sparkles, 
+  ChevronRight
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export function Features() {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref as React.RefObject<Element>, { once: true, margin: '-10%' });
+  const navigate = useNavigate();
+
+  const PROBLEM_GRID = [
+    {
+      index: '001',
+      tag: 'DATA EXTRACTION',
+      title: 'They train on generic prompts.',
+      desc: 'Most platforms feed surface-level hints that don\'t replicate high-bar engineering rounds. When edge cases hit, you get zero depth.'
+    },
+    {
+      index: '002',
+      tag: 'ARTIFICIAL SCARCITY',
+      title: 'They meter your ambition.',
+      desc: 'Token throttling, cloud downtime, and paywalled testcases. Right when you\'re in the flow of pre-interview prep, you hit arbitrary caps.'
+    },
+    {
+      index: '003',
+      tag: 'SILENT DOWNGRADES',
+      title: 'They test on weak sample cases.',
+      desc: 'Submissions pass with suboptimal O(N²) solutions without stress-testing large constraints, hidden edge cases, or memory limits.'
+    },
+    {
+      index: '004',
+      tag: 'FRAGMENTED STACKS',
+      title: 'They scatter your focus.',
+      desc: 'DSA on one site, core CS subjects on another, and mock interviews nowhere. Constant context switching destroys retention.'
+    }
+  ];
+
+  const CAPABILITIES = [
+    {
+      id: '01',
+      icon: Terminal,
+      title: 'Deterministic Code Execution',
+      desc: 'Multi-language runtime supporting JS, Python 3, Java, and C++ with millisecond timing, memory profiling, and exact diff validation.'
+    },
+    {
+      id: '02',
+      icon: ShieldCheck,
+      title: 'Live Anti-Cheating & Proctoring',
+      desc: 'Active tab tracking, fullscreen lock, copy-paste defense, window blur telemetry, and automatic integrity audit logging.'
+    },
+    {
+      id: '03',
+      icon: Code2,
+      title: 'Complete LeetCode Problem Bank',
+      desc: 'Direct problem integration with multi-language starter templates, categorized topic tagging, and complexity analyzers.'
+    },
+    {
+      id: '04',
+      icon: Layers,
+      title: 'Core CS Subject Mastery',
+      desc: 'Dedicated modules covering Operating Systems, DBMS/SQL, Computer Networks, and High-Level System Design.'
+    },
+    {
+      id: '05',
+      icon: Sparkles,
+      title: 'Interactive Assessment Studio',
+      desc: 'Build custom technical tests, invite candidates via verified Gmail links, and generate comprehensive scoring audit reports.'
+    },
+    {
+      id: '06',
+      icon: Cpu,
+      title: 'AI Mock Technical Interviews',
+      desc: 'Dynamic voice & text technical interview sessions with real-time feedback, behavioral scoring, and rubric breakdowns.'
+    }
+  ];
 
   return (
     <section
       ref={ref}
       id="platform"
-      className="relative py-32 lg:py-40 px-6 lg:px-12"
+      className="relative bg-[#070709] text-white py-28 lg:py-36 px-6 lg:px-12 border-t border-white/10"
       data-testid="features-section"
     >
-      {/* Section header */}
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="max-w-xl mb-20 lg:mb-28"
-        >
-          <motion.span
-            variants={fadeIn}
-            className="inline-block text-white/35 text-[11px] font-medium letter-widest uppercase tracking-[0.2em] mb-5"
-          >
-            Platform
-          </motion.span>
-          <motion.h2
-            variants={fadeUp}
-            className="text-[40px] sm:text-[52px] font-bold leading-[1.0] letter-tight text-white mb-5"
-          >
-            Everything you need.
+      {/* ── 1. THE PROBLEM SECTION (Matching Rig.ai Visual) ─── */}
+      <div className="max-w-7xl mx-auto mb-36">
+        <div className="text-center mb-16">
+          <span className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF3B1F]/10 border border-[#FF3B1F]/30 text-[#FF3B1F] text-xs font-mono font-bold tracking-widest uppercase mb-6">
+            ✕ THE PROBLEM
+          </span>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight max-w-4xl mx-auto">
+            You don't own your interview prep.
             <br />
-            <span className="text-white/40">Nothing you don't.</span>
-          </motion.h2>
-          <motion.p variants={fadeUp} className="text-white/50 text-lg leading-relaxed">
-            A complete interview preparation system, engineered for depth over breadth.
-          </motion.p>
-        </motion.div>
+            <span className="text-white/40">And you're hitting rate limits.</span>
+          </h2>
+        </div>
 
-        {/* Feature grid */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden"
-        >
-          {FEATURES.map((feature) => (
-            <motion.div
-              key={feature.id}
-              variants={fadeUp}
-              className="
-                group relative p-8 bg-black
-                hover:bg-white/[0.02] transition-colors duration-500 cursor-default
-              "
-              data-testid={`feature-${feature.id}`}
-            >
-              {/* Icon */}
-              <div className="
-                w-9 h-9 rounded-xl border border-white/10 bg-white/[0.04]
-                flex items-center justify-center text-white/60 mb-6
-                group-hover:border-white/20 group-hover:text-white/80
-                transition-all duration-300
-              ">
-                {feature.icon}
+        {/* 4-Quadrant Grid with Radar Graphic in Center */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 relative">
+          {/* Subtle Radar Center Graphic */}
+          <div className="hidden lg:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 pointer-events-none opacity-20 z-0">
+            <div className="w-full h-full rounded-full border border-[#FF3B1F] flex items-center justify-center animate-spin" style={{ animationDuration: '20s' }}>
+              <div className="w-3/4 h-3/4 rounded-full border border-[#FF3B1F]/40 flex items-center justify-center">
+                <div className="w-1/2 h-1/2 rounded-full border border-dashed border-[#FF3B1F]/60" />
               </div>
+            </div>
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#FF3B1F] shadow-[0_0_12px_#FF3B1F]" />
+          </div>
 
-              {/* Label */}
-              <p className="text-white/30 text-[11px] font-medium uppercase tracking-[0.16em] mb-3">
-                {feature.label}
-              </p>
-
-              {/* Title */}
-              <h3 className="text-white text-lg font-semibold leading-snug mb-3 letter-tight">
-                {feature.title}
+          {PROBLEM_GRID.map((p) => (
+            <div
+              key={p.index}
+              className="relative p-8 lg:p-10 bg-[#0E0E12] border border-white/10 hover:border-[#FF3B1F]/40 transition-all duration-300 z-10"
+            >
+              <div className="flex items-center justify-between font-mono text-xs text-[#FF3B1F] mb-4">
+                <span className="tracking-widest font-bold">{p.tag}</span>
+                <span className="text-white/30">{p.index}</span>
+              </div>
+              <h3 className="text-xl lg:text-2xl font-bold text-white mb-3">
+                {p.title}
               </h3>
-
-              {/* Description */}
-              <p className="text-white/45 text-sm leading-relaxed">
-                {feature.description}
+              <p className="text-white/60 text-sm lg:text-base leading-relaxed">
+                {p.desc}
               </p>
-
-              {/* Hover border accent */}
-              <div className="
-                absolute bottom-0 left-8 right-8 h-px
-                bg-gradient-to-r from-transparent via-white/20 to-transparent
-                opacity-0 group-hover:opacity-100 transition-opacity duration-500
-              " />
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
+      </div>
+
+      {/* ── 2. INTRODUCING ALGOASCENT (Geometric Red Cuts Banner) ─── */}
+      <div className="max-w-7xl mx-auto">
+        {/* Horizontal Geometric Cuts */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="h-1.5 w-16 bg-[#FF3B1F]" />
+          <div className="h-1.5 w-32 bg-[#FF3B1F]" />
+          <div className="h-1.5 flex-1 bg-[#FF3B1F]/30" />
+        </div>
+
+        <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-8 mb-20">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF3B1F]/10 border border-[#FF3B1F]/30 text-[#FF3B1F] text-xs font-mono font-bold tracking-widest uppercase mb-4">
+              ✓ INTRODUCING ALGOASCENT
+            </div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight">
+              Everything deterministic.
+              <br />
+              Own your engineering.
+            </h2>
+          </div>
+          <p className="text-white/60 text-base sm:text-lg max-w-lg leading-relaxed">
+            A complete technical preparation and evaluation ecosystem built for software engineers, students, and hiring teams.
+          </p>
+        </div>
+
+        {/* 6-Grid Capabilities Showcase */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {CAPABILITIES.map((cap) => {
+            const Icon = cap.icon;
+            return (
+              <div
+                key={cap.id}
+                className="group relative p-8 bg-[#0E0E12] border border-white/10 hover:border-[#FF3B1F] transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="w-12 h-12 flex items-center justify-center bg-black border border-white/15 text-[#FF3B1F] group-hover:border-[#FF3B1F] transition-colors">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <span className="font-mono text-xs text-white/30 group-hover:text-[#FF3B1F] transition-colors">
+                      FEATURE {cap.id}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#FF3B1F] transition-colors">
+                    {cap.title}
+                  </h3>
+                  <p className="text-white/60 text-sm leading-relaxed">
+                    {cap.desc}
+                  </p>
+                </div>
+
+                <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between text-xs font-mono text-white/40 group-hover:text-white transition-colors">
+                  <span>PRODUCTION READY</span>
+                  <ChevronRight className="w-4 h-4 text-[#FF3B1F] group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Live CTA Card */}
+        <div className="mt-16 p-8 lg:p-12 bg-gradient-to-r from-[#0E0E12] to-[#16161D] border-2 border-[#FF3B1F]/40 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div>
+            <span className="font-mono text-xs text-[#FF3B1F] font-bold tracking-widest uppercase">
+              COMPLETE ENGINEERING ECOSYSTEM
+            </span>
+            <h3 className="text-2xl lg:text-3xl font-bold text-white mt-1 mb-2">
+              Ready to elevate your engineering career?
+            </h3>
+            <p className="text-white/60 text-sm max-w-xl">
+              Solve LeetCode patterns, master operating systems & database internals, conduct AI mock interviews, or run live assessments.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="rig-chamfer-btn whitespace-nowrap px-8 py-4 bg-[#FF3B1F] text-black font-bold text-sm tracking-wide hover:bg-[#E63219] active:scale-[0.98] transition-all flex items-center gap-2 shadow-lg shadow-[#FF3B1F]/20"
+            >
+              <span>Launch Platform</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => navigate('/assessment/algoascent-test-assessment')}
+              className="whitespace-nowrap px-6 py-4 border border-white/20 bg-black/40 text-white font-bold text-sm hover:border-white/40 transition-all"
+            >
+              <span>Test Assessment</span>
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );

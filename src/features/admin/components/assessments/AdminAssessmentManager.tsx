@@ -141,28 +141,28 @@ export const AdminAssessmentManager: React.FC = () => {
     return (
         <div className="space-y-6 animate-fadeIn pb-12 font-sans text-slate-200">
             {/* ── TOP HEADER ──────────────────────────────────────────────────── */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#181a24]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                         Assessment Studio
                     </h1>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-white/50 mt-0.5">
                         Build, deploy, and evaluate technical assessments.
                     </p>
                 </div>
 
                 <button
                     onClick={handleCreateNew}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#AA8A2A] text-black font-black text-xs hover:brightness-110 shadow-md shadow-[#D4AF37]/20 flex items-center gap-1.5 self-start sm:self-auto transition-all cursor-pointer"
+                    className="rig-chamfer-btn px-4 py-2 bg-[#FF3B1F] text-black font-bold text-xs hover:bg-[#E63219] shadow-md shadow-[#FF3B1F]/20 flex items-center gap-1.5 self-start sm:self-auto transition-all cursor-pointer"
                 >
                     <Plus className="w-3.5 h-3.5" /> Create Assessment
                 </button>
             </div>
 
             {/* ── COMPACT ANALYTICS HEADER ─────────────────────────────────────── */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-3 border-b border-[#181a24]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-3 border-b border-white/10">
                 <div>
-                    <span className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider block">
+                    <span className="text-[0.65rem] font-bold text-white/40 uppercase tracking-wider block font-mono">
                         ACTIVE
                     </span>
                     <div className="text-2xl font-bold text-white mt-0.5">
@@ -171,7 +171,7 @@ export const AdminAssessmentManager: React.FC = () => {
                 </div>
 
                 <div>
-                    <span className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider block">
+                    <span className="text-[0.65rem] font-bold text-white/40 uppercase tracking-wider block font-mono">
                         PARTICIPANTS
                     </span>
                     <div className="text-2xl font-bold text-white mt-0.5">
@@ -180,16 +180,16 @@ export const AdminAssessmentManager: React.FC = () => {
                 </div>
 
                 <div>
-                    <span className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider block">
+                    <span className="text-[0.65rem] font-bold text-white/40 uppercase tracking-wider block font-mono">
                         AVG SCORE
                     </span>
-                    <div className="text-2xl font-bold text-[#D4AF37] mt-0.5">
+                    <div className="text-2xl font-bold text-[#FF3B1F] mt-0.5">
                         {avgScore > 0 ? `${avgScore}%` : '—'}
                     </div>
                 </div>
 
                 <div>
-                    <span className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider block">
+                    <span className="text-[0.65rem] font-bold text-white/40 uppercase tracking-wider block font-mono">
                         COMPLETION
                     </span>
                     <div className="text-2xl font-bold text-emerald-400 mt-0.5">
@@ -201,13 +201,13 @@ export const AdminAssessmentManager: React.FC = () => {
             {/* ── FILTER & SEARCH TOOLBAR ──────────────────────────────────────── */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div className="relative flex-1 max-w-sm w-full">
-                    <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <Search className="w-3.5 h-3.5 text-white/40 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                         type="text"
                         placeholder="Search assessments..."
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-                        className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-[#0e1018] border border-[#1f2232] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#D4AF37]"
+                        className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-[#0E0E14] border border-white/10 text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-[#FF3B1F]"
                     />
                 </div>
 
@@ -223,8 +223,8 @@ export const AdminAssessmentManager: React.FC = () => {
                             onClick={() => setStatusFilter(f.id as any)}
                             className={`px-3 py-1 rounded-md text-[0.7rem] font-bold transition-all ${
                                 statusFilter === f.id
-                                    ? 'bg-[#181a24] text-[#D4AF37] border border-[#282b3d]'
-                                    : 'text-slate-400 hover:text-white'
+                                    ? 'bg-[#14141C] text-[#FF3B1F] border border-[#FF3B1F]/40'
+                                    : 'text-white/40 hover:text-white'
                             }`}
                         >
                             {f.label}
@@ -235,29 +235,29 @@ export const AdminAssessmentManager: React.FC = () => {
 
             {/* ── ASSESSMENT LIST (TABLE-FIRST INTERFACE) ──────────────────────── */}
             {isLoading ? (
-                <div className="py-20 text-center text-slate-500 flex flex-col items-center justify-center gap-2 font-mono text-xs">
-                    <div className="w-5 h-5 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+                <div className="py-20 text-center text-white/40 flex flex-col items-center justify-center gap-2 font-mono text-xs">
+                    <div className="w-5 h-5 border-2 border-[#FF3B1F] border-t-transparent rounded-full animate-spin" />
                     <span>FETCHING ASSESSMENTS...</span>
                 </div>
             ) : filteredAssessments.length === 0 ? (
-                <div className="p-16 text-center border border-dashed border-[#1f2232] rounded-xl bg-[#08090e]">
-                    <Layers className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                <div className="p-16 text-center border border-dashed border-white/10 rounded-xl bg-[#08080C]">
+                    <Layers className="w-8 h-8 text-white/30 mx-auto mb-2" />
                     <h3 className="text-sm font-bold text-white mb-1">Your assessment workspace is empty.</h3>
-                    <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
+                    <p className="text-xs text-white/40 max-w-sm mx-auto mb-4">
                         Create your first technical assessment for campus placements, candidate screenings, or coding rounds.
                     </p>
                     <button
                         onClick={handleCreateNew}
-                        className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#AA8A2A] text-black font-bold text-xs"
+                        className="rig-chamfer-btn px-4 py-2 bg-[#FF3B1F] text-black font-bold text-xs"
                     >
                         Create Assessment
                     </button>
                 </div>
             ) : (
-                <div className="border border-[#181a24] rounded-lg overflow-hidden bg-[#090a0f]">
+                <div className="border border-white/10 rounded-lg overflow-hidden bg-[#090A0E]">
                     <table className="w-full text-left text-xs">
                         <thead>
-                            <tr className="border-b border-[#181a24] bg-[#0c0d14] text-slate-300 font-bold uppercase text-[0.65rem] tracking-wider">
+                            <tr className="border-b border-white/10 bg-[#0E0E14] text-white/70 font-bold uppercase text-[0.65rem] tracking-wider font-mono">
                                 <th className="py-2.5 px-4">Assessment</th>
                                 <th className="py-2.5 px-4">Status</th>
                                 <th className="py-2.5 px-4">Questions</th>
@@ -268,18 +268,18 @@ export const AdminAssessmentManager: React.FC = () => {
                                 <th className="py-2.5 px-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#141620]">
+                        <tbody className="divide-y divide-white/5">
                             {filteredAssessments.map(a => (
                                 <tr
                                     key={a.id}
                                     onClick={() => setActiveDetailId(a.id)}
-                                    className="hover:bg-white/[0.02] cursor-pointer transition-colors group"
+                                    className="hover:bg-white/[0.03] cursor-pointer transition-colors group"
                                 >
                                     <td className="py-3 px-4 max-w-xs sm:max-w-md">
-                                        <div className="font-bold text-white group-hover:text-[#D4AF37] transition-colors truncate">
+                                        <div className="font-bold text-white group-hover:text-[#FF3B1F] transition-colors truncate">
                                             {a.title}
                                         </div>
-                                        <div className="text-[0.7rem] text-slate-300 truncate mt-0.5">
+                                        <div className="text-[0.7rem] text-white/40 truncate mt-0.5">
                                             {a.description || `${a.accessMode} mode · ${a.passingScore}% passing`}
                                         </div>
                                     </td>
@@ -290,7 +290,7 @@ export const AdminAssessmentManager: React.FC = () => {
                                                 ? 'text-emerald-400'
                                                 : a.status === 'draft'
                                                     ? 'text-amber-400'
-                                                    : 'text-slate-400'
+                                                    : 'text-white/40'
                                         }`}>
                                             <span className={`w-1.5 h-1.5 rounded-full ${
                                                 a.status === 'published'
@@ -303,23 +303,23 @@ export const AdminAssessmentManager: React.FC = () => {
                                         </span>
                                     </td>
 
-                                    <td className="py-3 px-4 text-slate-300">
+                                    <td className="py-3 px-4 text-white/70">
                                         {a.questionCount || a.questions?.length || 0} Questions
                                     </td>
 
-                                    <td className="py-3 px-4 text-slate-300">
+                                    <td className="py-3 px-4 text-white/70 font-mono">
                                         {a.duration} min
                                     </td>
 
-                                    <td className="py-3 px-4 text-slate-300">
+                                    <td className="py-3 px-4 text-white/70">
                                         <strong className="text-white">{a.participantsCount || 0}</strong> candidates
                                     </td>
 
-                                    <td className="py-3 px-4 text-[#D4AF37] font-bold">
+                                    <td className="py-3 px-4 text-[#FF3B1F] font-bold font-mono">
                                         {a.averageScore && a.averageScore > 0 ? `${a.averageScore}%` : '—'}
                                     </td>
 
-                                    <td className="py-3 px-4 text-slate-300 text-[0.7rem]">
+                                    <td className="py-3 px-4 text-white/40 text-[0.7rem] font-mono">
                                         {new Date(a.createdAt).toLocaleDateString()}
                                     </td>
 

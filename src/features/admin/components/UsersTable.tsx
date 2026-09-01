@@ -30,7 +30,7 @@ const EMPTY_FORM: CreateForm = {
 };
 
 // ── Shared input style ────────────────────────────────────────────────────────
-const inputCls = 'w-full bg-[#0d0d0d] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#D4AF37] transition-colors placeholder-gray-600';
+const inputCls = 'w-full bg-[#0d0d0d] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#FF3B1F] transition-colors placeholder-gray-600';
 const labelCls = 'block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1.5';
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -43,7 +43,7 @@ const UsersTable: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [search, setSearch] = useState('');
-    const [roleFilter, setRoleFilter] = useState('all');
+    const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user'>('all');
     const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
 
     // Modals
@@ -59,7 +59,11 @@ const UsersTable: React.FC = () => {
         if (silent) setRefreshing(true);
         else setLoading(true);
         try {
-            const data = await adminApi.getUsers();
+            const raw = await adminApi.getUsers();
+            const data = (raw || []).map((u: any) => ({
+                ...u,
+                _id: u._id || u.id || `usr_${Math.random()}`
+            }));
             setUsers(data);
         } catch {
             toast('Failed to load users', 'error');
@@ -232,10 +236,10 @@ const UsersTable: React.FC = () => {
                 <input
                     type="text" placeholder="Search username or email…"
                     value={search} onChange={e => setSearch(e.target.value)}
-                    className="flex-1 bg-[#111] border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[#D4AF37]"
+                    className="flex-1 bg-[#111] border border-white/10 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-[#FF3B1F]"
                 />
                 <select
-                    value={roleFilter} onChange={e => setRoleFilter(e.target.value)}
+                    value={roleFilter} onChange={e => setRoleFilter(e.target.value as any)}
                     className="bg-[#111] border border-white/10 rounded-lg px-4 py-2 text-sm text-white"
                 >
                     <option value="all">All Roles</option>

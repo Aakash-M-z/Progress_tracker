@@ -313,12 +313,64 @@ export class DatabaseAPI {
       if (params.limit) query.set('limit', String(params.limit));
 
       const res = await fetchWithAuth(`${API_BASE}/api/problems?${query.toString()}`, { headers: authHeaders() });
-      if (!res.ok) throw new Error(`Failed to fetch problems: ${res.statusText}`);
-      return res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (data.problems && data.problems.length > 0) return data;
+      }
     } catch (e) {
-      console.error('getProblems:', e);
-      return { problems: [], pagination: { page: 1, limit: 20, total: 0, pages: 0 } };
+      console.warn('getProblems server fallback:', e);
     }
+
+    // Built-in Curated LeetCode Problem Dataset Fallback
+    const ALL_CURATED_PROBLEMS = [
+      { leetcodeId: 1, title: 'Two Sum', slug: 'two-sum', difficulty: 'easy', topic: 'Arrays', url: 'https://leetcode.com/problems/two-sum/' },
+      { leetcodeId: 2, title: 'Add Two Numbers', slug: 'add-two-numbers', difficulty: 'medium', topic: 'Linked Lists', url: 'https://leetcode.com/problems/add-two-numbers/' },
+      { leetcodeId: 3, title: 'Longest Substring Without Repeating Characters', slug: 'longest-substring-without-repeating-characters', difficulty: 'medium', topic: 'Sliding Window', url: 'https://leetcode.com/problems/longest-substring-without-repeating-characters/' },
+      { leetcodeId: 15, title: '3Sum', slug: '3sum', difficulty: 'medium', topic: 'Two Pointers', url: 'https://leetcode.com/problems/3sum/' },
+      { leetcodeId: 20, title: 'Valid Parentheses', slug: 'valid-parentheses', difficulty: 'easy', topic: 'Stacks', url: 'https://leetcode.com/problems/valid-parentheses/' },
+      { leetcodeId: 21, title: 'Merge Two Sorted Lists', slug: 'merge-two-sorted-lists', difficulty: 'easy', topic: 'Linked Lists', url: 'https://leetcode.com/problems/merge-two-sorted-lists/' },
+      { leetcodeId: 23, title: 'Merge k Sorted Lists', slug: 'merge-k-sorted-lists', difficulty: 'hard', topic: 'Heaps', url: 'https://leetcode.com/problems/merge-k-sorted-lists/' },
+      { leetcodeId: 33, title: 'Search in Rotated Sorted Array', slug: 'search-in-rotated-sorted-array', difficulty: 'medium', topic: 'Binary Search', url: 'https://leetcode.com/problems/search-in-rotated-sorted-array/' },
+      { leetcodeId: 42, title: 'Trapping Rain Water', slug: 'trapping-rain-water', difficulty: 'hard', topic: 'Two Pointers', url: 'https://leetcode.com/problems/trapping-rain-water/' },
+      { leetcodeId: 53, title: 'Maximum Subarray', slug: 'maximum-subarray', difficulty: 'medium', topic: 'Dynamic Programming', url: 'https://leetcode.com/problems/maximum-subarray/' },
+      { leetcodeId: 70, title: 'Climbing Stairs', slug: 'climbing-stairs', difficulty: 'easy', topic: 'Dynamic Programming', url: 'https://leetcode.com/problems/climbing-stairs/' },
+      { leetcodeId: 121, title: 'Best Time to Buy and Sell Stock', slug: 'best-time-to-buy-and-sell-stock', difficulty: 'easy', topic: 'Arrays', url: 'https://leetcode.com/problems/best-time-to-buy-and-sell-stock/' },
+      { leetcodeId: 141, title: 'Linked List Cycle', slug: 'linked-list-cycle', difficulty: 'easy', topic: 'Linked Lists', url: 'https://leetcode.com/problems/linked-list-cycle/' },
+      { leetcodeId: 146, title: 'LRU Cache', slug: 'lru-cache', difficulty: 'medium', topic: 'Design', url: 'https://leetcode.com/problems/lru-cache/' },
+      { leetcodeId: 200, title: 'Number of Islands', slug: 'number-of-islands', difficulty: 'medium', topic: 'Graphs', url: 'https://leetcode.com/problems/number-of-islands/' },
+      { leetcodeId: 206, title: 'Reverse Linked List', slug: 'reverse-linked-list', difficulty: 'easy', topic: 'Linked Lists', url: 'https://leetcode.com/problems/reverse-linked-list/' },
+      { leetcodeId: 226, title: 'Invert Binary Tree', slug: 'invert-binary-tree', difficulty: 'easy', topic: 'Trees', url: 'https://leetcode.com/problems/invert-binary-tree/' },
+      { leetcodeId: 300, title: 'Longest Increasing Subsequence', slug: 'longest-increasing-subsequence', difficulty: 'medium', topic: 'Dynamic Programming', url: 'https://leetcode.com/problems/longest-increasing-subsequence/' },
+      { leetcodeId: 322, title: 'Coin Change', slug: 'coin-change', difficulty: 'medium', topic: 'Dynamic Programming', url: 'https://leetcode.com/problems/coin-change/' },
+      { leetcodeId: 994, title: 'Rotting Oranges', slug: 'rotting-oranges', difficulty: 'medium', topic: 'Graphs', url: 'https://leetcode.com/problems/rotting-oranges/' }
+    ];
+
+    let filtered = ALL_CURATED_PROBLEMS;
+    if (params.difficulty) {
+      filtered = filtered.filter(p => p.difficulty.toLowerCase() === params.difficulty?.toLowerCase());
+    }
+    if (params.topic) {
+      filtered = filtered.filter(p => p.topic.toLowerCase() === params.topic?.toLowerCase());
+    }
+    if (params.search) {
+      const s = params.search.toLowerCase();
+      filtered = filtered.filter(p => p.title.toLowerCase().includes(s) || String(p.leetcodeId).includes(s));
+    }
+
+    const page = params.page || 1;
+    const limit = params.limit || 10;
+    const start = (page - 1) * limit;
+    const paginated = filtered.slice(start, start + limit);
+
+    return {
+      problems: paginated,
+      pagination: {
+        page,
+        limit,
+        total: filtered.length,
+        pages: Math.max(1, Math.ceil(filtered.length / limit))
+      }
+    };
   }
 }
 

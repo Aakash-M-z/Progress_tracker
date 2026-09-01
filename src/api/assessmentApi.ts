@@ -363,13 +363,37 @@ function getStoredLocalAssessments(): Assessment[] {
     } catch {}
     return [
         {
+            id: 'asmt_test_1',
+            title: 'AlgoAscent Live Technical Screening & Coding Assessment',
+            description: 'Hands-on technical evaluation covering Algorithmic Problem Solving (Two Sum, Valid Parentheses), Multi-Case Testing, and Core Computer Science.',
+            duration: 45,
+            passingScore: 60,
+            maxAttempts: 2,
+            accessMode: 'public',
+            shareToken: 'algoascent-test-assessment',
+            settings: { requireFullscreen: false, trackTabSwitches: true, showResultsImmediately: true },
+            status: 'published',
+            questions: [
+                mapLeetCodeProblem(PROBLEM_DATASET[0] || { number: 1, name: 'Two Sum', difficulty: 'Easy', topic: 'Arrays', tags: ['hash-map'] }),
+                mapLeetCodeProblem(PROBLEM_DATASET[2] || { number: 20, name: 'Valid Parentheses', difficulty: 'Easy', topic: 'Stacks', tags: ['stack'] }),
+                CORE_FALLBACK_QUESTIONS[0],
+                CORE_FALLBACK_QUESTIONS[1]
+            ],
+            questionCount: 4,
+            totalPoints: 50,
+            participantsCount: 0,
+            completedCount: 0,
+            averageScore: 0,
+            createdAt: new Date().toISOString()
+        },
+        {
             id: 'asmt_demo_1',
             title: 'Campus Placement 2026 — Software Engineering Assessment',
             description: 'Comprehensive technical evaluation covering Data Structures, Algorithmic Problem Solving, DBMS/SQL, and Operating Systems.',
             duration: 60,
             passingScore: 60,
             maxAttempts: 1,
-            accessMode: 'authenticated',
+            accessMode: 'public',
             shareToken: 'campus-2026-demo',
             settings: { requireFullscreen: true, trackTabSwitches: true, showResultsImmediately: true },
             status: 'published',
@@ -871,16 +895,26 @@ export const assessmentApi = {
     async startAssessment(shareToken: string, candidateInfo?: { name?: string; email?: string; candidateName?: string; candidateEmail?: string }) {
         try {
             const cleanInfo = {
-                name: candidateInfo?.name || candidateInfo?.candidateName,
-                email: candidateInfo?.email || candidateInfo?.candidateEmail
+                candidateName: candidateInfo?.name || candidateInfo?.candidateName,
+                candidateEmail: candidateInfo?.email || candidateInfo?.candidateEmail
             };
             const res = await fetch(`${API_BASE}/api/assessments/${shareToken}/start`, {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify(cleanInfo)
             });
-            if (res.ok) return res.json();
-        } catch (err) {
+            if (res.ok) {
+                return await res.json();
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                if (errData.error) {
+                    throw new Error(errData.error);
+                }
+            }
+        } catch (err: any) {
+            if (err.message && !err.message.includes('fetch') && !err.message.includes('NetworkError') && !err.message.includes('Failed to fetch')) {
+                throw err;
+            }
             console.warn('[assessmentApi] startAssessment fallback for:', shareToken);
         }
 
@@ -916,6 +950,14 @@ export const assessmentApi = {
         saveStoredLocalAttempts([attempt, ...existing]);
 
         return {
+            attemptId: attempt.id,
+            assessmentTitle: found.title,
+            durationMinutes: found.duration || 60,
+            startedAt: attempt.startedAt,
+            expiresAt: attempt.expiresAt,
+            serverTime: new Date().toISOString(),
+            savedAnswers: {},
+            savedCodingSubmissions: {},
             attempt: {
                 ...attempt,
                 remainingSeconds: (found.duration || 60) * 60

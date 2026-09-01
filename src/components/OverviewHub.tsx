@@ -9,7 +9,12 @@ import {
     Star,
     GitFork,
     FolderGit2,
+    Terminal,
+    Activity as ActivityIcon,
+    ArrowUpRight,
+    Zap
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Activity } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { API_BASE } from '../api/config';
@@ -39,6 +44,7 @@ interface GitHubRepo {
 
 export const OverviewHub: React.FC<OverviewHubProps> = ({ activities, onAddActivity }) => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [activeSection, setActiveSection] = useState<OverviewSection>('leetcode');
     const [repos, setRepos] = useState<GitHubRepo[]>([]);
     const [reposLoading, setReposLoading] = useState(false);
@@ -107,99 +113,143 @@ export const OverviewHub: React.FC<OverviewHubProps> = ({ activities, onAddActiv
     const sections = [
         {
             id: 'leetcode' as OverviewSection,
-            label: 'LeetCode Problem Set',
-            shortLabel: 'Course / LeetCode',
-            icon: <Code2 className="w-4 h-4" />,
-            color: '#f59e0b',
-            accent: 'from-amber-500/20 to-orange-500/10',
-            border: 'border-amber-500/30',
-            text: 'text-amber-400',
-            description: '1,200+ curated problems, topic filters, solutions & solve tracking',
+            code: '01',
+            label: 'LEETCODE ENGINE',
+            sublabel: '1,200+ Problems & Live Solves',
+            icon: Code2,
         },
         {
             id: 'subjects' as OverviewSection,
-            label: 'Core Subjects',
-            shortLabel: 'Core Subjects',
-            icon: <BookOpen className="w-4 h-4" />,
-            color: '#38bdf8',
-            accent: 'from-sky-500/20 to-blue-500/10',
-            border: 'border-sky-500/30',
-            text: 'text-sky-400',
-            description: 'System Design, OS, DBMS, Computer Networks & OOPS modules',
+            code: '02',
+            label: 'CORE CS SUBJECTS',
+            sublabel: 'OS, DBMS, CN & System Design',
+            icon: BookOpen,
         },
         {
             id: 'github' as OverviewSection,
-            label: 'GitHub Dev Hub',
-            shortLabel: 'GitHub',
-            icon: <Github className="w-4 h-4" />,
-            color: '#10b981',
-            accent: 'from-emerald-500/20 to-teal-500/10',
-            border: 'border-emerald-500/30',
-            text: 'text-emerald-400',
-            description: 'Live repositories, open source contributions & star tracking',
+            code: '03',
+            label: 'GITHUB DEV HUB',
+            sublabel: 'Repos & Open Source Work',
+            icon: Github,
         },
         {
             id: 'roadmap' as OverviewSection,
-            label: 'DSA Roadmap',
-            shortLabel: 'DSA Roadmap',
-            icon: <Map className="w-4 h-4" />,
-            color: '#a855f7',
-            accent: 'from-purple-500/20 to-indigo-500/10',
-            border: 'border-purple-500/30',
-            text: 'text-purple-400',
-            description: '4 structured mastery stages, blind 75 & topic trees',
+            code: '04',
+            label: 'DSA ROADMAP',
+            sublabel: '4 Structured Stages & Blind 75',
+            icon: Map,
         },
     ];
 
     return (
-        <div className="space-y-6 animate-fadeIn">
-            {/* ── COMMAND HUB NAVIGATION BAR ──────────────────────────────── */}
-            <div className="p-2 rounded-2xl bg-[#090b14]/90 border border-white/[0.08] backdrop-blur-xl shadow-[0_0_40px_rgba(0,0,0,0.5)]">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                    {sections.map((s) => {
-                        const isActive = activeSection === s.id;
-                        return (
-                            <button
-                                key={s.id}
-                                onClick={() => setActiveSection(s.id)}
-                                className={`relative p-3.5 rounded-xl transition-all duration-300 flex items-center gap-3 text-left overflow-hidden border ${
-                                    isActive
-                                        ? `bg-gradient-to-r ${s.accent} ${s.border} shadow-[0_0_20px_rgba(0,0,0,0.4)] scale-[1.01]`
-                                        : 'bg-[#10121d]/60 border-white/[0.04] hover:border-white/15 hover:bg-[#151726]/80 text-slate-400'
-                                }`}
-                            >
-                                <div
-                                    className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform ${
-                                        isActive ? 'scale-110 shadow-md' : 'opacity-75'
-                                    }`}
-                                    style={{
-                                        background: isActive ? `${s.color}22` : 'rgba(255,255,255,0.04)',
-                                        color: s.color,
-                                        border: `1px solid ${isActive ? s.color : 'rgba(255,255,255,0.08)'}`,
-                                    }}
-                                >
-                                    {s.icon}
-                                </div>
-                                <div className="min-w-0">
-                                    <div className={`text-xs font-bold truncate ${isActive ? 'text-white' : 'text-slate-300'}`}>
-                                        {s.shortLabel}
-                                    </div>
-                                    <div className="text-[0.62rem] text-slate-400 truncate mt-0.5">
-                                        {s.id === 'leetcode' ? '1.2k+ Solves' : s.id === 'subjects' ? '5 CS Domains' : s.id === 'github' ? 'Public Repos' : '4 Tracks'}
-                                    </div>
-                                </div>
+        <div className="space-y-8 animate-fadeIn font-sans">
+            {/* ── TOP HERO OVERVIEW BANNER ────────────────── */}
+            <div className="relative overflow-hidden bg-[#0E0E14] border border-white/10 p-6 sm:p-8 lg:p-10 shadow-2xl rounded-2xl">
+                {/* Accent red geometric cut */}
+                <div className="absolute top-0 left-0 w-32 h-1.5 bg-[#FF3B1F]" />
 
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="active-indicator"
-                                        className="absolute bottom-0 left-0 right-0 h-0.5"
-                                        style={{ background: s.color, boxShadow: `0 0 10px ${s.color}` }}
-                                    />
-                                )}
-                            </button>
-                        );
-                    })}
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                    <div className="max-w-2xl">
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="w-2 h-2 rounded-full bg-[#FF3B1F] shadow-[0_0_8px_#FF3B1F]" />
+                            <span className="text-white/60 text-xs font-mono font-bold tracking-wider uppercase">
+                                ALGOASCENT DASHBOARD
+                            </span>
+                        </div>
+
+                        <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-2">
+                            Overview & Engineering Hub
+                        </h1>
+                        <p className="text-white/60 text-sm sm:text-base leading-relaxed">
+                            Track problem-solving milestones, revise core computer science subjects, inspect repositories, and launch technical assessments.
+                        </p>
+                    </div>
+
+                    {/* Quick Action Buttons */}
+                    <div className="flex flex-wrap items-center gap-3">
+                        <button
+                            onClick={() => navigate('/assessment/algoascent-test-assessment')}
+                            className="rig-chamfer-btn px-6 py-3.5 bg-[#FF3B1F] text-black font-bold text-xs sm:text-sm tracking-wide hover:bg-[#E63219] active:scale-[0.98] transition-all flex items-center gap-2 shadow-lg shadow-[#FF3B1F]/20"
+                        >
+                            <span>Take Test Assessment</span>
+                            <ArrowUpRight className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => navigate('/assessments')}
+                            className="px-5 py-3.5 bg-black/60 border border-white/15 hover:border-white/30 text-white font-bold text-xs sm:text-sm transition-all flex items-center gap-2"
+                        >
+                            <span>Assessment Studio</span>
+                        </button>
+                    </div>
                 </div>
+
+                {/* Clean Metrics Strip */}
+                <div className="mt-8 pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-xs text-white/60">
+                    <div className="flex items-center gap-2">
+                        <ActivityIcon className="w-3.5 h-3.5 text-[#FF3B1F]" />
+                        <span>Solved: {activities.length} Questions</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Terminal className="w-3.5 h-3.5 text-[#FF3B1F]" />
+                        <span>Languages: JS, Python, Java, C++</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <BookOpen className="w-3.5 h-3.5 text-[#FF3B1F]" />
+                        <span>Core Subjects: 5 Tracks</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Map className="w-3.5 h-3.5 text-[#FF3B1F]" />
+                        <span>Roadmaps: 4 Stages</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* ── BRUTALIST TAB NAVIGATION (RIG.AI STYLE) ────────────────── */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {sections.map((s) => {
+                    const isActive = activeSection === s.id;
+                    const Icon = s.icon;
+                    return (
+                        <button
+                            key={s.id}
+                            onClick={() => setActiveSection(s.id)}
+                            className={`
+                                relative p-4 text-left transition-all duration-200 border
+                                ${isActive
+                                    ? 'bg-[#14141C] border-[#FF3B1F] text-white shadow-lg'
+                                    : 'bg-[#0A0A0E] border-white/10 hover:border-white/20 hover:bg-[#0E0E14] text-white/60'
+                                }
+                            `}
+                        >
+                            {/* Active Top Red Notch */}
+                            {isActive && (
+                                <div className="absolute top-0 left-0 right-0 h-1 bg-[#FF3B1F]" />
+                            )}
+
+                            <div className="flex items-center justify-between mb-3">
+                                <div className={`
+                                    w-8 h-8 flex items-center justify-center border transition-colors
+                                    ${isActive 
+                                        ? 'bg-[#FF3B1F] text-black border-[#FF3B1F]' 
+                                        : 'bg-black text-white/60 border-white/10'
+                                    }
+                                `}>
+                                    <Icon className="w-4 h-4" />
+                                </div>
+                                <span className="font-mono text-xs text-[#FF3B1F] font-bold">
+                                    {s.code} //
+                                </span>
+                            </div>
+
+                            <div className="font-bold text-sm text-white tracking-wide">
+                                {s.label}
+                            </div>
+                            <div className="text-xs text-white/40 mt-1 truncate">
+                                {s.sublabel}
+                            </div>
+                        </button>
+                    );
+                })}
             </div>
 
             {/* ── SECTION CONTENT SWITCHER ───────────────────────────────── */}
@@ -212,7 +262,7 @@ export const OverviewHub: React.FC<OverviewHubProps> = ({ activities, onAddActiv
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.25 }}
+                            transition={{ duration: 0.2 }}
                         >
                             <LeetCodeQuestions activities={activities} onAddActivity={onAddActivity} />
                         </motion.div>
@@ -225,7 +275,7 @@ export const OverviewHub: React.FC<OverviewHubProps> = ({ activities, onAddActiv
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.25 }}
+                            transition={{ duration: 0.2 }}
                         >
                             <CoreSubjects />
                         </motion.div>
@@ -238,26 +288,26 @@ export const OverviewHub: React.FC<OverviewHubProps> = ({ activities, onAddActiv
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.25 }}
+                            transition={{ duration: 0.2 }}
                             className="space-y-6"
                         >
                             {/* GitHub Profile Banner */}
-                            <div className="p-6 rounded-2xl bg-[#0c0d16] border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.06)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                            <div className="p-6 bg-[#0E0E14] border border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg border border-emerald-400/30">
-                                        <Github className="w-7 h-7" />
+                                    <div className="w-12 h-12 bg-black border border-white/15 flex items-center justify-center text-[#FF3B1F]">
+                                        <Github className="w-6 h-6" />
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <h3 className="text-base font-extrabold text-white">
+                                            <h3 className="text-lg font-bold text-white">
                                                 {user?.name || user?.username || 'Developer'}
                                             </h3>
-                                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[0.65rem] font-bold">
-                                                GitHub Active
+                                            <span className="px-2 py-0.5 bg-[#FF3B1F]/15 text-[#FF3B1F] border border-[#FF3B1F]/30 text-[10px] font-mono font-bold">
+                                                ACTIVE SYNC
                                             </span>
                                         </div>
-                                        <p className="text-xs text-slate-400 font-mono mt-0.5">
-                                            github.com/{githubUsername}
+                                        <p className="text-xs text-white/40 font-mono mt-0.5">
+                                            github.com/{githubUsername || 'connected_account'}
                                         </p>
                                     </div>
                                 </div>
@@ -268,13 +318,13 @@ export const OverviewHub: React.FC<OverviewHubProps> = ({ activities, onAddActiv
                                         value={githubUsername}
                                         onChange={(e) => setGithubUsername(e.target.value)}
                                         placeholder="GitHub handle..."
-                                        className="px-3 py-1.5 rounded-xl bg-[#141624] border border-white/10 text-xs text-white focus:border-emerald-400 focus:outline-none"
+                                        className="px-3.5 py-2 bg-black border border-white/15 text-xs text-white focus:border-[#FF3B1F] focus:outline-none"
                                     />
                                     <a
                                         href={`https://github.com/${githubUsername}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold hover:from-emerald-400 hover:to-teal-400 transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                                        className="px-4 py-2 bg-white text-black text-xs font-bold hover:bg-white/90 transition-all flex items-center gap-1.5"
                                     >
                                         <span>View Profile</span>
                                         <ExternalLink className="w-3.5 h-3.5" />
@@ -285,16 +335,20 @@ export const OverviewHub: React.FC<OverviewHubProps> = ({ activities, onAddActiv
                             {/* Repositories Grid */}
                             <div>
                                 <div className="flex items-center justify-between mb-4">
-                                    <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                                        <FolderGit2 className="w-4 h-4 text-emerald-400" />
-                                        <span>Public Repositories ({repos.length})</span>
+                                    <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                        <FolderGit2 className="w-4 h-4 text-[#FF3B1F]" />
+                                        <span>PUBLIC REPOSITORIES ({repos.length})</span>
                                     </h4>
-                                    <span className="text-xs text-slate-400">Live Synchronized</span>
+                                    <span className="text-xs text-white/40 font-mono">LIVE CONNECTED</span>
                                 </div>
 
                                 {reposLoading ? (
-                                    <div className="p-8 text-center text-slate-500 animate-pulse bg-[#0c0d16] rounded-2xl border border-white/[0.06]">
-                                        Fetching GitHub repositories...
+                                    <div className="p-12 text-center text-white/40 font-mono text-xs bg-[#0E0E14] border border-white/10">
+                                        FETCHING GITHUB REPOSITORIES...
+                                    </div>
+                                ) : repos.length === 0 ? (
+                                    <div className="p-12 text-center text-white/40 font-mono text-xs bg-[#0E0E14] border border-white/10">
+                                        NO PUBLIC REPOSITORIES FOUND FOR THIS USERNAME.
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -304,33 +358,33 @@ export const OverviewHub: React.FC<OverviewHubProps> = ({ activities, onAddActiv
                                                 href={repo.html_url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="p-5 rounded-2xl bg-[#0c0d16] border border-white/[0.08] hover:border-emerald-500/40 hover:bg-[#121422] transition-all flex flex-col justify-between group"
+                                                className="p-5 bg-[#0E0E14] border border-white/10 hover:border-[#FF3B1F] transition-all flex flex-col justify-between group"
                                             >
                                                 <div>
                                                     <div className="flex items-start justify-between gap-2 mb-2">
-                                                        <h5 className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors truncate">
+                                                        <h5 className="text-sm font-bold text-white group-hover:text-[#FF3B1F] transition-colors truncate">
                                                             {repo.name}
                                                         </h5>
-                                                        <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 flex-shrink-0" />
+                                                        <ExternalLink className="w-3.5 h-3.5 text-white/30 group-hover:text-[#FF3B1F] flex-shrink-0" />
                                                     </div>
-                                                    <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed mb-4">
+                                                    <p className="text-xs text-white/50 line-clamp-2 leading-relaxed mb-4">
                                                         {repo.description || 'No description provided.'}
                                                     </p>
                                                 </div>
 
-                                                <div className="flex items-center justify-between pt-3 border-t border-white/[0.04] text-xs text-slate-400 font-mono">
+                                                <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs text-white/40 font-mono">
                                                     {repo.language && (
-                                                        <span className="px-2 py-0.5 rounded-md bg-white/[0.05] border border-white/10 text-[0.68rem] text-slate-300 font-sans">
+                                                        <span className="px-2 py-0.5 bg-black border border-white/10 text-[10px] text-white/80">
                                                             {repo.language}
                                                         </span>
                                                     )}
                                                     <div className="flex items-center gap-3">
                                                         <span className="flex items-center gap-1">
-                                                            <Star className="w-3 h-3 text-amber-400" />
+                                                            <Star className="w-3 h-3 text-[#FF3B1F]" />
                                                             {repo.stargazers_count}
                                                         </span>
                                                         <span className="flex items-center gap-1">
-                                                            <GitFork className="w-3 h-3 text-slate-400" />
+                                                            <GitFork className="w-3 h-3 text-white/40" />
                                                             {repo.forks_count}
                                                         </span>
                                                     </div>
@@ -350,7 +404,7 @@ export const OverviewHub: React.FC<OverviewHubProps> = ({ activities, onAddActiv
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.25 }}
+                            transition={{ duration: 0.2 }}
                         >
                             <DSARoadmap activities={activities} />
                         </motion.div>

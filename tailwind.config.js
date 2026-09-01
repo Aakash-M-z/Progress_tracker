@@ -8,8 +8,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
-        display: ['Poppins', 'Inter', 'sans-serif'],
+        sans: ['"Work Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['"Work Sans"', 'Poppins', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
         orbitron: ['Orbitron', 'sans-serif'],
       },

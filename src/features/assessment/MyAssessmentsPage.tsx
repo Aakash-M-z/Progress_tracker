@@ -38,12 +38,12 @@ const MyAssessmentsPage: React.FC = () => {
     return (
         <div className="section-gap animate-fadeIn pb-12">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.08]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
                 <div>
-                    <h2 className="text-2xl font-black text-white flex items-center gap-2.5">
-                        <span className="text-[#D4AF37]">◈</span> My Assigned Assessments
+                    <h2 className="text-2xl font-bold text-white flex items-center gap-2.5">
+                        <span className="text-[#FF3B1F]">◈</span> My Assigned Assessments
                     </h2>
-                    <p className="text-gray-400 mt-1 text-xs">
+                    <p className="text-white/50 mt-1 text-xs">
                         View and take technical assessments, campus placements, and mock coding rounds assigned to you.
                     </p>
                 </div>
@@ -51,15 +51,15 @@ const MyAssessmentsPage: React.FC = () => {
 
             {/* Assessment List */}
             {isLoading ? (
-                <div className="py-20 text-center text-slate-500 flex flex-col items-center justify-center gap-2">
-                    <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                    <span className="text-xs font-bold uppercase">Loading your assessments...</span>
+                <div className="py-20 text-center text-white/40 flex flex-col items-center justify-center gap-2">
+                    <div className="w-6 h-6 border-2 border-[#FF3B1F] border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs font-bold uppercase tracking-wider font-mono">Loading your assessments...</span>
                 </div>
             ) : assessments.length === 0 ? (
-                <div className="p-16 text-center border-2 border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
-                    <Layers className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                <div className="p-16 text-center border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
+                    <Layers className="w-12 h-12 text-white/30 mx-auto mb-3" />
                     <h4 className="text-base font-bold text-white mb-1">No Assessments Assigned</h4>
-                    <p className="text-xs text-slate-400 max-w-sm mx-auto mb-4">
+                    <p className="text-xs text-white/40 max-w-sm mx-auto mb-4">
                         When an administrator assigns you an evaluation or placement test, it will appear here.
                     </p>
                 </div>
@@ -68,18 +68,18 @@ const MyAssessmentsPage: React.FC = () => {
                     {assessments.map(a => (
                         <div
                             key={a.id}
-                            className="p-5 rounded-2xl bg-[#0e101a] border border-white/5 hover:border-indigo-500/30 transition-all flex flex-col justify-between shadow-lg space-y-4"
+                            className="p-5 rounded-2xl bg-[#0E0E14] border border-white/10 hover:border-[#FF3B1F]/40 transition-all flex flex-col justify-between shadow-lg space-y-4"
                         >
                             <div>
                                 <div className="flex items-center justify-between gap-2 mb-2.5">
-                                    <span className={`px-2.5 py-0.5 rounded text-[0.65rem] font-black uppercase tracking-wider ${
+                                    <span className={`px-2.5 py-0.5 rounded text-[0.65rem] font-bold uppercase tracking-wider ${
                                         a.attemptStatus === 'completed'
                                             ? a.attemptPassed
                                                 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                                                 : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                                             : a.attemptStatus === 'in_progress'
                                                 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                                                : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+                                                : 'bg-[#FF3B1F]/15 text-[#FF3B1F] border border-[#FF3B1F]/30'
                                     }`}>
                                         {a.attemptStatus === 'completed'
                                             ? a.attemptPassed ? 'Passed' : 'Needs Improvement'
@@ -87,29 +87,29 @@ const MyAssessmentsPage: React.FC = () => {
                                     </span>
 
                                     {a.attemptScore !== null && (
-                                        <span className="text-xs font-black text-[#D4AF37]">
+                                        <span className="text-xs font-bold text-[#FF3B1F]">
                                             Score: {a.attemptScore}%
                                         </span>
                                     )}
                                 </div>
 
-                                <h3 className="text-base font-black text-white line-clamp-1">{a.title}</h3>
-                                <p className="text-xs text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                                <h3 className="text-base font-bold text-white line-clamp-1">{a.title}</h3>
+                                <p className="text-xs text-white/50 mt-1 line-clamp-2 leading-relaxed">
                                     {a.description || 'Comprehensive technical assessment.'}
                                 </p>
 
-                                <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-white/5 text-[0.7rem] text-slate-400">
+                                <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-white/5 text-[0.7rem] text-white/50 font-mono">
                                     <div>
-                                        <span className="block text-[0.6rem] font-bold uppercase text-slate-500">Duration</span>
-                                        <strong className="text-slate-200">{a.duration} Mins</strong>
+                                        <span className="block text-[0.6rem] font-bold uppercase text-white/40">Duration</span>
+                                        <strong className="text-white font-sans">{a.duration} Mins</strong>
                                     </div>
                                     <div>
-                                        <span className="block text-[0.6rem] font-bold uppercase text-slate-500">Questions</span>
-                                        <strong className="text-slate-200">{a.questionCount} Total</strong>
+                                        <span className="block text-[0.6rem] font-bold uppercase text-white/40">Questions</span>
+                                        <strong className="text-white font-sans">{a.questionCount} Total</strong>
                                     </div>
                                     <div>
-                                        <span className="block text-[0.6rem] font-bold uppercase text-slate-500">Passing</span>
-                                        <strong className="text-emerald-400">{a.passingScore}%</strong>
+                                        <span className="block text-[0.6rem] font-bold uppercase text-white/40">Passing</span>
+                                        <strong className="text-emerald-400 font-sans">{a.passingScore}%</strong>
                                     </div>
                                 </div>
                             </div>
@@ -121,14 +121,14 @@ const MyAssessmentsPage: React.FC = () => {
                                         onClick={() => navigate(`/assessment/${a.shareToken}/result`, {
                                             state: { attemptId: a.attemptId }
                                         })}
-                                        className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 text-indigo-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
+                                        className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors border border-white/10"
                                     >
                                         <FileText className="w-3.5 h-3.5" /> View Detailed Scorecard
                                     </button>
                                 ) : (
                                     <button
                                         onClick={() => navigate(`/assessment/${a.shareToken}`)}
-                                        className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#AA8A2A] text-black font-black text-xs hover:brightness-110 shadow-lg shadow-[#D4AF37]/20 flex items-center justify-center gap-1.5 transition-all"
+                                        className="rig-chamfer-btn w-full py-2.5 bg-[#FF3B1F] text-black font-bold text-xs hover:bg-[#E63219] shadow-lg shadow-[#FF3B1F]/20 flex items-center justify-center gap-1.5 transition-all"
                                     >
                                         <Play className="w-3.5 h-3.5" />
                                         {a.attemptStatus === 'in_progress' ? 'Resume Assessment' : 'Start Assessment'}
