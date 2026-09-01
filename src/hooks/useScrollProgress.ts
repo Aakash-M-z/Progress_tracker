@@ -8,23 +8,34 @@ export function useScrollProgress() {
     direction: 'down',
   });
   const lastScrollY = useRef(0);
+  const rafId = useRef<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = maxScroll > 0 ? scrollY / maxScroll : 0;
-      const direction = scrollY > lastScrollY.current ? 'down' : 'up';
+      if (rafId.current !== null) return;
 
-      lastScrollY.current = scrollY;
+      rafId.current = requestAnimationFrame(() => {
+        rafId.current = null;
+        const currentScrollY = window.scrollY;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = maxScroll > 0 ? currentScrollY / maxScroll : 0;
+        const direction = currentScrollY > lastScrollY.current ? 'down' : 'up';
 
-      setScrollState({ progress, scrollY, direction });
+        // Only update if difference is meaningful
+        if (Math.abs(currentScrollY - lastScrollY.current) > 3) {
+          lastScrollY.current = currentScrollY;
+          setScrollState({ progress, scrollY: currentScrollY, direction });
+        }
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId.current !== null) cancelAnimationFrame(rafId.current);
+    };
   }, []);
 
   return scrollState;

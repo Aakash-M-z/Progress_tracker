@@ -49,13 +49,13 @@ function CameraController({ scrollProgress, mouseX, mouseY, breathPhaseRef }: Ca
 function SceneLights() {
   return (
     <>
-      <ambientLight intensity={0.025} />
+      <ambientLight intensity={0.035} />
       <directionalLight
         position={[2, 5, 3]}
         intensity={0.32}
         color="#ffffff"
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[512, 512]}
         shadow-camera-near={0.5}
         shadow-camera-far={16}
         shadow-bias={-0.001}
@@ -102,10 +102,12 @@ function SceneContent({ scrollProgress, mouseX, mouseY }: SceneContentProps) {
 
       <ContactShadows
         position={[0.3, -1.04, 0]}
-        opacity={0.5}
-        scale={7}
-        blur={1.8}
+        opacity={0.4}
+        scale={6}
+        blur={1.5}
         far={3}
+        frames={1}
+        resolution={256}
       />
     </>
   );
@@ -120,16 +122,16 @@ interface CinematicSceneProps {
 export function CinematicScene({ scrollProgress, mouseX, mouseY }: CinematicSceneProps) {
   return (
     <Canvas
-      shadows={{ type: THREE.PCFShadowMap }}
-      dpr={[1, 1.5]}
+      shadows={{ type: THREE.BasicShadowMap }}
+      dpr={[1, 1.25]}
       gl={{
-        antialias: true,
+        antialias: false,
         alpha: true,
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 0.82,
         powerPreference: 'high-performance',
       }}
-      style={{ background: 'transparent' }}
+      style={{ background: 'transparent', pointerEvents: 'none' }}
     >
       {/* FOV 38° — balanced: monitor is large but full desk visible */}
       <PerspectiveCamera makeDefault fov={38} near={0.1} far={28} position={[0.3, 0.28, 2.4]} />

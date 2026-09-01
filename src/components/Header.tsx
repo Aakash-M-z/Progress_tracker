@@ -162,44 +162,35 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                 </svg>
               </button>
             )}
-            <div className="flex items-center gap-3">
-              <div style={{
-                width: '34px', height: '34px', borderRadius: '8px',
-                border: '1px solid rgba(255,255,255,0.1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(255,255,255,0.03)',
-              }}>
-                <svg className="w-5 h-5 text-[#818cf8]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
+              <div className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center bg-white/[0.03]">
+                <svg className="w-4 h-4 text-[#FF3B1F]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
                 </svg>
               </div>
               <div className="hidden sm:block">
-                <h1 style={{
-                  fontFamily: '"Orbitron", "Inter", sans-serif',
-                  fontSize: '0.92rem', fontWeight: 800, color: '#F8FAFC',
-                  letterSpacing: '0.04em', lineHeight: 1.2,
-                }}>
-                  Algo<span className="text-[#818cf8]">Ascent</span>
+                <h1 className="text-sm font-bold text-white tracking-wide leading-tight">
+                  Algo<span className="text-[#FF3B1F]">Ascent</span>
                 </h1>
-                <p style={{ fontSize: '0.56rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.18em' }}>
-                  Technical Assessment Studio
+                <p className="text-[10px] text-white/40 uppercase tracking-widest font-mono">
+                  Engineering Platform
                 </p>
               </div>
             </div>
           </div>
  
           {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 h-full">
+          <nav className="hidden md:flex items-center gap-6 h-full font-mono">
             {navItems.map(item => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 end={item.path === '/dashboard'}
                 className={({ isActive }) => `
-                  h-full flex items-center px-1 border-b-2 text-xs font-bold uppercase tracking-wider transition-all duration-200
+                  h-full flex items-center px-1 border-b-2 text-xs font-semibold uppercase tracking-wider transition-all duration-200
                   ${isActive
-                    ? 'border-[#6366f1] text-white drop-shadow-[0_0_8px_rgba(99,102,241,0.2)]'
-                    : 'border-transparent text-white/40 hover:text-white/80 hover:border-white/10'
+                    ? 'border-[#FF3B1F] text-white drop-shadow-[0_0_8px_rgba(255,59,31,0.3)]'
+                    : 'border-transparent text-white/45 hover:text-white hover:border-white/15'
                   }
                 `}
               >
@@ -211,24 +202,24 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
           {/* Right side */}
           <div className="flex items-center gap-3">
 
-            {/* User Avatar Only Dropdown Button */}
+            {/* User Avatar Dropdown Button */}
             <div ref={dropdownRef} style={{ position: 'relative' }}>
               <button
                 onClick={() => setShowDropdown(d => !d)}
                 className={`relative w-9 h-9 rounded-full overflow-hidden flex items-center justify-center transition-all duration-200 border-2 cursor-pointer ${
                   showDropdown
-                    ? 'border-indigo-400 shadow-[0_0_16px_rgba(99,102,241,0.5)] scale-105'
-                    : 'border-white/15 hover:border-indigo-400/70 hover:scale-105'
+                    ? 'border-[#FF3B1F] shadow-[0_0_16px_rgba(255,59,31,0.4)] scale-105'
+                    : 'border-white/15 hover:border-[#FF3B1F]/60 hover:scale-105'
                 }`}
                 style={{
-                  background: 'linear-gradient(135deg, #818cf8, #4f46e5)',
+                  background: 'linear-gradient(135deg, #FF3B1F, #B8220C)',
                 }}
                 aria-label="User Profile Menu"
               >
                 {userAvatar ? (
                   <img src={userAvatar} alt={displayName} className="w-full h-full object-cover rounded-full" />
                 ) : (
-                  <span className="text-xs font-black text-white">{initials}</span>
+                  <span className="text-xs font-bold text-black">{initials}</span>
                 )}
               </button>
  
@@ -238,10 +229,10 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                   style={{
                     position: 'absolute', right: 0, top: 'calc(100% + 8px)',
                     width: '230px',
-                    background: '#0d0d12',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: '#0E0E14',
+                    border: '1px solid rgba(255,255,255,0.1)',
                     borderRadius: '14px',
-                    boxShadow: '0 20px 56px rgba(0,0,0,0.85), 0 0 24px rgba(99,102,241,0.02)',
+                    boxShadow: '0 20px 56px rgba(0,0,0,0.85), 0 0 24px rgba(255,59,31,0.05)',
                     zIndex: 100, overflow: 'hidden',
                     animation: 'dropdownOpen 0.18s cubic-bezier(0.22,1,0.36,1) both',
                   }}
@@ -249,15 +240,15 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                   {/* User info header */}
                   <div style={{
                     padding: '14px 16px',
-                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                    borderBottom: '1px solid rgba(255,255,255,0.06)',
                     display: 'flex', alignItems: 'center', gap: '12px',
                   }}>
                     <div style={{
-                      width: '40px', height: '40px', borderRadius: '50%', flexShrink: 0,
-                      background: 'linear-gradient(135deg, #818cf8, #4f46e5)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '1rem', fontWeight: 700, color: '#ffffff',
-                      boxShadow: '0 0 12px rgba(99,102,241,0.2)',
+                      width: '38px', height: '38px', borderRadius: '50%', flexShrink: 0,
+                      background: 'linear-gradient(135deg, #FF3B1F, #B8220C)',
+                      display: 'flex', alignItems: 'center', justifySelf: 'center', justifyContent: 'center',
+                      fontSize: '0.95rem', fontWeight: 700, color: '#000000',
+                      boxShadow: '0 0 12px rgba(255,59,31,0.2)',
                       overflow: 'hidden',
                       border: '1px solid rgba(255,255,255,0.1)'
                     }}>
@@ -268,11 +259,11 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                       )}
                     </div>
                     <div style={{ minWidth: 0 }}>
-                      <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#EAEAEA', lineHeight: 1.3 }}>
+                      <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#FFFFFF', lineHeight: 1.3 }}>
                         {displayName}
                       </p>
                       <p style={{
-                        fontSize: '0.72rem', color: '#555',
+                        fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                       }}>
                         {user?.email || ''}
@@ -290,16 +281,16 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                           width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
                           padding: '9px 12px', borderRadius: '8px',
                           background: 'transparent', border: 'none',
-                          color: '#888', fontSize: '0.85rem', cursor: 'pointer',
+                          color: 'rgba(255,255,255,0.65)', fontSize: '0.85rem', cursor: 'pointer',
                           transition: 'all 0.15s ease', textAlign: 'left',
                         }}
                         onMouseEnter={e => {
-                          (e.currentTarget as HTMLElement).style.background = 'rgba(99,102,241,0.06)';
-                          (e.currentTarget as HTMLElement).style.color = '#818cf8';
+                          (e.currentTarget as HTMLElement).style.background = 'rgba(255,59,31,0.1)';
+                          (e.currentTarget as HTMLElement).style.color = '#FF3B1F';
                         }}
                         onMouseLeave={e => {
                           (e.currentTarget as HTMLElement).style.background = 'transparent';
-                          (e.currentTarget as HTMLElement).style.color = '#888';
+                          (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.65)';
                         }}
                       >
                         <span style={{ fontSize: '0.9rem', width: '16px', textAlign: 'center' }}>{item.icon}</span>
@@ -307,7 +298,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                       </button>
                     ))}
  
-                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '4px 2px' }} />
+                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '4px 2px' }} />
  
                     {/* Admin section — only visible to admins */}
                     {adminItems.length > 0 && (
@@ -315,7 +306,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                         <div style={{
                           padding: '8px 12px 4px',
                           fontSize: '0.65rem', fontWeight: 700,
-                          color: '#818cf8', textTransform: 'uppercase', letterSpacing: '0.12em',
+                          color: '#FF3B1F', textTransform: 'uppercase', letterSpacing: '0.12em',
                         }}>
                           Admin
                         </div>
@@ -327,23 +318,23 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
                               width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
                               padding: '9px 12px', borderRadius: '8px',
                               background: 'transparent', border: 'none',
-                              color: '#818cf8', fontSize: '0.85rem', cursor: 'pointer',
-                              transition: 'all 0.15s ease', textAlign: 'left', opacity: 0.85,
+                              color: '#FF3B1F', fontSize: '0.85rem', cursor: 'pointer',
+                              transition: 'all 0.15s ease', textAlign: 'left', opacity: 0.9,
                             }}
                             onMouseEnter={e => {
-                              (e.currentTarget as HTMLElement).style.background = 'rgba(99,102,241,0.08)';
+                              (e.currentTarget as HTMLElement).style.background = 'rgba(255,59,31,0.1)';
                               (e.currentTarget as HTMLElement).style.opacity = '1';
                             }}
                             onMouseLeave={e => {
                               (e.currentTarget as HTMLElement).style.background = 'transparent';
-                              (e.currentTarget as HTMLElement).style.opacity = '0.85';
+                              (e.currentTarget as HTMLElement).style.opacity = '0.9';
                             }}
                           >
                             <span style={{ fontSize: '0.9rem', width: '16px', textAlign: 'center' }}>{item.icon}</span>
                             {item.label}
                           </button>
                         ))}
-                        <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '4px 2px' }} />
+                        <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '4px 2px' }} />
                       </>
                     )}
  

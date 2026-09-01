@@ -24,7 +24,8 @@ const ShareAssessmentModal: React.FC<ShareAssessmentModalProps> = ({
 
     if (!isOpen || !assessment) return null;
 
-    const shareUrl = `${window.location.origin}/assessment/${assessment.shareToken}`;
+    const shareToken = assessment.shareToken || assessment.id || (assessment as any)._id || 'asmt_demo_1';
+    const shareUrl = `${window.location.origin}/assessment/${shareToken}`;
 
     const handleCopy = () => {
         navigator.clipboard.writeText(shareUrl);

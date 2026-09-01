@@ -25,7 +25,7 @@ export default defineConfig({
     },
     headers: {
       // Required for Google OAuth popup — allows window.closed polling across origins
-      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+      'Cross-Origin-Opener-Policy': 'unsafe-none',
       'Cross-Origin-Embedder-Policy': 'unsafe-none',
     },
     proxy: {

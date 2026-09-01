@@ -101,39 +101,29 @@ export function Pricing() {
           variants={staggerContainer}
           initial="hidden"
           animate={inView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start"
+          className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch"
+          data-testid="pricing-grid"
         >
           {TIERS.map((tier) => (
             <motion.div
               key={tier.name}
               variants={fadeUp}
               className={`
-                relative p-8 rounded-2xl
+                relative p-8 lg:p-10 rounded-2xl flex flex-col justify-between
+                transition-all duration-500
                 ${tier.highlighted
-                  ? 'border border-white/20 bg-white/[0.05] ring-1 ring-white/10'
-                  : 'border border-white/[0.07] bg-white/[0.02]'
+                  ? 'bg-[#0E0E14] border-2 border-[#FF3B1F] shadow-[0_0_40px_rgba(255,59,31,0.15)]'
+                  : 'bg-white/[0.02] border border-white/[0.08] hover:border-white/20'
                 }
               `}
-              data-testid={`pricing-tier-${tier.name.toLowerCase()}`}
+              data-testid={`pricing-card-${tier.name.toLowerCase()}`}
             >
               {tier.highlighted && (
-                <div className="absolute -top-px left-8 right-8 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+                <div className="absolute -top-3.5 left-8 px-3.5 py-1 bg-[#FF3B1F] text-black text-[11px] font-bold letter-wider uppercase tracking-[0.14em]">
+                  Most Popular
+                </div>
               )}
 
-              {/* Tier name */}
-              <p className="text-white/45 text-[11px] font-medium uppercase tracking-[0.18em] mb-5">
-                {tier.name}
-              </p>
-
-              {/* Price */}
-              <div className="flex items-baseline gap-2 mb-2">
-                <span className="text-[44px] font-bold letter-tight text-white leading-none">
-                  {tier.price}
-                </span>
-                <span className="text-white/35 text-sm">/ {tier.period}</span>
-              </div>
-
-              {/* Description */}
               <p className="text-white/45 text-sm mb-8 leading-relaxed">
                 {tier.description}
               </p>
@@ -143,10 +133,10 @@ export function Pricing() {
                 href="/dashboard"
                 onClick={(e) => { e.preventDefault(); navigate('/dashboard'); }}
                 className={`
-                  block w-full py-3 rounded-xl text-sm font-semibold text-center mb-8
+                  block w-full py-3.5 rounded-xl text-sm font-bold text-center mb-8
                   transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]
                   ${tier.highlighted
-                    ? 'bg-white text-black hover:bg-white/90'
+                    ? 'bg-[#FF3B1F] text-black hover:bg-[#E63219] shadow-lg'
                     : 'border border-white/12 text-white/70 hover:border-white/25 hover:text-white'
                   }
                 `}
